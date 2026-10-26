@@ -1,5 +1,6 @@
 ---
-title: "LocalPilot"
+date: "2026-05-01"
+title: "Local Pilot"
 tech:
   - "Python"
   - "TypeScript"

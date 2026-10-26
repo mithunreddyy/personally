@@ -22,7 +22,7 @@ No database, forms, or environment variables are used.
 
 - Direction lives in `DESIGN.md`. Read it before any UI, copy, or layout work.
 - Colors, fonts, and radii come from the `@theme` tokens in `src/index.css`. Do not hardcode new colors.
-- Light (soft, cool off-white) is the default. Dark is a working toggle via `data-theme="dark"`. Test both.
+- Dark (neutral charcoal `#161616`, not pure black) is the default. Light is a working toggle via `data-theme="light"`. Test both.
 
 <!-- antislop:start -->
 ## antislop

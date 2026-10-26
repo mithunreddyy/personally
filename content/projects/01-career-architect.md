@@ -1,4 +1,5 @@
 ---
+date: "2026-05-04"
 title: "Autonomous Career Architect"
 tech:
   - "Python"

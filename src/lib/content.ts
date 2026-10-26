@@ -1,5 +1,5 @@
-import { BlogPost, Experience, PersonalInfo, Project, SkillGroup } from '../types';
-import { calculateReadTime, formatDate } from './utils';
+import { BlogPost, CvSection, Experience, PersonalInfo, Project, SkillGroup } from '../types';
+import { calculateReadTime } from './utils';
 
 type Frontmatter = Record<string, string | number | boolean | string[]>;
 
@@ -93,6 +93,7 @@ export const PROJECTS: Project[] = files(
   tech: Array.isArray(data.tech) ? data.tech : [],
   link: str(data.link) || undefined,
   demoUrl: str(data.demoUrl) || undefined,
+  date: str(data.date),
 }));
 
 export const SKILL_GROUPS: SkillGroup[] = Object.values(
@@ -106,6 +107,26 @@ export const SKILL_GROUPS: SkillGroup[] = Object.values(
       return { category: category.trim(), skills: bulletsOf(rest.join('\n')) };
     }),
 );
+
+const cv = files(import.meta.glob('/content/cv.md', { query: '?raw', import: 'default', eager: true }))[0];
+
+export const CV_UPDATED = str(cv?.data.updated);
+
+// "## Title" starts a section; each "- name | detail | sub | place" line is one entry
+export const CV_SECTIONS: CvSection[] = (cv?.body ?? '')
+  .replace(/<!--[\s\S]*?-->/g, '')
+  .split(/^##\s+/m)
+  .filter(section => section.trim())
+  .map(section => {
+    const [title, ...rest] = section.split('\n');
+    return {
+      title: title.trim(),
+      entries: bulletsOf(rest.join('\n')).map(line => {
+        const [name = '', detail = '', sub = '', place = ''] = line.split('|').map(part => part.trim());
+        return { name, detail, sub, place };
+      }),
+    };
+  });
 
 export const BLOG_POSTS: BlogPost[] = files(
   import.meta.glob('/content/blog/*.md', { query: '?raw', import: 'default', eager: true }),
@@ -122,5 +143,4 @@ export const BLOG_POSTS: BlogPost[] = files(
     readTime: calculateReadTime(body, str(data.excerpt)),
     published: true,
   }))
-  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-  .map(post => ({ ...post, date: formatDate(post.date) }));
+  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());

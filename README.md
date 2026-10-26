@@ -32,11 +32,6 @@ npm run build
 npm run lint    # type check
 ```
 
-## Deploy
-
-Pushing to `master` builds the site and publishes it to GitHub Pages at https://mithunreddyy.github.io/Portfolio/ (`.github/workflows/deploy-pages.yml`).
-
-One-time setup: **Settings → Pages → Source → GitHub Actions**. No secrets or environment variables are needed.
 
 ## Layout
 

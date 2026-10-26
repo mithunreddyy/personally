@@ -1,91 +1,94 @@
 # DESIGN.md: Mithun Reddy Portfolio
 
-**Status:** draft for owner review.
-**Sources:** observed values come from `src/index.css` and `README.md`. Items marked **PROPOSED** are additions to make the direction more designed. Each one stays a proposal until the owner keeps it.
+**Status:** owner-directed redesign, October 2026. The owner asked for the structure and restraint of shedsgns.me, made personal. Values below come from `src/index.css` and the components.
 
 ## Identity
 
-Observed: a personal portfolio for a design-minded software engineer. It is editorial first: project case studies, a long-form blog, and a live availability status.
+A personal index for a full-stack engineer: a short introduction, then plain lists of projects, experience, stack, and writing. It reads like a well-kept text file. Nothing on the page competes with the words.
 
-Personality, observed: quiet, precise, typographic. Motion rewards attention and does not fill space.
+What makes it his, not the reference:
+- The greeting line uses the live time in Hyderabad ("good evening from Hyderabad, where it's 19:42").
+- Hanken Grotesk, not Inter.
+- A neutral charcoal dark theme (not pure black) by default, a cool off-white light theme, and the blue accent.
+- Keyboard shortcuts (M, V, D, T, ⌘K) and the command menu.
 
 ## Dials
 
-**PROPOSED:** ENERGY 2 / RHYTHM 2 / MOTION 2.
+ENERGY 1 / RHYTHM 2 / MOTION 1.
 
-Design Read: *"Reading this as: personal portfolio and editorial blog for engineers and hiring managers, in a restrained editorial style, dial ENERGY 2 / RHYTHM 2 / MOTION 2."*
+Design Read: *"Reading this as: personal index and blog for engineers and hiring managers, in a quiet text-first list style, dial ENERGY 1 / RHYTHM 2 / MOTION 1."*
 
-Raise RHYTHM to 3 if the owner wants section compositions to vary more.
+RHYTHM moved from 1 to 2 in October 2026, when the owner asked for Projects and Writing to be distinct. Every section keeps the same frame (hairline, muted label, content); only Projects and Writing break the plain row, each with a shape that fits its content.
 
 ## Palette
 
-Light is the default, on a soft, cool off-white (not pure white). Dark is a working toggle through `data-theme="dark"` on `:root`. Both modes must work.
+Dark is the default, set by the October 2026 owner request for "less black": a neutral charcoal instead of near-pure black, which is easier on the eyes over long reading. Light is a working toggle through `data-theme="light"` on `:root`, and a visitor's choice is remembered. `color-scheme` and the `theme-color` meta follow the active theme.
 
 | Token | Dark | Light |
 |---|---|---|
-| `--color-bg` | `#080808` | `#f6f7f9` |
-| `--color-ink` | `#f0f0f0` | `#15171a` |
-| `--color-muted` | `#a1a1a1` | `#636872` |
-| `--color-line` | `rgba(255,255,255,0.05)` | `rgba(0,0,0,0.08)` |
+| `--color-bg` | `#161616` | `#f6f7f9` |
+| `--color-ink` | `#ececec` | `#15171a` |
+| `--color-muted` | `#a3a3a3` | `#636872` |
+| `--color-line` | `rgba(255,255,255,0.08)` | `rgba(0,0,0,0.08)` |
 | `--color-accent` | `#3B82F6` | `#2563EB` |
 
-Rule: one accent. Neutrals do not count toward the palette limit.
-
-**PROPOSED:** reserve the accent for one moment per screen, such as the primary action or the availability dot. Everything else stays in ink and muted.
+- Ink: names, links, the first-person name in the intro.
+- Muted: section labels, prose, dates, detail columns.
+- Accent: only the focus ring and the "copied" check. Nowhere else.
 
 ## Typography
 
-- **Sans (headings and body):** Hanken Grotesk, fallback Inter. Reason: editorial headings with a clear weight range.
-- **Mono (metadata and code):** Geist Mono, fallback JetBrains Mono. Reason: dates, read times, and code-like data read as data.
-- Blog title: 2.25rem to 3rem, weight 700, letter-spacing -0.02em, line-height 1.15.
-- Lead: 1.05rem to 1.12rem, line-height 1.85.
-- Body: 1.02rem to 1.08rem, line-height 1.9 to 1.95.
-- Measure: content column is 680px max.
-
-## Shape and Depth
-
-- Cards: 16px radius (`rounded-2xl`), surface `ink` at 3% opacity.
-- Depth comes from surface contrast, not shadow. No shadows are defined in the current system.
-- Pills are not part of the system, except the availability status dot.
+- One face, Hanken Grotesk, for everything. Reason: it reads warmer than the reference's Inter at small sizes.
+- One size: 17px, line-height 26px (28px for article prose). Hierarchy comes from color (ink against muted), not from size or weight.
+- Article contents index, and list details on phones under 480px: 15px / 22px.
+- Geist Mono is still loaded in the theme but no longer used in the UI.
 
 ## Layout
 
-- One content column, 680px max, with 20px to 24px side gutters.
-- Whitespace separates sections. It is structure, not leftover space.
+- One column, 600px max, 20px side gutters, 120px top padding (64px on phones), 144px bottom padding to clear the dock.
+- Every section is the `Section` component in `src/components/List.tsx`: a 1px `line` divider, a muted label, then content.
+- List rows are the `Row` component: name left, detail right. Below 480px the detail drops under the name at 15px.
+- **Projects** are one flex row each: title left, month and year right. Nothing else; the details live on `/work/:slug`. One closing line points to GitHub: "Everything else lives on GitHub."
+- **Writing** is a ledger: the year hangs in a left column, shown once beside the first post of that year, then title and "category, read time" at 15px. Posts read as a timeline, not a pile.
+- **Focus by colour** (`.focus-index` in `src/index.css`): hovering or focusing an entry in Projects or Writing turns the other titles from ink to muted. Colour, not opacity, so dimmed titles keep AA contrast.
+- Article pages (blog posts and `/work/:slug`) use `Article` in `src/components/Article.tsx`. At 1180px and wider, the back link, issue number, and contents are pinned to the left edge. On narrower screens they sit above the title.
 
-**PROPOSED (RHYTHM 2):** keep one shared column, but vary the internal composition: a text-led intro, a list-led project index, and a wide case-study block. Do not repeat the same card grid in every section.
+- The CV page (`/cv`) follows the same shapes. The header puts the name and an "Updated" date on the left and the email with its copy button on the right. Below it come Currently, Experience, then Earlier and Education as `CollapsibleSection` ("+" turns into "×"), a Download PDF link, and a live GMT+5:30 clock at 14px. Its entries come from `content/cv.md`, one `name | detail | line underneath | place` per line. The place ("Hyderabad, India") sits on the right of the line underneath in every section, Experience included. Below 480px the right-hand column goes away: each entry reads name (with its toggle), role, then one 15px muted line of "dates, place" (`PhoneMeta` in `src/components/List.tsx`), so company names never break.
+
+## Components
+
+- **Links:** the `.link-line` class. A resting 1px `line` underline that fills with ink from the left in 0.38s on hover and keyboard focus. This is the identity motif: every link on every page uses it.
+- **Theme toggle:** a single icon fixed top-right, 44px tap target.
+- **Dock:** fixed bottom center, a 1px `line` border on `bg`, round 44px icons for email, GitHub, and LinkedIn. A back-to-index icon appears on every page except home.
+- **Stack:** one flat row of 24px logos from `public/stack/`, masked to the `muted` colour (`ink` on hover) so they follow the theme instead of showing brand colours. Each logo carries its name as `aria-label` and a hover title.
+- **Experience rows (CV page only):** a "+" toggle that turns into "×" and opens the role's bullets.
+- **Command menu (⌘K):** a plain text list, with no icons, shadow, or blur.
+- **Skip link:** "Skip to content" appears top-left on the first Tab and jumps to `main`.
+- **Shortcut feedback:** pressing M confirms "Copied <email>." in ink at the end of the shortcuts line for 2s, only after the clipboard accepts it.
+- **RSS:** `/feed.xml` is generated from `content/blog/` by `vite-plugin-feed.ts`, linked in the page head and in one sentence under Writing on the index.
+
+## Shape and depth
+
+- No shadows anywhere.
+- Radius: the dock and its icons are fully round; the command menu is 12px. Nothing else has a radius.
+- Depth comes only from the 1px `line` hairlines.
 
 ## Motion
 
-- Library: Motion. Smooth scroll: Lenis.
-- Transitions: 200ms to 300ms, ease.
-- Hover states on links and cards are the baseline.
+- Entrance: each block fades up 4px once on load (`.appear`, 0.6s), staggered 40ms apart through `--appear-delay`.
+- Interaction: the link underline fill, the focus-by-colour fade in Projects and Writing (0.3s), the experience toggle (0.3s height), and the command menu fade.
+- Reduced motion turns off the entrance and the underline transition.
 
-**PROPOSED (MOTION 2):** one signature reveal per page, such as the title entering once. No Fade Up, Bounce, or Floating on every element.
+## Resolved conflicts with antislop
 
-## Identity Motif
+1. Radial accent spotlight on `body::after`: removed in this redesign.
+2. Uppercase mono labels with wide tracking: removed. Labels are now sentence case in the body face.
+3. Lucide icons: kept only where a glyph names a real destination or action (mail, GitHub, LinkedIn, back, theme, copy).
 
-**PROPOSED:** the mono metadata line (date, read time, location) is the recurring typographic voice across blog and case studies. It is the one place where the mono face appears.
-
-## Known Conflicts With antislop
-
-These items come from the current code and conflict with an antislop rule. Per R-37, each one needs an owner decision: keep it and record the reason, or drop it.
-
-1. **Radial accent spotlight** on `body::after` at 5% opacity (`src/index.css`). Rule R-01 and R-13: a glow needs a stated purpose.
-   Owner decision: [pending]
-
-2. **Uppercase mono labels with 0.08em to 0.14em tracking** on the back link, meta row, "more" label, and footer (`src/index.css`). Rule R-06: wide-tracked uppercase is forbidden as a default without purpose.
-   Owner decision: [pending]
-
-3. **Lucide icons** (README: "thin stroke variants"). Rule R-04: an icon set picked for its library look needs written relevance per icon.
-   Owner decision: [pending]
-
-Note: the README lists Inter as the UI font, but the CSS puts Hanken Grotesk first. This DESIGN.md follows the CSS.
-
-## Antislop Checks for This Design
+## Antislop checks for this design
 
 - No em dashes in UI text (R-02).
-- Mobile: no horizontal overflow, tap targets 44px (R-03).
-- Every stat, testimonial, and claim must be real or removed (R-17, R-18, R-36).
-- Every nav item must have a real destination (R-24).
+- Mobile: no horizontal overflow, 44px tap targets (R-03).
+- Every stat, testimonial, and claim is real or removed (R-17, R-18, R-36).
+- Every link has a real destination (R-24).
 - Light and dark both verified (R-34).

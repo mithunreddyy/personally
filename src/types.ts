@@ -5,6 +5,7 @@ export interface Project {
   tech: string[];
   link?: string;
   demoUrl?: string;
+  date: string;
 }
 
 export interface Experience {
@@ -14,6 +15,18 @@ export interface Experience {
   location: string;
   period: string;
   highlights: string[];
+}
+
+export interface CvEntry {
+  name: string;
+  detail: string;
+  sub: string;
+  place: string;
+}
+
+export interface CvSection {
+  title: string;
+  entries: CvEntry[];
 }
 
 export interface SkillGroup {

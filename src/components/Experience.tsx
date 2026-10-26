@@ -1,111 +1,139 @@
-import { motion } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
+import { useState } from 'react';
+
 import { SKILL_GROUPS } from '../constants';
-
-const skillIconMap: Record<string, string> = {
-  "TypeScript": "https://cdn.simpleicons.org/typescript/3178C6",
-  "JavaScript (ES6+)": "https://cdn.simpleicons.org/javascript/F7DF1E",
-  "Python": "https://cdn.simpleicons.org/python/3776AB",
-  "HTML5": "https://cdn.simpleicons.org/html5/E34F26",
-  "CSS3": "https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original.svg",
-  "LangChain": "https://cdn.simpleicons.org/langchain/white",
-  "LangGraph": "https://cdn.simpleicons.org/langgraph/3399FF",
-  "HuggingFace": "https://cdn.simpleicons.org/huggingface/FFD21E",
-  "PyTorch": "https://cdn.simpleicons.org/pytorch/EE4C2C",
-  "TensorFlow": "https://cdn.simpleicons.org/tensorflow/FF6F00",
-  "PySpark": "https://cdn.simpleicons.org/apachespark/E25A1C",
-  "Databricks": "https://cdn.simpleicons.org/databricks/FF3621",
-  "PostgreSQL": "https://cdn.simpleicons.org/postgresql/4169E1",
-  "MongoDB": "https://cdn.simpleicons.org/mongodb/47A248",
-  "Redis": "https://cdn.simpleicons.org/redis/DC382D",
-  "Cassandra": "https://cdn.simpleicons.org/apachecassandra/1287B1",
-  "AWS": "https://raw.githubusercontent.com/devicons/devicon/master/icons/amazonwebservices/amazonwebservices-original-wordmark.svg",
-  "GCP": "https://cdn.simpleicons.org/googlecloud/4285F4",
-  "Azure": "https://raw.githubusercontent.com/devicons/devicon/master/icons/azure/azure-original.svg",
-  "Docker": "https://cdn.simpleicons.org/docker/2496ED",
-  "TerraForm": "https://cdn.simpleicons.org/terraform/7B42BC",
-  "GitHub Actions": "https://cdn.simpleicons.org/githubactions/2088FF"
-};
-
-const allSkills = SKILL_GROUPS.flatMap(g => g.skills);
-
 import { Experience } from '../types';
+import { PhoneMeta, Section } from './List';
 
-export function ExperienceSection({ experiences }: { experiences: Experience[] }) {
+const EASE = [0.25, 0.46, 0.45, 0.94] as const;
+
+function ExperienceEntry({ exp }: { exp: Experience }) {
+  const [open, setOpen] = useState(false);
+  const bodyId = `exp-${exp.id}`;
+
   return (
-    <section id="experience" className="section-container pt-3 sm:pt-4 pb-4 sm:pb-6">
-      <div className="mb-2.5 sm:mb-3">
-        <h2 className="text-[15px] sm:text-[17px] font-semibold text-ink">Experience</h2>
-        <p className="text-[16px] sm:text-[18px] leading-[1.75] text-muted/70 font-medium max-w-xl">
-          Two backend-heavy roles so far: microservices, PostgreSQL performance, and data pipelines.
-        </p>
-      </div>
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        aria-expanded={open}
+        aria-controls={bodyId}
+        className="group w-full text-left py-1 -my-1"
+      >
+        <span className="flex items-baseline justify-between gap-4">
+          <span className="text-ink">{exp.company}</span>
+          <span className="flex items-baseline gap-3 text-muted shrink-0">
+            <span className="max-[479px]:hidden">{exp.period}</span>
+            <span
+              aria-hidden="true"
+              className={`inline-block transition-transform duration-300 group-hover:text-ink ${open ? 'rotate-45' : ''}`}
+            >
+              +
+            </span>
+          </span>
+        </span>
+        <span className="flex flex-wrap items-baseline justify-between gap-x-4 text-muted">
+          <span className="min-w-0">{exp.role}</span>
+          <span className="shrink-0 max-[479px]:hidden">{exp.location}</span>
+        </span>
+        <PhoneMeta parts={[exp.period, exp.location]} />
+      </button>
 
-      <div className="space-y-4 sm:space-y-6">
-        {experiences.map((exp, index) => (
+      <AnimatePresence initial={false}>
+        {open && (
           <motion.div
-            key={exp.id}
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1, duration: 0.5 }}
-            viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-6"
+            id={bodyId}
+            initial={{ height: 0 }}
+            animate={{ height: 'auto' }}
+            exit={{ height: 0 }}
+            transition={{ duration: 0.3, ease: EASE }}
+            className="overflow-hidden"
           >
-            <div className="md:col-span-3">
-              <span className="text-[12px] sm:text-[14px] text-muted/60 font-bold uppercase tracking-tight font-mono block mt-1">{exp.period}</span>
-            </div>
-            <div className="md:col-span-9 space-y-3">
-              <div className="flex flex-wrap items-baseline gap-1.5">
-                <h3 className="text-[16px] sm:text-[18px] font-semibold text-ink">{exp.role}</h3>
-                <span className="text-[16px] sm:text-[18px] text-muted/60 font-medium">at</span>
-                <span className="text-[16px] sm:text-[18px] text-ink font-semibold">{exp.company}</span>
-              </div>
-              <ul className="space-y-2.5 pl-0">
-                {exp.highlights.map((h, i) => (
-                  <li key={i} className="text-[15px] sm:text-[17px] text-muted/70 leading-[1.75] font-medium flex gap-2">
-                    <span className="text-muted/20 mt-0.5 shrink-0">·</span>
-                    <span>{h}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <ul className="pt-3 space-y-2 text-muted">
+              {exp.highlights.map((h, i) => (
+                <li key={i}>{h}</li>
+              ))}
+            </ul>
           </motion.div>
-        ))}
-      </div>
-    </section>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
-export function Skills() {
+export function ExperienceSection({ experiences, delay = 0 }: { experiences: Experience[]; delay?: number }) {
   return (
-    <section id="skills" className="section-container pt-3 sm:pt-4 pb-4 sm:pb-6">
-      <h2 className="text-[15px] sm:text-[17px] font-semibold text-ink text-left mb-3 sm:mb-3.5">Stack</h2>
-
-      <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
-        {allSkills.map((skill, i) => (
-          <motion.div
-            key={skill}
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ delay: i * 0.03, duration: 0.3 }}
-            viewport={{ once: true }}
-            whileHover={{ scale: 1.2, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-            className="group relative will-change-transform"
-          >
-            <img
-              src={skillIconMap[skill] || ''}
-              alt={skill}
-              className="w-6 h-6 sm:w-7 sm:h-7 object-contain transition-all duration-300 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]"
-              referrerPolicy="no-referrer"
-              loading="lazy"
-              decoding="async"
-            />
-            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 translate-y-full px-2 py-0.5 bg-ink text-bg text-[8px] font-bold whitespace-nowrap rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
-              {skill}
-            </div>
-          </motion.div>
+    <Section id="experience" title="Experience" delay={delay}>
+      <div className="flex flex-col gap-4">
+        {experiences.map(exp => (
+          <ExperienceEntry key={exp.id} exp={exp} />
         ))}
       </div>
-    </section>
+    </Section>
+  );
+}
+
+// Skill name in content/skills.md -> logo file in public/stack/
+const STACK_ICONS: Record<string, string> = {
+  TypeScript: 'typescript',
+  'JavaScript (ES6+)': 'javascript',
+  Python: 'python',
+  HTML5: 'html5',
+  CSS3: 'css',
+  LangChain: 'langchain',
+  LangGraph: 'langgraph',
+  HuggingFace: 'huggingface',
+  PyTorch: 'pytorch',
+  TensorFlow: 'tensorflow',
+  PySpark: 'apachespark',
+  Databricks: 'databricks',
+  PostgreSQL: 'postgresql',
+  MongoDB: 'mongodb',
+  Redis: 'redis',
+  Cassandra: 'apachecassandra',
+  AWS: 'aws',
+  GCP: 'googlecloud',
+  Azure: 'azure',
+  Docker: 'docker',
+  TerraForm: 'terraform',
+  'GitHub Actions': 'githubactions',
+};
+
+/** One flat row of logos, masked to the muted colour so they follow the theme instead of brand colours */
+export function Skills({ delay = 0 }: { delay?: number }) {
+  const skills = [...new Set(SKILL_GROUPS.flatMap(group => group.skills))];
+
+  return (
+    <Section id="skills" title="Stack" delay={delay}>
+      <ul className="flex flex-wrap items-center gap-x-5 gap-y-4">
+        {skills.map(skill => {
+          const icon = STACK_ICONS[skill];
+          return (
+            <li key={skill} title={skill}>
+              {icon ? (
+                <span
+                  role="img"
+                  aria-label={skill}
+                  className="block w-6 h-6 bg-muted hover:bg-ink transition-colors"
+                  style={{
+                    maskImage: `url(${import.meta.env.BASE_URL}stack/${icon}.svg)`,
+                    WebkitMaskImage: `url(${import.meta.env.BASE_URL}stack/${icon}.svg)`,
+                    maskSize: 'contain',
+                    WebkitMaskSize: 'contain',
+                    maskRepeat: 'no-repeat',
+                    WebkitMaskRepeat: 'no-repeat',
+                    maskPosition: 'center',
+                    WebkitMaskPosition: 'center',
+                  }}
+                />
+              ) : (
+                // No logo yet: the name stands in rather than the skill going missing
+                <span className="text-muted">{skill}</span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </Section>
   );
 }

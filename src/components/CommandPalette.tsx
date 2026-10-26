@@ -1,26 +1,27 @@
-import { Code, FileText, Mail, MessageSquare, Moon, Search, Sun, User, Briefcase, Layers, Copy, CopyCheck } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import { KeyboardEvent, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTheme, toggleTheme } from '../hooks/useTheme';
-import { BlogPost, PersonalInfo } from '../types';
+import { BLOG_POSTS, PERSONAL_INFO, PROJECTS } from '../constants';
 import { scrollToSection } from '../lib/utils';
+import { downloadResume } from './Hero';
 
 interface PaletteCommand {
   id: string;
   name: string;
-  icon: ReactNode;
   run: () => void;
   // Commands that keep the palette open (e.g. copy feedback)
   keepOpen?: boolean;
 }
 
-export function CommandPalette({ personalInfo, blogs }: { personalInfo: PersonalInfo; blogs: BlogPost[] }) {
+export function CommandPalette() {
+  const personalInfo = PERSONAL_INFO;
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
   const [emailCopied, setEmailCopied] = useState(false);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { theme } = useTheme();
   const returnFocusRef = useRef<HTMLElement | null>(null);
 
@@ -66,46 +67,41 @@ export function CommandPalette({ personalInfo, blogs }: { personalInfo: Personal
     }
   };
 
+  // Sections live on the index; from any other page, go home first and land there
+  const goTo = useCallback((id: string) => {
+    if (pathname === '/') scrollToSection(id);
+    else navigate('/', { state: { scrollTo: id } });
+  }, [pathname, navigate]);
+
   const commands = useMemo<PaletteCommand[]>(() => [
-    { id: 'profile', name: 'Go to Profile', icon: <User size={16} />, run: () => scrollToSection('hero') },
-    { id: 'projects', name: 'View Projects', icon: <Code size={16} />, run: () => scrollToSection('projects') },
-    { id: 'experience', name: 'View Experience', icon: <Briefcase size={16} />, run: () => scrollToSection('experience') },
-    { id: 'stack', name: 'View Stack', icon: <Layers size={16} />, run: () => scrollToSection('skills') },
-    { id: 'blog', name: 'View Writing', icon: <MessageSquare size={16} />, run: () => scrollToSection('blog') },
-    { id: 'contact', name: 'Contact Me', icon: <Mail size={16} />, run: () => scrollToSection('contact') },
+    { id: 'cv', name: 'CV', run: () => navigate('/cv') },
+    { id: 'projects', name: 'Projects', run: () => goTo('projects') },
+    { id: 'stack', name: 'Stack', run: () => goTo('skills') },
+    { id: 'blog', name: 'Writing', run: () => goTo('blog') },
+    { id: 'contact', name: 'Connect', run: () => goTo('contact') },
     {
       id: 'theme',
       name: theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode',
-      icon: theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />,
       run: toggleTheme,
     },
     {
       id: 'email',
       name: emailCopied ? 'Email copied' : 'Copy email address',
-      icon: emailCopied ? <CopyCheck size={16} /> : <Copy size={16} />,
       run: copyEmail,
       keepOpen: true,
     },
-    {
-      id: 'resume',
-      name: 'Download Resume',
-      icon: <FileText size={16} />,
-      run: () => {
-        const link = document.createElement('a');
-        link.href = personalInfo.resumeUrl;
-        link.download = 'Mithun_Reddy_Resume.pdf';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      },
-    },
-    ...blogs.map((post): PaletteCommand => ({
+    { id: 'resume', name: 'Download resume', run: () => downloadResume(personalInfo.resumeUrl) },
+    ...PROJECTS.map((project): PaletteCommand => ({
+      id: `work-${project.id}`,
+      name: `Open ${project.title}`,
+      run: () => navigate(`/work/${project.id}`),
+    })),
+    ...BLOG_POSTS.map((post): PaletteCommand => ({
       id: `post-${post.slug}`,
-      name: `Read: ${post.title.replace(/\n/g, ' ')}`,
-      icon: <MessageSquare size={16} />,
+      name: `Read ${post.title.replace(/\n/g, ' ')}`,
       run: () => navigate(`/blog/${post.slug}`),
     })),
-  ], [theme, emailCopied, blogs, personalInfo.email, personalInfo.resumeUrl, navigate]);
+  ], [theme, emailCopied, personalInfo.resumeUrl, navigate, goTo]);
 
   const filtered = commands.filter((cmd) => cmd.name.toLowerCase().includes(search.trim().toLowerCase()));
   const currentIndex = Math.min(activeIndex, Math.max(filtered.length - 1, 0));
@@ -141,26 +137,25 @@ export function CommandPalette({ personalInfo, blogs }: { personalInfo: Personal
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[99999] flex items-start justify-center pt-[20vh] px-4">
+        <div className="fixed inset-0 z-[99999] flex items-start justify-center pt-[18vh] px-5">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={close}
-            className="absolute inset-0 bg-bg/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-bg/70"
           />
           <motion.div
             role="dialog"
             aria-modal="true"
-            aria-label="Command palette"
-            initial={{ opacity: 0, scale: 0.95, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-            className="relative w-full max-w-lg bg-bg/80 backdrop-blur-2xl border border-ink/10 rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden"
+            aria-label="Command menu"
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="relative w-full max-w-[440px] bg-bg border border-line rounded-xl overflow-hidden text-[17px] leading-[26px]"
           >
-            <div className="flex items-center px-4 py-3 border-b border-ink/5">
-              <Search size={18} className="text-muted/50 mr-3" aria-hidden="true" />
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-line">
               <input
                 type="text"
                 autoFocus
@@ -169,21 +164,21 @@ export function CommandPalette({ personalInfo, blogs }: { personalInfo: Personal
                 aria-controls="command-listbox"
                 aria-autocomplete="list"
                 aria-activedescendant={activeCommand ? `cmd-${activeCommand.id}` : undefined}
-                aria-label="Type a command or search"
-                placeholder="Type a command or search..."
+                aria-label="Search pages and actions"
+                placeholder="Search pages and actions"
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
                   setActiveIndex(0);
                 }}
                 onKeyDown={onInputKeyDown}
-                className="flex-1 bg-transparent border-none outline-none text-ink text-[15px] placeholder:text-muted/40 font-medium"
+                className="flex-1 min-w-0 bg-transparent border-none outline-none text-ink placeholder:text-muted"
               />
-              <div className="text-[10px] font-mono tracking-widest uppercase text-muted px-2 py-1 bg-ink/5 rounded-md" aria-hidden="true">ESC</div>
+              <span className="text-muted text-[15px]" aria-hidden="true">esc</span>
             </div>
-            <div id="command-listbox" role="listbox" aria-label="Commands" className="max-h-[300px] overflow-y-auto p-2">
+            <div id="command-listbox" role="listbox" aria-label="Results" className="max-h-[300px] overflow-y-auto p-1.5">
               {filtered.length === 0 ? (
-                <div role="status" className="p-4 text-center text-[13px] text-muted font-medium">No results found.</div>
+                <p role="status" className="px-2.5 py-2 text-muted">Nothing matches "{search}". Try a page name, like Writing.</p>
               ) : (
                 filtered.map((cmd, i) => {
                   const isActive = i === currentIndex;
@@ -196,10 +191,9 @@ export function CommandPalette({ personalInfo, blogs }: { personalInfo: Personal
                       tabIndex={-1}
                       onMouseEnter={() => setActiveIndex(i)}
                       onClick={() => runCommand(cmd)}
-                      className={`w-full flex items-center px-3 py-3 gap-3 text-left rounded-xl transition-colors group ${isActive ? 'bg-ink/[0.04]' : ''}`}
+                      className={`w-full block px-2.5 py-2 text-left rounded-lg transition-colors ${isActive ? 'bg-ink/[0.05] text-ink' : 'text-muted'}`}
                     >
-                      <div className={`transition-colors ${isActive ? 'text-ink' : 'text-muted'}`}>{cmd.icon}</div>
-                      <span className={`text-[14px] font-medium transition-colors ${isActive ? 'text-ink' : 'text-ink/80'}`}>{cmd.name}</span>
+                      {cmd.name}
                     </button>
                   );
                 })

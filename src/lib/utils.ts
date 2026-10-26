@@ -1,36 +1,12 @@
 /**
- * Formats a date string into DD/MM/YY format
+ * Formats a YYYY-MM-DD date as "Feb 2025" (short) or "21 February 2025" (long)
  */
-export function formatDate(dateStr: string): string {
-  try {
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) {
-      // Handle "FEB 21, 2025" format if New Date fails
-      const months: Record<string, number> = {
-        JAN: 0, FEB: 1, MAR: 2, APR: 3, MAY: 4, JUN: 5,
-        JUL: 6, AUG: 7, SEP: 8, OCT: 9, NOV: 10, DEC: 11
-      };
-      const parts = dateStr.split(/[\s,]+/);
-      if (parts.length >= 3) {
-        const month = months[parts[0].toUpperCase()];
-        const day = parseInt(parts[1], 10);
-        const year = parseInt(parts[2], 10);
-        if (month !== undefined && !isNaN(day) && !isNaN(year)) {
-          const dd = String(day).padStart(2, '0');
-          const mm = String(month + 1).padStart(2, '0');
-          const yy = String(year).slice(-2);
-          return `${dd}/${mm}/${yy}`;
-        }
-      }
-      return dateStr;
-    }
-    const dd = String(d.getDate()).padStart(2, '0');
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const yy = String(d.getFullYear()).slice(-2);
-    return `${dd}/${mm}/${yy}`;
-  } catch {
-    return dateStr;
-  }
+export function formatPostDate(raw: string, style: 'short' | 'long' = 'short'): string {
+  const d = new Date(`${raw}T00:00:00`);
+  if (isNaN(d.getTime())) return raw;
+  return d.toLocaleDateString('en-GB', style === 'short'
+    ? { month: 'short', year: 'numeric' }
+    : { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 /**

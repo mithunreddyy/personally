@@ -1,65 +1,41 @@
-import { MotionConfig, motion, useScroll, useSpring } from 'motion/react';
-import { useEffect, useState, Suspense, lazy } from 'react';
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { MotionConfig } from 'motion/react';
+import { Suspense, lazy, useEffect } from 'react';
+import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
 import { Blog } from './components/Blog';
-import { CommandPalette } from './components/CommandPalette';
-import { Dock } from './components/Dock';
-import { ExperienceSection, Skills } from './components/Experience';
-import { Footer } from './components/Footer';
-import { Header } from './components/Header';
+import { Connect } from './components/Connect';
+import { Skills } from './components/Experience';
 import { Hero } from './components/Hero';
 import { Projects } from './components/Projects';
 import { SEO } from './components/SEO';
+import { Shell } from './components/Shell';
 import { usePortfolioData } from './hooks/usePortfolioData';
+import { scrollToSection } from './lib/utils';
 
-// Lazy load heavy components
+// Reading pages load on demand
 const BlogPostView = lazy(() => import('./components/BlogPostView').then(module => ({ default: module.BlogPostView })));
+const ProjectView = lazy(() => import('./components/ProjectView').then(module => ({ default: module.ProjectView })));
+const CvView = lazy(() => import('./components/CvView').then(module => ({ default: module.CvView })));
 const NotFound = lazy(() => import('./components/NotFound').then(module => ({ default: module.NotFound })));
 
 function Portfolio() {
-  const { personalInfo, projects, experiences, blogs } = usePortfolioData();
+  const { personalInfo, projects, blogs } = usePortfolioData();
+  const location = useLocation();
 
-
-
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
+  // The command menu can send people here from another page with a section to land on
+  useEffect(() => {
+    const target = (location.state as { scrollTo?: string } | null)?.scrollTo;
+    if (target) requestAnimationFrame(() => scrollToSection(target));
+  }, [location.state]);
 
   return (
-    <div className="relative font-sans">
-
+    <>
       <SEO />
-      <CommandPalette personalInfo={personalInfo} blogs={blogs} />
-     
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.2 }}
-      >
-        <Header personalInfo={personalInfo} />
-        <Dock />
-
-        {/* Scroll progress indicator */}
-        <motion.div
-          className="fixed top-0 left-0 right-0 h-[2px] bg-accent origin-left z-[200]"
-          style={{ scaleX }}
-        />
-
-        <main className="relative z-10">
-          <Hero personalInfo={personalInfo} />
-          <Projects projects={projects} />
-          <ExperienceSection experiences={experiences} />
-          <Skills />
-          <Blog blogs={blogs} />
-        </main>
-
-        <Footer />
-      </motion.div>
-    </div>
+      <Hero personalInfo={personalInfo} />
+      <Projects projects={projects} delay={160} />
+      <Skills delay={200} />
+      <Blog blogs={blogs} delay={240} showFeed />
+      <Connect personalInfo={personalInfo} delay={280} />
+    </>
   );
 }
 
@@ -68,14 +44,18 @@ export default function App() {
     // "user" honors the OS reduced-motion setting for every Motion animation
     <MotionConfig reducedMotion="user">
       <Router basename={import.meta.env.BASE_URL}>
-        <div className="min-h-screen bg-bg text-ink relative selection:bg-accent/30 selection:text-ink">
-          <Suspense fallback={<div className="min-h-screen bg-bg flex items-center justify-center"><div className="w-8 h-8 border-2 border-accent/20 border-t-accent rounded-full animate-spin" /></div>}>
-            <Routes>
-              <Route path="/" element={<Portfolio />} />
-              <Route path="/blog/:slug" element={<BlogPostView />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
+        <div className="min-h-screen bg-bg text-ink relative selection:bg-accent/20 selection:text-ink">
+          <Shell>
+            <Suspense fallback={<p className="text-muted" role="status">Loading the page</p>}>
+              <Routes>
+                <Route path="/" element={<Portfolio />} />
+                <Route path="/cv" element={<CvView />} />
+                <Route path="/work/:slug" element={<ProjectView />} />
+                <Route path="/blog/:slug" element={<BlogPostView />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </Shell>
         </div>
       </Router>
     </MotionConfig>

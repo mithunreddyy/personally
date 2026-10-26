@@ -4,13 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mithun Reddy</title>
+    <meta name="theme-color" content="#161616" />
     <script>
       try {
-        document.documentElement.setAttribute("data-theme", localStorage.getItem("theme") === "dark" ? "dark" : "light");
+        var theme = localStorage.getItem("theme") === "light" ? "light" : "dark";
       } catch (e) {
-        document.documentElement.setAttribute("data-theme", "light");
+        var theme = "dark";
       }
+      document.documentElement.setAttribute("data-theme", theme);
+      document.querySelector('meta[name="theme-color"]').setAttribute("content", theme === "light" ? "#f6f7f9" : "#161616");
     </script>
+    <link rel="alternate" type="application/rss+xml" title="Mithun Reddy, writing" href="%BASE_URL%feed.xml" />
     <meta name="description" content="Portfolio of Mithun Reddy, a Full-Stack Software Engineer & AI Enthusiast specializing in scalable web architectures and machine learning." />
     
     <link rel="preconnect" href="https://fonts.googleapis.com" />

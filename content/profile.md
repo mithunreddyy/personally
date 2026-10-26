@@ -1,5 +1,5 @@
 ---
-name: "mithun reddy"
+name: "Mithun Reddy Sudireddy"
 role: "Full-Stack Software Engineer"
 # location: "Hyderabad, India"
 email: "mithunreddy@outlook.in"
@@ -9,4 +9,4 @@ birthYear: 1999
 resumeUrl: "/mithunresume.pdf"
 ---
 
-a full-stack software engineer based in Hyderabad, India 🇮🇳 where I specialize in crafting scalable web architectures with a strong focus on machine learning pipelines, system performance, and backend optimization.
+a full-stack software engineer and designer who build and ships with effort, care and taste.
