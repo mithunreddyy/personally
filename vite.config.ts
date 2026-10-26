@@ -7,8 +7,8 @@ import {feed} from './vite-plugin-feed';
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
-    // Served from https://mithunreddyy.github.io/Portfolio/ in production
-    base: mode === 'production' ? '/Portfolio/' : '/',
+    // GitHub Pages serves from /Portfolio/; Vercel (which sets VERCEL=1 at build) serves from the domain root
+    base: mode === 'production' && !process.env.VERCEL ? '/Portfolio/' : '/',
     plugins: [react(), tailwindcss(), feed()],
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
