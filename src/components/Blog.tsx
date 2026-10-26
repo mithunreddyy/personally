@@ -1,5 +1,5 @@
 import { BlogPost } from "../types";
-import { Section, TextLink } from "./List";
+import { Arrow, Section, TextLink } from "./List";
 
 /** Ledger of posts: the year hangs in the left column once, beside the first post written that year */
 export function Blog({
@@ -43,8 +43,9 @@ export function Blog({
       {showFeed && blogs.length > 0 && (
         <p className="text-muted">
           New posts also go out through the{" "}
-          <a href={`${import.meta.env.BASE_URL}feed.xml`} className="link-line">
-            RSS feed
+          <a href={`${import.meta.env.BASE_URL}feed.xml`} className="group">
+            <span className="link-line">RSS feed</span>
+            <Arrow />
           </a>
           .
         </p>

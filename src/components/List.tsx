@@ -137,19 +137,61 @@ export function RowList({ children }: { children: ReactNode }) {
   return <div className="flex flex-col gap-1.5 max-[479px]:gap-2.5">{children}</div>;
 }
 
-/** Internal route or external URL, both wearing the hairline underline */
-export function TextLink({ to, children }: { to: string; children: ReactNode }) {
-  if (/^(https?:|mailto:)/.test(to)) {
-    const external = to.startsWith('http');
+/**
+ * North-east arrow after a link, drawn like the shedsgns.me icon. It marks a link that leaves
+ * the site (and project titles); the underline stays on the text, not the arrow.
+ */
+export function Arrow({ newTab = false }: { newTab?: boolean }) {
+  return (
+    <>
+      {/* Takes no room at rest, so "GitHub." never reads "GitHub  ."; the box opens on hover or focus */}
+      <span
+        aria-hidden="true"
+        className="inline-block w-0 group-hover:w-[0.92em] group-focus-visible:w-[0.92em] overflow-x-clip align-baseline whitespace-nowrap leading-none transition-[width] duration-200 motion-reduce:transition-none"
+      >
+        <svg
+          viewBox="0 0 22 22"
+          fill="none"
+          className="inline-block w-[0.62em] h-[0.62em] ml-[0.3em] text-ink opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity motion-reduce:transition-none"
+        >
+          <path
+            d="M3.14 18.86 17.38 4.62M18.86 18.86V7.96c0-2.66-2.16-4.82-4.82-4.82H3.14"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+      {newTab && <span className="sr-only"> (opens in a new tab)</span>}
+    </>
+  );
+}
+
+/** Internal route or external URL, both wearing the hairline underline; external URLs get the arrow */
+export function TextLink({ to, arrow, children }: { to: string; arrow?: boolean; children: ReactNode }) {
+  const external = /^https?:/.test(to);
+  const withArrow = arrow ?? external;
+  const body = withArrow ? (
+    <>
+      <span className="link-line">{children}</span>
+      <Arrow newTab={external} />
+    </>
+  ) : (
+    children
+  );
+  const className = withArrow ? 'group' : 'link-line';
+
+  if (external || to.startsWith('mailto:')) {
     return (
-      <a href={to} className="link-line" {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}>
-        {children}
+      <a href={to} className={className} {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}>
+        {body}
       </a>
     );
   }
   return (
-    <Link to={to} className="link-line">
-      {children}
+    <Link to={to} className={className}>
+      {body}
     </Link>
   );
 }

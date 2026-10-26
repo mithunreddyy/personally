@@ -258,8 +258,8 @@ export function BlogPostView() {
         meta={
           <>
             Published <time dateTime={post.date}>{formatPostDate(post.date, "long")}</time>, {post.readTime}.{" "}
-            <button type="button" onClick={copyLink} className="link-line">
-              {linkCopied ? "Link copied" : "Copy link"}
+            <button type="button" onClick={copyLink} className="link-line text-[15px] leading-[22px]">
+              {linkCopied ? "Link copied" : "copy link"}
             </button>
             <span role="status" className="sr-only">
               {linkCopied ? "Link copied to clipboard" : ""}

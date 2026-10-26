@@ -59,6 +59,7 @@ Dark is the default, set by the October 2026 owner request for "less black": a n
 ## Components
 
 - **Links:** the `.link-line` class. A resting 1px `line` underline that fills with ink from the left in 0.38s on hover and keyboard focus. This is the identity motif: every link on every page uses it.
+- **Arrow (↗):** the `Arrow` component in `src/components/List.tsx`, drawn like the shedsgns.me icon, 0.62em, in ink. It is invisible until its link is hovered or keyboard-focused, then fades in; it takes no room at rest (so "GitHub." never reads "GitHub  ."), and its box opens over 0.2s on hover or focus, which nudges any text after it in a sentence by under 1em. Touch screens without hover don't show it. It appears after project titles and after links that leave the site (GitHub, LinkedIn, the PDF view, RSS, project URLs; `TextLink` adds it to any http URL). Internal links (CV, blog posts, download) stay plain so the arrow keeps one meaning. The underline stays on the text only. Owner decision, October 2026: R-08 was raised and the owner chose this scope over arrows on every link.
 - **Theme toggle:** a single icon fixed top-right, 44px tap target.
 - **Dock:** fixed bottom center, a 1px `line` border on `bg`, round 44px icons for email, GitHub, and LinkedIn. A back-to-index icon appears on every page except home.
 - **Stack:** one flat row of 24px logos from `public/stack/`, masked to the `muted` colour (`ink` on hover) so they follow the theme instead of showing brand colours. Each logo carries its name as `aria-label` and a hover title.

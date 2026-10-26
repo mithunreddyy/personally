@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { toggleTheme } from '../hooks/useTheme';
 
 import { PersonalInfo } from '../types';
-import { appear } from './List';
+import { appear, Arrow } from './List';
 
 const FLAG = '🇮🇳';
 const HOME_ZONE = 'Asia/Kolkata';
@@ -92,8 +92,9 @@ export function Hero({ personalInfo }: { personalInfo: PersonalInfo }) {
 
       <p className="appear text-muted" style={appear(80)}>
         The full story is in my <Link to="/cv" className="link-line">CV</Link>, also a PDF you can{' '}
-        <a href={personalInfo.resumeUrl} target="_blank" rel="noreferrer" className="link-line">
-          view
+        <a href={personalInfo.resumeUrl} target="_blank" rel="noreferrer" className="group">
+          <span className="link-line">view</span>
+          <Arrow newTab />
         </a>{' '}
         or{' '}
         <button type="button" onClick={() => downloadResume(personalInfo.resumeUrl)} className="link-line">
