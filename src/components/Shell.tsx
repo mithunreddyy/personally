@@ -65,7 +65,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <a href="#content" className="skip-link">Skip to content</a>
       <ThemeToggle />
       <CommandPalette />
-      <main id="content" tabIndex={-1} className="outline-none relative mx-auto w-full max-w-[600px] px-5 pt-16 sm:pt-[120px] pb-36 text-[17px] leading-[26px]">
+      <main id="content" tabIndex={-1} className="outline-none relative mx-auto w-full max-w-[600px] px-5 pt-16 sm:pt-[120px] pb-36 text-[16px] leading-[24px]">
         {children}
       </main>
       <Dock showIndex={pathname !== '/'} />

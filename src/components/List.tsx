@@ -79,7 +79,7 @@ export function PhoneMeta({ parts }: { parts: ReactNode[] }) {
   if (!shown.length) return null;
   return (
     // A span, not a p, so it is valid inside the Experience toggle button
-    <span className="block min-[480px]:hidden mt-0.5 text-muted text-[15px] leading-[22px]">
+    <span className="block min-[480px]:hidden mt-0.5 text-muted">
       {shown.map((part, i) => (
         <span key={i}>
           {i > 0 && ', '}
@@ -125,7 +125,7 @@ export function Row({ name, detail }: { name: ReactNode; detail?: ReactNode }) {
     <div className="grid grid-cols-[minmax(0,1fr)_auto] max-[479px]:grid-cols-1 items-baseline gap-x-4">
       <div className="min-w-0">{name}</div>
       {detail && (
-        <div className="text-muted text-right max-[479px]:text-left max-[479px]:text-[15px] max-[479px]:leading-[22px]">
+        <div className="text-muted text-right max-[479px]:text-left">
           {detail}
         </div>
       )}

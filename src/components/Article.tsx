@@ -57,7 +57,7 @@ export function Article({
     <>
       <nav
         aria-label="Contents"
-        className="appear flex flex-col gap-3.5 mb-8 min-[1180px]:fixed min-[1180px]:left-16 min-[1180px]:top-[120px] min-[1180px]:w-[200px] min-[1180px]:mb-0 text-[15px] leading-[22px]"
+        className="appear flex flex-col gap-3.5 mb-8 min-[1180px]:fixed min-[1180px]:left-16 min-[1180px]:top-[120px] min-[1180px]:w-[200px] min-[1180px]:mb-0"
         style={appear(0)}
       >
         <p className="flex items-center gap-1.5 text-muted">
@@ -66,7 +66,7 @@ export function Article({
             aria-label="Back to index"
             className="inline-flex items-center justify-center -m-3 p-3 hover:text-ink transition-colors"
           >
-            <CornerDownLeft size={15} strokeWidth={1.75} aria-hidden="true" />
+            <CornerDownLeft size={14} strokeWidth={1.75} aria-hidden="true" />
           </Link>
           <span className="ml-1">{index}</span>
         </p>
@@ -105,7 +105,7 @@ export function ArticleSection({ id, title, children }: { id?: string; title?: R
   return (
     <section id={id} className="flex flex-col gap-3.5 scroll-mt-24">
       {title && <h2 className="text-muted font-normal">{title}</h2>}
-      <div className="prose-flow flex flex-col gap-4 text-ink/85 leading-[28px]">{children}</div>
+      <div className="prose-flow flex flex-col gap-4 text-ink/85 leading-[26px]">{children}</div>
     </section>
   );
 }

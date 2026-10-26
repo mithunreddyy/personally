@@ -7,7 +7,7 @@ Personal portfolio and blog. Project case studies, an editorial blog, and an ava
 - React 19, Vite, TypeScript
 - Tailwind CSS v4
 - Motion for animation
-- Hanken Grotesk for text, Geist Mono for metadata
+- Inter (variable) for text, Geist Mono for metadata
 - Lucide React for icons
 - Open-Meteo for the temperature shown in the blog reader
 

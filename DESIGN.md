@@ -8,7 +8,6 @@ A personal index for a full-stack engineer: a short introduction, then plain lis
 
 What makes it his, not the reference:
 - The greeting line uses the live time in Hyderabad ("good evening from Hyderabad, where it's 19:42").
-- Hanken Grotesk, not Inter.
 - A neutral charcoal dark theme (not pure black) by default, a cool off-white light theme, and the blue accent.
 - Keyboard shortcuts (M, V, D, T, ⌘K) and the command menu.
 
@@ -38,22 +37,24 @@ Dark is the default, set by the October 2026 owner request for "less black": a n
 
 ## Typography
 
-- One face, Hanken Grotesk, for everything. Reason: it reads warmer than the reference's Inter at small sizes.
-- One size: 17px, line-height 26px (28px for article prose). Hierarchy comes from color (ink against muted), not from size or weight.
-- Article contents index, and list details on phones under 480px: 15px / 22px.
+- One face, Inter (variable, weights 100 to 900 with optical sizing), for everything. Owner's choice, October 2026, replacing Hanken Grotesk. Optical sizing is on, so the 12px clock, the 14px greeting and the 16px body are each drawn for their size.
+- One size: 16px, line-height 24px, everywhere: body, labels, list rows, meta lines, the command menu. Article prose is 16px with a 26px line-height for long reading. Hierarchy comes from color (ink against muted), not from size or weight.
+- Scale origin: matched to shedsgns.me (14/22 body, 10/20 clock, computed styles read from the live site, October 2026), then the owner raised everything 2px except the greeting line.
+- The greeting line ("good night from India, where it's 23:22") stays at the reference 14px / 22px, a quiet lead-in above the 16px intro.
+- The CV clock: 12px / 20px (11.5px on phones), with `GMT+5:30` tracked 0.04em.
 - Geist Mono is still loaded in the theme but no longer used in the UI.
 
 ## Layout
 
 - One column, 600px max, 20px side gutters, 120px top padding (64px on phones), 144px bottom padding to clear the dock.
 - Every section is the `Section` component in `src/components/List.tsx`: a 1px `line` divider, a muted label, then content.
-- List rows are the `Row` component: name left, detail right. Below 480px the detail drops under the name at 15px.
+- List rows are the `Row` component: name left, detail right. Below 480px the detail drops under the name.
 - **Projects** are one flex row each: title left, month and year right. Nothing else; the details live on `/work/:slug`. One closing line points to GitHub: "Everything else lives on GitHub."
-- **Writing** is a ledger: the year hangs in a left column, shown once beside the first post of that year, then title and "category, read time" at 15px. Posts read as a timeline, not a pile.
+- **Writing** is a ledger: the year hangs in a left column, shown once beside the first post of that year, then title and a muted "category, read time" line. Posts read as a timeline, not a pile.
 - **Focus by colour** (`.focus-index` in `src/index.css`): hovering or focusing an entry in Projects or Writing turns the other titles from ink to muted. Colour, not opacity, so dimmed titles keep AA contrast.
 - Article pages (blog posts and `/work/:slug`) use `Article` in `src/components/Article.tsx`. At 1180px and wider, the back link, issue number, and contents are pinned to the left edge. On narrower screens they sit above the title.
 
-- The CV page (`/cv`) follows the same shapes. The header puts the name and an "Updated" date on the left and the email with its copy button on the right. Below it come Currently, Experience, then Earlier and Education as `CollapsibleSection` ("+" turns into "×"), a Download PDF link, and a live GMT+5:30 clock at 14px. Its entries come from `content/cv.md`, one `name | detail | line underneath | place` per line. The place ("Hyderabad, India") sits on the right of the line underneath in every section, Experience included. Below 480px the right-hand column goes away: each entry reads name (with its toggle), role, then one 15px muted line of "dates, place" (`PhoneMeta` in `src/components/List.tsx`), so company names never break.
+- The CV page (`/cv`) follows the same shapes. The header puts the name and an "Updated" date on the left and the email with its copy button on the right. Below it come Currently, Experience, then Earlier and Education as `CollapsibleSection` ("+" turns into "×"), a Download PDF link, and a live GMT+5:30 clock at 12px. Its entries come from `content/cv.md`, one `name | detail | line underneath | place` per line. The place ("Hyderabad, India") sits on the right of the line underneath in every section, Experience included. Below 480px the right-hand column goes away: each entry reads name (with its toggle), role, then one muted line of "dates, place" (`PhoneMeta` in `src/components/List.tsx`), so company names never break.
 
 ## Components
 

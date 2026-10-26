@@ -31,7 +31,7 @@ export function Blog({
                   <span className="focus-title">
                     <TextLink to={`/blog/${post.slug}`}>{post.title.replace(/\n/g, " ")}</TextLink>
                   </span>
-                  <span className="text-muted text-[15px] leading-[22px] mt-1">
+                  <span className="text-muted mt-0.5">
                     {[post.category, post.readTime].filter(Boolean).join(", ")}
                   </span>
                 </div>

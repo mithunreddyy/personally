@@ -76,24 +76,15 @@ export function Hero({ personalInfo }: { personalInfo: PersonalInfo }) {
     <section id="hero" aria-label="Introduction" className="flex flex-col gap-6 pb-9">
       <h1 className="sr-only">{personalInfo.name}, {personalInfo.role}</h1>
 
-      <p className="appear text-muted pt-6" style={appear(0)}>
+      {/* The greeting stays at the reference 14px; the rest of the page is 16px */}
+      <p className="appear text-muted pt-6 text-[14px] leading-[22px]">
         {hello} from {HOME_CITY}, where it's <time className="tabular-nums">{time}</time>
       </p>
 
-      <p className="appear text-muted" style={appear(40)}>
+      <p className="appear text-muted"  style={appear(40)}>
         I'm <span className="text-ink">{firstName}</span>,{' '}
         {hasFlag ? beforeFlag : summary}
-        {hasFlag && (
-          <>
-            <img
-              src={`${import.meta.env.BASE_URL}indian-flag.png`}
-              alt="India"
-              className="inline-block w-[18px] h-[18px] mx-0.5 -translate-y-px"
-              decoding="async"
-            />
-            {afterFlag}
-          </>
-        )}
+        {hasFlag && <span className="text-ink">{afterFlag}</span>}
       </p>
 
       <p className="appear text-muted" style={appear(60)}>I’ve worked across healthcare, fintech, dev tools, and AI. The one thing that’s

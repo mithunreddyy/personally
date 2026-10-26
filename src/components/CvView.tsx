@@ -78,8 +78,8 @@ export function CvView() {
         </button>
       </section>
 
-      <footer className="appear flex items-baseline gap-2.5 text-[14px] leading-5 text-muted tabular-nums" style={appear(240)}>
-        <span>GMT+5:30</span>
+      <footer className="appear flex items-baseline gap-2.5 text-[11.5px] sm:text-[12px] leading-5 text-muted tabular-nums" style={appear(240)}>
+        <span className="tracking-[0.04em]">GMT+5:30</span>
         <time>{time}</time>
       </footer>
     </>

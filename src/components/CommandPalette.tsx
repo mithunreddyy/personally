@@ -153,7 +153,7 @@ export function CommandPalette() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full max-w-[440px] bg-bg border border-line rounded-xl overflow-hidden text-[17px] leading-[26px]"
+            className="relative w-full max-w-[440px] bg-bg border border-line rounded-xl overflow-hidden text-[16px] leading-[24px]"
           >
             <div className="flex items-center gap-3 px-4 py-3 border-b border-line">
               <input
@@ -174,7 +174,7 @@ export function CommandPalette() {
                 onKeyDown={onInputKeyDown}
                 className="flex-1 min-w-0 bg-transparent border-none outline-none text-ink placeholder:text-muted"
               />
-              <span className="text-muted text-[15px]" aria-hidden="true">esc</span>
+              <span className="text-muted" aria-hidden="true">esc</span>
             </div>
             <div id="command-listbox" role="listbox" aria-label="Results" className="max-h-[300px] overflow-y-auto p-1.5">
               {filtered.length === 0 ? (
