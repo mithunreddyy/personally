@@ -5,7 +5,7 @@
   --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
   /* Dark is the default: a neutral charcoal, lifted off pure black so long reading is easier on the eyes */
-  --color-bg: #161616;
+  --color-bg: #040404;
   --color-ink: #ececec;
   --color-muted: #a3a3a3;
   --color-line: rgba(255, 255, 255, 0.08);

@@ -4,7 +4,7 @@ export type Theme = 'light' | 'dark';
 
 const STORAGE_KEY = 'theme';
 // Browser chrome (mobile address bar) follows the page background
-const THEME_COLOR: Record<Theme, string> = { dark: '#161616', light: '#f6f7f9' };
+const THEME_COLOR: Record<Theme, string> = { dark: '#040404', light: '#f6f7f9' };
 const listeners = new Set<() => void>();
 
 // Dark is the default; only an explicit earlier choice of light overrides it
