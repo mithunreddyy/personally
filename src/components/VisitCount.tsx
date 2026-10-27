@@ -35,7 +35,7 @@ export function VisitCount({ delay = 0 }: { delay?: number }) {
 
   return (
     // The line keeps its height while loading, so nothing jumps when the number arrives
-    <footer className="appear min-h-5 text-[11.5px] sm:text-[12px] leading-5 text-muted tabular-nums" style={appear(delay)}>
+    <footer className="appear min-h-5 text-[13px] sm:text-[14px] leading-5 text-muted tabular-nums" style={appear(delay)}>
       {total !== null && `${total.toLocaleString('en-US')} ${total === 1 ? 'visit' : 'visits'}`}
     </footer>
   );
