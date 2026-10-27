@@ -72,15 +72,22 @@ export function CvView() {
         <Entries section={section('Education')} />
       </CollapsibleSection>
 
-      <section className="appear border-t border-line pt-3.5 pb-16" style={appear(200)}>
+      <section className="appear border-t border-line pt-3.5 pb-16 print:hidden" style={appear(200)}>
         <button type="button" onClick={() => downloadResume(PERSONAL_INFO.resumeUrl)} className="link-line">
           Download PDF
         </button>
       </section>
 
-      <footer className="appear flex items-baseline gap-2.5 text-[11.5px] sm:text-[12px] leading-5 text-muted tabular-nums" style={appear(240)}>
+      <footer className="appear flex items-baseline gap-2.5 text-[11.5px] sm:text-[12px] leading-5 text-muted tabular-nums print:hidden" style={appear(240)}>
         <span className="tracking-[0.04em]">GMT+5:30</span>
         <time>{time}</time>
+      </footer>
+
+      <footer className="hidden print:block pt-6 border-t border-black/15 text-[12px] text-black/60">
+        <div className="flex justify-between items-baseline">
+          <span>{PERSONAL_INFO.name} — {PERSONAL_INFO.role}</span>
+          <span>https://mithunre.vercel.app/cv</span>
+        </div>
       </footer>
     </>
   );

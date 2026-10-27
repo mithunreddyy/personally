@@ -37,19 +37,19 @@ export function CollapsibleSection({ title, delay = 0, children }: { title: stri
   const bodyId = useId();
 
   return (
-    <section className="appear border-t border-line pt-3.5 pb-4" style={appear(delay)}>
+    <section className="appear border-t border-line pt-3.5 pb-4 print:pt-2 print:pb-2 print:border-black/15 print:break-inside-avoid" style={appear(delay)}>
       <h2 className="font-normal">
         <button
           type="button"
           onClick={() => setOpen(o => !o)}
           aria-expanded={open}
           aria-controls={bodyId}
-          className="group w-full flex items-baseline justify-between gap-3 text-left text-muted"
+          className="group w-full flex items-baseline justify-between gap-3 text-left text-muted print:text-black"
         >
-          <span>{title}</span>
+          <span className="print:font-medium print:text-black">{title}</span>
           <span
             aria-hidden="true"
-            className={`inline-block transition-transform duration-300 group-hover:text-ink ${open ? 'rotate-45' : ''}`}
+            className={`inline-block transition-transform duration-300 group-hover:text-ink print:hidden ${open ? 'rotate-45' : ''}`}
           >
             +
           </span>
@@ -63,12 +63,15 @@ export function CollapsibleSection({ title, delay = 0, children }: { title: stri
             animate={{ height: 'auto' }}
             exit={{ height: 0 }}
             transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="overflow-hidden"
+            className="overflow-hidden print:hidden"
           >
             <div className="pt-3.5 pb-2">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>
+      <div className="hidden print:block pt-2 pb-1">
+        {children}
+      </div>
     </section>
   );
 }
@@ -79,7 +82,7 @@ export function PhoneMeta({ parts }: { parts: ReactNode[] }) {
   if (!shown.length) return null;
   return (
     // A span, not a p, so it is valid inside the Experience toggle button
-    <span className="block min-[480px]:hidden mt-0.5 text-muted">
+    <span className="block min-[480px]:hidden print:hidden mt-0.5 text-muted">
       {shown.map((part, i) => (
         <span key={i}>
           {i > 0 && ', '}
@@ -103,15 +106,15 @@ export function Entry({
   place?: ReactNode;
 }) {
   return (
-    <div>
+    <div className="print:break-inside-avoid">
       <div className="flex items-baseline justify-between gap-4">
-        <span className="text-ink min-w-0">{name}</span>
-        {detail && <span className="text-muted shrink-0 max-[479px]:hidden">{detail}</span>}
+        <span className="text-ink min-w-0 print:text-black print:font-medium">{name}</span>
+        {detail && <span className="text-muted shrink-0 max-[479px]:hidden print:inline print:text-black/80">{detail}</span>}
       </div>
       {(sub || place) && (
-        <div className="flex flex-wrap items-baseline justify-between gap-x-4 text-muted">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 text-muted print:text-black/70">
           {sub && <span className="min-w-0">{sub}</span>}
-          {place && <span className="shrink-0 max-[479px]:hidden">{place}</span>}
+          {place && <span className="shrink-0 max-[479px]:hidden print:inline">{place}</span>}
         </div>
       )}
       <PhoneMeta parts={[detail, place]} />

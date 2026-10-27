@@ -144,3 +144,102 @@
     transition: none;
   }
 }
+
+/* ── Code block visible scrollbars ── */
+/* Firefox only: setting these in Chromium disables the ::-webkit-scrollbar rules below */
+@supports not selector(::-webkit-scrollbar) {
+  pre {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+  }
+
+  :root[data-theme='light'] pre {
+    scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
+  }
+}
+
+pre::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+pre::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+pre::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 9999px;
+}
+
+:root[data-theme='light'] pre::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+pre::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 9999px;
+}
+
+:root[data-theme='light'] pre::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.22);
+}
+
+pre::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+:root[data-theme='light'] pre::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+/* ── Print Stylesheet (/cv & articles) ── */
+@media print {
+  @page {
+    margin: 1.2cm 1.5cm;
+    size: A4 portrait;
+  }
+
+  html,
+  body,
+  #root,
+  .min-h-screen {
+    background: #ffffff !important;
+    color: #111111 !important;
+    min-height: auto !important;
+  }
+
+  :root {
+    --color-bg: #ffffff !important;
+    --color-ink: #111111 !important;
+    --color-muted: #374151 !important;
+    --color-line: rgba(0, 0, 0, 0.12) !important;
+  }
+
+  /* Hide interactive fixed chrome and animations */
+  .skip-link,
+  nav,
+  button[aria-label*="mode"],
+  .no-print,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  .appear {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .link-line {
+    background-image: none !important;
+    color: #111111 !important;
+  }
+
+  /* Prevent awkward page break cuts inside jobs and sections */
+  section,
+  .print\:break-inside-avoid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

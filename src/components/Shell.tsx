@@ -17,7 +17,7 @@ function ThemeToggle() {
       onClick={toggleTheme}
       aria-pressed={theme === 'dark'}
       aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-      className="fixed top-2 right-2 z-50 flex items-center justify-center w-11 h-11 text-muted opacity-70 hover:opacity-100 hover:text-ink transition"
+      className="fixed top-2 right-2 z-50 flex items-center justify-center w-11 h-11 text-muted opacity-70 hover:opacity-100 hover:text-ink transition print:hidden"
     >
       <Contrast size={16} strokeWidth={1.75} aria-hidden="true" />
     </button>
@@ -30,7 +30,7 @@ function Dock({ showIndex }: { showIndex: boolean }) {
   return (
     <nav
       aria-label="Quick links"
-      className="fixed left-0 right-0 bottom-[max(20px,env(safe-area-inset-bottom))] z-50 flex justify-center pointer-events-none"
+      className="fixed left-0 right-0 bottom-[max(20px,env(safe-area-inset-bottom))] z-50 flex justify-center pointer-events-none print:hidden"
     >
       <div className="pointer-events-auto flex items-center gap-0.5 p-1 rounded-3xl border border-line bg-bg">
         {showIndex && (
@@ -62,10 +62,10 @@ export function Shell({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <a href="#content" className="skip-link">Skip to content</a>
+      <a href="#content" className="skip-link print:hidden">Skip to content</a>
       <ThemeToggle />
       <CommandPalette />
-      <main id="content" tabIndex={-1} className="outline-none relative mx-auto w-full max-w-[600px] px-5 pt-16 sm:pt-[120px] pb-36 text-[16px] leading-[24px]">
+      <main id="content" tabIndex={-1} className="outline-none relative mx-auto w-full max-w-[600px] min-w-0 px-5 pt-16 sm:pt-[120px] pb-36 text-[16px] leading-[24px] print:p-0 print:max-w-none print:w-full">
         {children}
       </main>
       <Dock showIndex={pathname !== '/'} />

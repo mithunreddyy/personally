@@ -1,3 +1,4 @@
+import { Check, Copy } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -10,44 +11,59 @@ import { SEO } from "./SEO";
 
 /* Content parser */
 
-type ContentBlock =
+export type InlineSegment =
+  | { type: "text"; text: string }
+  | { type: "bold"; text: string }
+  | { type: "code"; text: string }
+  | { type: "link"; text: string; url: string };
+
+export type ContentBlock =
   | { type: "heading"; text: string }
-  | { type: "paragraph"; segments: TextSegment[] }
-  | { type: "list"; style: "bullet" | "number"; items: ListItem[] };
+  | { type: "paragraph"; segments: InlineSegment[] }
+  | { type: "list"; style: "bullet" | "number"; items: ListItem[] }
+  | { type: "codeblock"; language?: string; code: string }
+  | { type: "blockquote"; segments: InlineSegment[] };
 
-type TextSegment = { text: string; bold: boolean };
-
-interface ListItem {
-  segments: TextSegment[];
+export interface ListItem {
+  segments: InlineSegment[];
   children?: ListItem[];
 }
 
-/** Parse **bold** markers inside a text string */
-const parseInline = (raw: string): TextSegment[] => {
-  const segments: TextSegment[] = [];
-  const regex = /\*\*(.+?)\*\*/g;
+/** Parses **bold**, `code`, and [text](url) markers inside inline prose */
+export const parseInline = (raw: string): InlineSegment[] => {
+  const segments: InlineSegment[] = [];
+  const tokenRegex = /(\*\*(.+?)\*\*|`([^`]+)`|\[([^\]]+)\]\(([^)]+)\))/g;
   let lastIndex = 0;
   let match: RegExpExecArray | null;
 
-  while ((match = regex.exec(raw)) !== null) {
+  while ((match = tokenRegex.exec(raw)) !== null) {
     if (match.index > lastIndex) {
-      segments.push({ text: raw.slice(lastIndex, match.index), bold: false });
+      segments.push({ type: "text", text: raw.slice(lastIndex, match.index) });
     }
-    segments.push({ text: match[1], bold: true });
-    lastIndex = regex.lastIndex;
+
+    if (match[2] !== undefined) {
+      segments.push({ type: "bold", text: match[2] });
+    } else if (match[3] !== undefined) {
+      segments.push({ type: "code", text: match[3] });
+    } else if (match[4] !== undefined && match[5] !== undefined) {
+      segments.push({ type: "link", text: match[4], url: match[5] });
+    }
+
+    lastIndex = tokenRegex.lastIndex;
   }
 
   if (lastIndex < raw.length) {
-    segments.push({ text: raw.slice(lastIndex), bold: false });
+    segments.push({ type: "text", text: raw.slice(lastIndex) });
   }
 
-  return segments.length ? segments : [{ text: raw, bold: false }];
+  return segments.length ? segments : [{ type: "text", text: raw }];
 };
 
 const parseContent = (content: string): ContentBlock[] => {
   const blocks: ContentBlock[] = [];
   let currentBlock: ContentBlock | null = null;
   let pendingNumberedItem: ListItem | null = null;
+  let inCodeBlock: { language: string; lines: string[] } | null = null;
 
   const flush = () => {
     if (pendingNumberedItem && currentBlock?.type === "list" && currentBlock.style === "number") {
@@ -70,10 +86,30 @@ const parseContent = (content: string): ContentBlock[] => {
   const lines = content.split("\n");
 
   for (const rawLine of lines) {
+    if (inCodeBlock) {
+      if (rawLine.trim().startsWith("```")) {
+        blocks.push({
+          type: "codeblock",
+          language: inCodeBlock.language,
+          code: inCodeBlock.lines.join("\n"),
+        });
+        inCodeBlock = null;
+      } else {
+        inCodeBlock.lines.push(rawLine);
+      }
+      continue;
+    }
+
     const line = rawLine.trim();
 
+    if (line.startsWith("```")) {
+      flush();
+      const language = line.slice(3).trim();
+      inCodeBlock = { language, lines: [] };
+      continue;
+    }
+
     if (!line) {
-      // Don't flush numbered list blocks on empty lines, they may have sub-bullets
       if (currentBlock?.type !== "list" || currentBlock.style !== "number") {
         flush();
       } else {
@@ -82,16 +118,28 @@ const parseContent = (content: string): ContentBlock[] => {
       continue;
     }
 
-    const headingMatch = line.match(/^(.+?):$/);
-    const bulletMatch = line.match(/^[•*-]\s+(.*)$/);
-    const orderedMatch = line.match(/^(\d+)\.\s+(.*)$/);
-
-    if (headingMatch && line.endsWith(":")) {
+    if (line.startsWith("> ") || line === ">") {
       flush();
-      currentBlock = { type: "heading", text: headingMatch[1] };
+      blocks.push({
+        type: "blockquote",
+        segments: parseInline(line.replace(/^>\s?/, "")),
+      });
+      continue;
+    }
+
+    const mdHeadingMatch = line.match(/^#{1,4}\s+(.+)$/);
+    const colonHeadingMatch = line.length <= 40 && !line.includes("(") && !line.includes("`") && line.endsWith(":") && line.slice(0, -1).trim();
+
+    if (mdHeadingMatch || colonHeadingMatch) {
+      flush();
+      const headingText = mdHeadingMatch ? mdHeadingMatch[1].trim() : (colonHeadingMatch as string);
+      currentBlock = { type: "heading", text: headingText };
       flush();
       continue;
     }
+
+    const bulletMatch = line.match(/^[•*-]\s+(.*)$/);
+    const orderedMatch = line.match(/^(\d+)\.\s+(.*)$/);
 
     if (orderedMatch) {
       if (currentBlock?.type !== "list" || currentBlock.style !== "number") {
@@ -105,14 +153,12 @@ const parseContent = (content: string): ContentBlock[] => {
     }
 
     if (bulletMatch) {
-      // Sub-bullet of a numbered list item
       if (pendingNumberedItem) {
         if (!pendingNumberedItem.children) pendingNumberedItem.children = [];
         pendingNumberedItem.children.push({ segments: parseInline(bulletMatch[1]) });
         continue;
       }
 
-      // Standalone bullet list
       if (currentBlock?.type === "list" && currentBlock.style === "bullet") {
         currentBlock.items.push({ segments: parseInline(bulletMatch[1]) });
       } else {
@@ -126,14 +172,20 @@ const parseContent = (content: string): ContentBlock[] => {
       continue;
     }
 
-    // Regular paragraph text
     if (currentBlock?.type === "paragraph") {
-      const existing = currentBlock.segments.map(s => s.text).join("");
-      currentBlock.segments = parseInline(existing + " " + line);
+      currentBlock.segments.push({ type: "text", text: " " }, ...parseInline(line));
     } else {
       flush();
       currentBlock = { type: "paragraph", segments: parseInline(line) };
     }
+  }
+
+  if (inCodeBlock) {
+    blocks.push({
+      type: "codeblock",
+      language: inCodeBlock.language,
+      code: inCodeBlock.lines.join("\n"),
+    });
   }
 
   flushPending();
@@ -143,19 +195,88 @@ const parseContent = (content: string): ContentBlock[] => {
 
 /* Inline text renderer */
 
-function RichText({ segments }: { segments: TextSegment[] }) {
+function RichText({ segments }: { segments: InlineSegment[] }) {
   return (
     <>
-      {segments.map((seg, i) =>
-        seg.bold ? (
-          <strong key={i} className="font-medium text-ink">
-            {seg.text}
-          </strong>
-        ) : (
-          <span key={i}>{seg.text}</span>
-        ),
-      )}
+      {segments.map((seg, i) => {
+        if (seg.type === "bold") {
+          return (
+            <strong key={i} className="font-medium text-ink">
+              {seg.text}
+            </strong>
+          );
+        }
+        if (seg.type === "code") {
+          return (
+            <code key={i} className="px-1.5 py-0.5 rounded font-mono text-[13.5px] bg-ink/[0.06] text-ink">
+              {seg.text}
+            </code>
+          );
+        }
+        if (seg.type === "link") {
+          const isExternal = seg.url.startsWith("http://") || seg.url.startsWith("https://");
+          return (
+            <a
+              key={i}
+              href={seg.url}
+              target={isExternal ? "_blank" : undefined}
+              rel={isExternal ? "noreferrer" : undefined}
+              className="link-line text-ink hover:text-accent transition-colors"
+            >
+              {seg.text}
+            </a>
+          );
+        }
+        return <span key={i}>{seg.text}</span>;
+      })}
     </>
+  );
+}
+
+function CodeBlock({ language, code }: { language?: string; code: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // clipboard fallback
+    }
+  };
+
+  return (
+    <div className="my-5 w-full max-w-full min-w-0 rounded-lg border border-line bg-ink/[0.03] overflow-hidden text-[13.5px] leading-[22px] font-mono">
+      <div className="flex items-center justify-between px-3.5 py-1.5 border-b border-line text-xs text-muted select-none">
+        <span className="font-mono text-muted/80">{language || "code"}</span>
+        <button
+          type="button"
+          onClick={copy}
+          className="hover:text-ink transition-colors flex items-center gap-1.5 font-sans text-xs py-0.5 px-1 -my-0.5 rounded"
+          aria-label="Copy code to clipboard"
+        >
+          {copied ? (
+            <>
+              <Check size={12} className="text-accent" aria-hidden="true" />
+              <span className="text-accent">Copied</span>
+            </>
+          ) : (
+            <>
+              <Copy size={12} aria-hidden="true" />
+              <span>Copy</span>
+            </>
+          )}
+        </button>
+      </div>
+      <pre
+        tabIndex={0}
+        aria-label={`${language || "code"} snippet`}
+        className="p-4 w-full max-w-full min-w-0 overflow-x-auto overflow-y-auto max-h-[380px] text-ink selection:bg-accent/30 font-mono whitespace-pre focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent/50 overscroll-contain"
+      >
+        <code className="block min-w-max font-mono text-inherit pr-4">{code}</code>
+      </pre>
+    </div>
   );
 }
 
@@ -165,6 +286,16 @@ function Block({ block }: { block: ContentBlock }) {
       <p className="text-pretty">
         <RichText segments={block.segments} />
       </p>
+    );
+  }
+  if (block.type === "codeblock") {
+    return <CodeBlock language={block.language} code={block.code} />;
+  }
+  if (block.type === "blockquote") {
+    return (
+      <blockquote className="my-4 pl-4 border-l-2 border-line text-muted italic">
+        <RichText segments={block.segments} />
+      </blockquote>
     );
   }
   if (block.type !== "list") return null;
@@ -218,7 +349,6 @@ export function BlogPostView() {
 
   const groups = groupByHeading(post.content ? parseContent(post.content) : []);
   const toc = groups.flatMap(g => (g.id && g.title ? [{ id: g.id, label: g.title }] : []));
-  // Oldest post is 001, so a number never changes once published
   const issue = String(BLOG_POSTS.length - position).padStart(3, "0");
   const otherPosts = BLOG_POSTS.filter(b => b.slug !== slug);
 

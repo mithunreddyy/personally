@@ -12,7 +12,7 @@ function ExperienceEntry({ exp }: { exp: Experience }) {
   const bodyId = `exp-${exp.id}`;
 
   return (
-    <div>
+    <div className="print:break-inside-avoid">
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
@@ -21,20 +21,20 @@ function ExperienceEntry({ exp }: { exp: Experience }) {
         className="group w-full text-left py-1 -my-1"
       >
         <span className="flex items-baseline justify-between gap-4">
-          <span className="text-ink">{exp.company}</span>
-          <span className="flex items-baseline gap-3 text-muted shrink-0">
-            <span className="max-[479px]:hidden">{exp.period}</span>
+          <span className="text-ink print:text-black print:font-medium">{exp.company}</span>
+          <span className="flex items-baseline gap-3 text-muted print:text-black/80 shrink-0">
+            <span className="max-[479px]:hidden print:inline">{exp.period}</span>
             <span
               aria-hidden="true"
-              className={`inline-block transition-transform duration-300 group-hover:text-ink ${open ? 'rotate-45' : ''}`}
+              className={`inline-block transition-transform duration-300 group-hover:text-ink print:hidden ${open ? 'rotate-45' : ''}`}
             >
               +
             </span>
           </span>
         </span>
-        <span className="flex flex-wrap items-baseline justify-between gap-x-4 text-muted">
+        <span className="flex flex-wrap items-baseline justify-between gap-x-4 text-muted print:text-black/70">
           <span className="min-w-0">{exp.role}</span>
-          <span className="shrink-0 max-[479px]:hidden">{exp.location}</span>
+          <span className="shrink-0 max-[479px]:hidden print:inline">{exp.location}</span>
         </span>
         <PhoneMeta parts={[exp.period, exp.location]} />
       </button>
@@ -47,7 +47,7 @@ function ExperienceEntry({ exp }: { exp: Experience }) {
             animate={{ height: 'auto' }}
             exit={{ height: 0 }}
             transition={{ duration: 0.3, ease: EASE }}
-            className="overflow-hidden"
+            className="overflow-hidden print:hidden"
           >
             <ul className="pt-3 space-y-2 text-muted">
               {exp.highlights.map((h, i) => (
@@ -57,6 +57,14 @@ function ExperienceEntry({ exp }: { exp: Experience }) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <div className="hidden print:block pt-1.5 pb-2">
+        <ul className="space-y-1 text-black/80 list-disc pl-5 text-[14px] leading-[20px]">
+          {exp.highlights.map((h, i) => (
+            <li key={i}>{h}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

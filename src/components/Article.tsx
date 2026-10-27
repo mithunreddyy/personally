@@ -93,7 +93,7 @@ export function Article({
         <p className="text-muted">{meta}</p>
       </header>
 
-      <div className="appear border-t border-line pt-6 flex flex-col gap-10 pb-10" style={appear(80)}>
+      <div className="appear border-t border-line pt-6 flex flex-col gap-10 pb-10 min-w-0 max-w-full" style={appear(80)}>
         {children}
       </div>
     </>
@@ -103,9 +103,9 @@ export function Article({
 /** One titled stretch of prose inside an article */
 export function ArticleSection({ id, title, children }: { id?: string; title?: ReactNode; children: ReactNode }) {
   return (
-    <section id={id} className="flex flex-col gap-3.5 scroll-mt-24">
+    <section id={id} className="flex flex-col gap-3.5 scroll-mt-24 min-w-0 max-w-full">
       {title && <h2 className="text-muted font-normal">{title}</h2>}
-      <div className="prose-flow flex flex-col gap-4 text-ink/85 leading-[26px]">{children}</div>
+      <div className="prose-flow flex flex-col gap-4 text-ink/85 leading-[26px] min-w-0 max-w-full">{children}</div>
     </section>
   );
 }

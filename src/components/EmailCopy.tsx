@@ -30,7 +30,7 @@ export function EmailCopy({ email }: { email: string }) {
         onClick={copyEmail}
         aria-label={`Copy email address ${email}`}
         title="Copy email"
-        className="inline-flex items-center justify-center w-8 h-8 -my-2 align-middle text-muted hover:text-ink transition-colors"
+        className="inline-flex items-center justify-center w-8 h-8 -my-2 align-middle text-muted hover:text-ink transition-colors print:hidden"
       >
         {copied ? <Check size={16} className="text-accent" aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
       </button>
