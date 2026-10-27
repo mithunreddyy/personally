@@ -1,6 +1,7 @@
 ---
 date: "2026-05-01"
 title: "Local Pilot"
+summary: "A local AI coding companion for VS Code."
 tech:
   - "Python"
   - "TypeScript"

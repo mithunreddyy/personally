@@ -89,6 +89,7 @@ export const PROJECTS: Project[] = files(
 ).map(({ path, data, body }) => ({
   id: slugOf(path),
   title: str(data.title),
+  summary: str(data.summary),
   description: bulletsOf(body),
   tech: Array.isArray(data.tech) ? data.tech : [],
   link: str(data.link) || undefined,

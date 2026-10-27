@@ -4,7 +4,6 @@ import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-route
 import { Blog } from './components/Blog';
 import { Connect } from './components/Connect';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { Skills } from './components/Experience';
 import { Hero } from './components/Hero';
 import { Projects } from './components/Projects';
 import { SEO } from './components/SEO';
@@ -33,9 +32,8 @@ function Portfolio() {
       <SEO />
       <Hero personalInfo={personalInfo} />
       <Projects projects={projects} delay={160} />
-      <Skills delay={200} />
-      <Blog blogs={blogs} delay={240} showFeed />
-      <Connect personalInfo={personalInfo} delay={280} />
+      <Blog blogs={blogs} delay={200} showFeed />
+      <Connect personalInfo={personalInfo} delay={240} />
     </>
   );
 }

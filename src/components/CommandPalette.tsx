@@ -76,7 +76,6 @@ export function CommandPalette() {
   const commands = useMemo<PaletteCommand[]>(() => [
     { id: 'cv', name: 'CV', run: () => navigate('/cv') },
     { id: 'projects', name: 'Projects', run: () => goTo('projects') },
-    { id: 'stack', name: 'Stack', run: () => goTo('skills') },
     { id: 'blog', name: 'Writing', run: () => goTo('blog') },
     { id: 'contact', name: 'Connect', run: () => goTo('contact') },
     {

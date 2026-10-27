@@ -8,11 +8,14 @@ const appear = (delay: number) => ({ '--appear-delay': `${delay}ms` }) as CSSPro
 export function Section({
   id,
   title,
+  action,
   delay = 0,
   children,
 }: {
   id?: string;
   title: ReactNode;
+  /** Quiet link on the right of the label, e.g. "All" */
+  action?: ReactNode;
   delay?: number;
   children: ReactNode;
 }) {
@@ -23,9 +26,18 @@ export function Section({
       className="appear border-t border-line pt-3.5 pb-6 flex flex-col gap-3.5 scroll-mt-6"
       style={appear(delay)}
     >
-      <h2 id={id ? `${id}-title` : undefined} className="text-muted font-normal">
-        {title}
-      </h2>
+      {action ? (
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 id={id ? `${id}-title` : undefined} className="text-muted font-normal">
+            {title}
+          </h2>
+          {action}
+        </div>
+      ) : (
+        <h2 id={id ? `${id}-title` : undefined} className="text-muted font-normal">
+          {title}
+        </h2>
+      )}
       {children}
     </section>
   );

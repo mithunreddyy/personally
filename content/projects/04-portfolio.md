@@ -1,6 +1,7 @@
 ---
 date: "2026-05-05"
 title: "Portfolio"
+summary: "This site, with every page written in Markdown."
 tech:
   - "React 19"
   - "TypeScript"

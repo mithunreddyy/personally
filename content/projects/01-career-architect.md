@@ -1,6 +1,7 @@
 ---
 date: "2026-05-04"
 title: "Autonomous Career Architect"
+summary: "Turns job postings into tailored resumes and cover letters."
 tech:
   - "Python"
   - "BM25"

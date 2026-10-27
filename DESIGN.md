@@ -49,7 +49,7 @@ Dark is the default, set by the October 2026 owner request for "less black": a n
 - One column, 600px max, 20px side gutters, 120px top padding (64px on phones), 144px bottom padding to clear the dock.
 - Every section is the `Section` component in `src/components/List.tsx`: a 1px `line` divider, a muted label, then content.
 - List rows are the `Row` component: name left, detail right. Below 480px the detail drops under the name.
-- **Projects** are one flex row each: title left, month and year right. Nothing else; the details live on `/work/:slug`. One closing line points to GitHub: "Everything else lives on GitHub."
+- **Projects** are the title and one muted line each (`summary` in the project's frontmatter), modelled on nublson.com, with no logos or marks. An "All" link sits on the right of the section label and opens the GitHub repositories list. Details live on `/work/:slug`.
 - **Writing** is a ledger: the year hangs in a left column, shown once beside the first post of that year, then title and a muted "category, read time" line. Posts read as a timeline, not a pile.
 - **Focus by colour** (`.focus-index` in `src/index.css`): hovering or focusing an entry in Projects or Writing turns the other titles from ink to muted. Colour, not opacity, so dimmed titles keep AA contrast.
 - Article pages (blog posts and `/work/:slug`) use `Article` in `src/components/Article.tsx`. At 1180px and wider, the back link, issue number, and contents are pinned to the left edge. On narrower screens they sit above the title.
@@ -62,7 +62,7 @@ Dark is the default, set by the October 2026 owner request for "less black": a n
 - **Arrow (↗):** the `Arrow` component in `src/components/List.tsx`, drawn like the shedsgns.me icon, 0.62em, in ink. It is invisible until its link is hovered or keyboard-focused, then fades in; it takes no room at rest (so "GitHub." never reads "GitHub  ."), and its box opens over 0.2s on hover or focus, which nudges any text after it in a sentence by under 1em. Touch screens without hover don't show it. It appears after project titles and after links that leave the site (GitHub, LinkedIn, the PDF view, RSS, project URLs; `TextLink` adds it to any http URL). Internal links (CV, blog posts, download) stay plain so the arrow keeps one meaning. The underline stays on the text only. Owner decision, October 2026: R-08 was raised and the owner chose this scope over arrows on every link.
 - **Theme toggle:** a single icon fixed top-right, 44px tap target.
 - **Dock:** fixed bottom center, a 1px `line` border on `bg`, round 44px icons for email, GitHub, and LinkedIn. A back-to-index icon appears on every page except home.
-- **Stack:** one flat row of 24px logos from `public/stack/`, masked to the `muted` colour (`ink` on hover) so they follow the theme instead of showing brand colours. Each logo carries its name as `aria-label` and a hover title.
+- **Stack (CV page only, between Experience and Earlier):** one flat row of 24px logos from `public/stack/`, masked to the `muted` colour (`ink` on hover) so they follow the theme instead of showing brand colours. Each logo carries its name as `aria-label` and a hover title.
 - **Experience rows (CV page only):** a "+" toggle that turns into "×" and opens the role's bullets.
 - **Command menu (⌘K):** a plain text list, with no icons, shadow, or blur.
 - **Skip link:** "Skip to content" appears top-left on the first Tab and jumps to `main`.

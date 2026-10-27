@@ -122,7 +122,7 @@ export function Skills({ delay = 0 }: { delay?: number }) {
                 <span
                   role="img"
                   aria-label={skill}
-                  className="block w-6 h-6 bg-muted hover:bg-ink transition-colors"
+                  className="block w-6 h-6 bg-muted hover:bg-ink transition-colors print:bg-black/70"
                   style={{
                     maskImage: `url(${import.meta.env.BASE_URL}stack/${icon}.svg)`,
                     WebkitMaskImage: `url(${import.meta.env.BASE_URL}stack/${icon}.svg)`,

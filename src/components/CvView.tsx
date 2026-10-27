@@ -4,7 +4,7 @@ import { CV_SECTIONS, CV_UPDATED, EXPERIENCES, PERSONAL_INFO } from '../constant
 import { formatPostDate } from '../lib/utils';
 import { CvSection } from '../types';
 import { EmailCopy } from './EmailCopy';
-import { ExperienceSection } from './Experience';
+import { ExperienceSection, Skills } from './Experience';
 import { downloadResume } from './Hero';
 import { appear, CollapsibleSection, Entry, Section } from './List';
 import { SEO } from './SEO';
@@ -64,21 +64,23 @@ export function CvView() {
 
       <ExperienceSection experiences={EXPERIENCES} delay={80} />
 
-      <CollapsibleSection title="Earlier" delay={120}>
+      <Skills delay={120} />
+
+      <CollapsibleSection title="Earlier" delay={160}>
         <Entries section={section('Earlier')} />
       </CollapsibleSection>
 
-      <CollapsibleSection title="Education" delay={160}>
+      <CollapsibleSection title="Education" delay={200}>
         <Entries section={section('Education')} />
       </CollapsibleSection>
 
-      <section className="appear border-t border-line pt-3.5 pb-16 print:hidden" style={appear(200)}>
+      <section className="appear border-t border-line pt-3.5 pb-16 print:hidden" style={appear(240)}>
         <button type="button" onClick={() => downloadResume(PERSONAL_INFO.resumeUrl)} className="link-line">
           Download PDF
         </button>
       </section>
 
-      <footer className="appear flex items-baseline gap-2.5 text-[11.5px] sm:text-[12px] leading-5 text-muted tabular-nums print:hidden" style={appear(240)}>
+      <footer className="appear flex items-baseline gap-2.5 text-[11.5px] sm:text-[12px] leading-5 text-muted tabular-nums print:hidden" style={appear(280)}>
         <span className="tracking-[0.04em]">GMT+5:30</span>
         <time>{time}</time>
       </footer>
