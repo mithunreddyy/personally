@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mithunre.vercel.app/sitemap.xml
+Sitemap: https://mithun.fyi/sitemap.xml

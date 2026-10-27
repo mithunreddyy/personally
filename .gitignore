@@ -23,3 +23,5 @@ firebase-blueprint.json
 # Internal Metadata
 metadata.json
 security_spec.md
+
+.wrangler

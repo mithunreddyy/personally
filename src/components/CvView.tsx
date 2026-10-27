@@ -88,7 +88,7 @@ export function CvView() {
       <footer className="hidden print:block pt-6 border-t border-black/15 text-[12px] text-black/60">
         <div className="flex justify-between items-baseline">
           <span>{PERSONAL_INFO.name} — {PERSONAL_INFO.role}</span>
-          <span>https://mithunre.vercel.app/cv</span>
+          <span>https://mithun.fyi/cv</span>
         </div>
       </footer>
     </>

@@ -8,8 +8,8 @@ import {sitemap} from './vite-plugin-sitemap';
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
-    // GitHub Pages serves from /Portfolio/; Vercel (which sets VERCEL=1 at build) serves from the domain root
-    base: mode === 'production' && !process.env.VERCEL ? '/Portfolio/' : '/',
+    // Cloudflare serves from the domain root; the GitHub Pages backup (GITHUB_PAGES=true in its workflow) serves from /Portfolio/
+    base: mode === 'production' && process.env.GITHUB_PAGES ? '/Portfolio/' : '/',
     plugins: [react(), tailwindcss(), feed(), sitemap()],
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),

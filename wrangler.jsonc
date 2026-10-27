@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "portfolio",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    // Unknown paths get index.html so deep links like /cv and /blog/<slug> load the app
+    "not_found_handling": "single-page-application",
+    // The worker sees every request first, so www can be sent to the bare domain
+    "run_worker_first": true
+  },
+  // Custom domains: Cloudflare creates the DNS records and the certificate for these on deploy
+  "routes": [
+    { "pattern": "mithun.fyi", "custom_domain": true },
+    { "pattern": "www.mithun.fyi", "custom_domain": true }
+  ]
+}

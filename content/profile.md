@@ -2,7 +2,7 @@
 name: "Mithun Reddy Sudireddy"
 role: "Full-Stack Software Engineer"
 # location: "Hyderabad, India"
-email: "mithunreddy@outlook.in"
+email: "hi@mithun.fyi"
 github: "mithunreddyy"
 linkedin: "mithunreddyyy"
 birthYear: 1999

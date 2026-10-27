@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-const SITE_URL = 'https://mithunre.vercel.app';
+const SITE_URL = 'https://mithun.fyi';
 
 interface SEOProps {
   title?: string;
@@ -29,7 +29,7 @@ function personSchema() {
 
 export function SEO({
   title = 'Mithun Reddy',
-  description = 'Full-Stack Software Engineer & AI Enthusiast with 2+ years of experience in designing scalable web architectures and machine learning pipelines.',
+  description = 'Full-Stack Software Engineer ',
   path = '/',
   type = 'website',
   image = `${SITE_URL}/og-image.png`,

@@ -377,7 +377,7 @@ export function BlogPostView() {
           datePublished: post.date,
           mainEntityOfPage: {
             "@type": "WebPage",
-            "@id": `https://mithunre.vercel.app/blog/${post.slug}`,
+            "@id": `https://mithun.fyi/blog/${post.slug}`,
           },
         }}
       />
