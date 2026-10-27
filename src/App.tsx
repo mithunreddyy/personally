@@ -8,6 +8,7 @@ import { Hero } from './components/Hero';
 import { Projects } from './components/Projects';
 import { SEO } from './components/SEO';
 import { Shell } from './components/Shell';
+import { VisitCount } from './components/VisitCount';
 import { usePortfolioData } from './hooks/usePortfolioData';
 import { scrollToSection } from './lib/utils';
 
@@ -34,6 +35,7 @@ function Portfolio() {
       <Projects projects={projects} delay={160} />
       <Blog blogs={blogs} delay={200} showFeed />
       <Connect personalInfo={personalInfo} delay={240} />
+      <VisitCount delay={280} />
     </>
   );
 }

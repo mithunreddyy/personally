@@ -67,6 +67,7 @@ Dark is the default, set by the October 2026 owner request for "less black": a n
 - **Command menu (⌘K):** a plain text list, with no icons, shadow, or blur.
 - **Skip link:** "Skip to content" appears top-left on the first Tab and jumps to `main`.
 - **Shortcut feedback:** pressing M confirms "Copied <email>." in ink at the end of the shortcuts line for 2s, only after the clipboard accepts it.
+- **Visit count:** the home page ends with one muted line, "1,284 visits", at the CV clock's 12px. Each browser session counts once. The number comes only from the worker's counter; when it can't be reached (local dev, the GitHub Pages backup), the line stays empty instead of showing a guess.
 - **RSS:** `/feed.xml` is generated from `content/blog/` by `vite-plugin-feed.ts`, linked in the page head and in one sentence under Writing on the index.
 
 ## Shape and depth
