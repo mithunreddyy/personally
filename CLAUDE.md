@@ -7,7 +7,7 @@ Personal portfolio for Mithun Reddy: case studies, an editorial blog, and a live
 - `npm run dev`: dev server on port 3000
 - `npm run build`: production build
 - `npm run lint`: type check (`tsc --noEmit`)
-- Deploy: pushing to `master` runs `.github/workflows/deploy-pages.yml`, which publishes to https://mithunreddyy.github.io/Portfolio/. Production builds use the `/Portfolio/` base, so reference files in `public/` through `import.meta.env.BASE_URL`, not a bare `/`.
+- Deploy: primary site URL is https://mithunre.vercel.app (deployed on Vercel with base `/`). GitHub Pages backup publishes to https://mithunreddyy.github.io/Portfolio/. Production builds use `import.meta.env.BASE_URL` to reference public assets.
 - Vercel: builds there set `VERCEL=1`, which switches the base to `/` (see `vite.config.ts`). `vercel.json` rewrites every path to `index.html` so deep links like `/cv` load.
 
 No database, forms, or environment variables are used.

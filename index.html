@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mithun Reddy</title>
-    <meta name="theme-color" content="#161616" />
+    <meta name="theme-color" content="#040404" />
     <script>
       try {
         var theme = localStorage.getItem("theme") === "light" ? "light" : "dark";
@@ -12,7 +12,7 @@
         var theme = "dark";
       }
       document.documentElement.setAttribute("data-theme", theme);
-      document.querySelector('meta[name="theme-color"]').setAttribute("content", theme === "light" ? "#f6f7f9" : "#161616");
+      document.querySelector('meta[name="theme-color"]').setAttribute("content", theme === "light" ? "#f6f7f9" : "#040404");
     </script>
     <link rel="alternate" type="application/rss+xml" title="Mithun Reddy, writing" href="%BASE_URL%feed.xml" />
     <meta name="description" content="Portfolio of Mithun Reddy, a Full-Stack Software Engineer & AI Enthusiast specializing in scalable web architectures and machine learning." />
@@ -24,6 +24,7 @@
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.json" />
   </head>
   <body>
     <div id="root"></div>

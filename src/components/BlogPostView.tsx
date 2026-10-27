@@ -236,6 +236,7 @@ export function BlogPostView() {
       <SEO
         title={post.title}
         description={post.excerpt}
+        path={`/blog/${post.slug}`}
         type="article"
         schema={{
           "@context": "https://schema.org",
@@ -246,7 +247,7 @@ export function BlogPostView() {
           datePublished: post.date,
           mainEntityOfPage: {
             "@type": "WebPage",
-            "@id": `https://mithunreddyy.github.io/Portfolio/blog/${post.slug}`,
+            "@id": `https://mithunre.vercel.app/blog/${post.slug}`,
           },
         }}
       />

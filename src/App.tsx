@@ -3,6 +3,7 @@ import { Suspense, lazy, useEffect } from 'react';
 import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
 import { Blog } from './components/Blog';
 import { Connect } from './components/Connect';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { Skills } from './components/Experience';
 import { Hero } from './components/Hero';
 import { Projects } from './components/Projects';
@@ -43,21 +44,24 @@ export default function App() {
   return (
     // "user" honors the OS reduced-motion setting for every Motion animation
     <MotionConfig reducedMotion="user">
-      <Router basename={import.meta.env.BASE_URL}>
-        <div className="min-h-screen bg-bg text-ink relative selection:bg-accent/20 selection:text-ink">
-          <Shell>
-            <Suspense fallback={<p className="text-muted" role="status">Loading the page</p>}>
-              <Routes>
-                <Route path="/" element={<Portfolio />} />
-                <Route path="/cv" element={<CvView />} />
-                <Route path="/work/:slug" element={<ProjectView />} />
-                <Route path="/blog/:slug" element={<BlogPostView />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
-          </Shell>
-        </div>
-      </Router>
+      <ErrorBoundary>
+        <Router basename={import.meta.env.BASE_URL}>
+          <div className="min-h-screen bg-bg text-ink relative selection:bg-accent/20 selection:text-ink">
+            <Shell>
+              <Suspense fallback={<p className="text-muted" role="status">Loading the page</p>}>
+                <Routes>
+                  <Route path="/" element={<Portfolio />} />
+                  <Route path="/cv" element={<CvView />} />
+                  <Route path="/work/:slug" element={<ProjectView />} />
+                  <Route path="/blog/:slug" element={<BlogPostView />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </Shell>
+          </div>
+        </Router>
+      </ErrorBoundary>
     </MotionConfig>
   );
 }
+

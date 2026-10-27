@@ -41,7 +41,7 @@ export function CvView() {
 
   return (
     <>
-      <SEO title="CV" description={`${PERSONAL_INFO.name}, ${PERSONAL_INFO.role}.`} />
+      <SEO title="CV" description={`${PERSONAL_INFO.name}, ${PERSONAL_INFO.role}.`} path="/cv" />
 
       <header
         className="appear grid grid-cols-[minmax(0,1fr)_auto] max-[479px]:grid-cols-1 gap-x-4 gap-y-3 items-baseline pb-9"

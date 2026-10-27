@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import type { Plugin } from 'vite';
 
-const SITE = 'https://mithunreddyy.github.io/Portfolio';
+const SITE = 'https://mithunre.vercel.app';
 const BLOG_DIR = path.resolve(__dirname, 'content/blog');
 
 const escape = (text: string) =>

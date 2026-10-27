@@ -25,7 +25,7 @@ Dark is the default, set by the October 2026 owner request for "less black": a n
 
 | Token | Dark | Light |
 |---|---|---|
-| `--color-bg` | `#161616` | `#f6f7f9` |
+| `--color-bg` | `#040404` | `#f6f7f9` |
 | `--color-ink` | `#ececec` | `#15171a` |
 | `--color-muted` | `#a3a3a3` | `#636872` |
 | `--color-line` | `rgba(255,255,255,0.08)` | `rgba(0,0,0,0.08)` |

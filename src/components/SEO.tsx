@@ -1,23 +1,48 @@
 import { Helmet } from 'react-helmet-async';
 
+const SITE_URL = 'https://mithunre.vercel.app';
+
 interface SEOProps {
   title?: string;
   description?: string;
-  canonical?: string;
+  /** Path relative to the site root, e.g. "/blog/my-post" */
+  path?: string;
   type?: string;
   image?: string;
   schema?: object;
 }
 
-export function SEO({ 
-  title = "Mithun Reddy", 
-  description = "Full-Stack Software Engineer & AI Enthusiast with 2+ years of experience in designing scalable web architectures and machine learning pipelines.",
-  canonical = "https://mithunreddyy.github.io/Portfolio/", 
-  type = "website",
-  image = "https://mithunreddyy.github.io/Portfolio/og-image.png",
-  schema
+/** Builds a Person JSON-LD block for the home page */
+function personSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: 'Mithun Reddy Sudireddy',
+    url: SITE_URL,
+    jobTitle: 'Full-Stack Software Engineer',
+    sameAs: [
+      'https://github.com/mithunreddyy',
+      'https://linkedin.com/in/mithunreddyyy',
+    ],
+  };
+}
+
+export function SEO({
+  title = 'Mithun Reddy',
+  description = 'Full-Stack Software Engineer & AI Enthusiast with 2+ years of experience in designing scalable web architectures and machine learning pipelines.',
+  path = '/',
+  type = 'website',
+  image = `${SITE_URL}/og-image.png`,
+  schema,
 }: SEOProps) {
-  const siteTitle = title.includes("Mithun Reddy") ? title : `${title} | Mithun Reddy`;
+  const siteTitle = title.includes('Mithun Reddy') ? title : `${title} | Mithun Reddy`;
+  const canonical = `${SITE_URL}${path}`;
+
+  // On the home page, inject Person structured data alongside any page-level schema
+  const isHome = path === '/';
+  const schemas: object[] = [];
+  if (isHome) schemas.push(personSchema());
+  if (schema) schemas.push(schema);
 
   return (
     <Helmet>
@@ -36,11 +61,11 @@ export function SEO({
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
 
-      {schema && (
-        <script type="application/ld+json">
-          {JSON.stringify(schema)}
+      {schemas.map((s, i) => (
+        <script key={i} type="application/ld+json">
+          {JSON.stringify(s)}
         </script>
-      )}
+      ))}
 
       <meta name="robots" content="index, follow" />
     </Helmet>

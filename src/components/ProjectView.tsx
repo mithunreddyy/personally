@@ -23,7 +23,7 @@ export function ProjectView() {
 
   return (
     <>
-      <SEO title={project.title} description={summary} />
+      <SEO title={project.title} description={summary} path={`/work/${project.id}`} />
 
       <Article
         index={`work / ${String(position + 1).padStart(2, '0')}`}
