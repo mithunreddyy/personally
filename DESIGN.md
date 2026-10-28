@@ -42,6 +42,7 @@ Dark is the default, set by the October 2026 owner request for "less black": a n
 - Scale origin: shedsgns.me's sizes (stylesheet read from the live site, October 2026), each raised 1px at the owner's request so the text is easier to read while the page stays quiet. Line heights rose 1px with them; spacing still follows the reference. (A +3px version was tried and set aside.)
 - The CV clock and the visit count: 11px / 20px (10.5px at 720px and below), tracked 0.02em.
 - Article contents rail (issue number and headings): 13px / 19px.
+- Article text at 720px and below is justified with automatic hyphenation (`.prose-flow` in `src/index.css`), so each line fills the narrow column without wide gaps between words. Wider screens keep ragged-right text.
 - Code blocks: 14px / 23px (13px / 21px at 540px and below), language label and Copy button 12px, inline code 0.88em.
 - Print styles keep their own sizes, set for the A4 PDF.
 - Geist Mono is still loaded in the theme but no longer used in the UI.
@@ -53,7 +54,7 @@ Dark is the default, set by the October 2026 owner request for "less black": a n
 - No dividers between sections. Owner decision, October 2026, for a more minimal page: whitespace and the muted label do the separating.
 - Article pages start at the same 120px as the index; the pinned rail sits at 120px from the top.
 - Every section is the `Section` component in `src/components/List.tsx`: a muted label, then content.
-- List rows are the `Row` component: name left, detail right in muted 13px, two pixels under the body so the names lead. Below 360px the detail drops under the name.
+- List rows are the `Row` component: name left, detail right in muted 14px, a pixel under the body so the names lead. Below 360px the detail drops under the name.
 - **Projects** are one line each: the title (with its arrow) on the left and the project's month on the right (`date` in its frontmatter, shown in lowercase as "may 2026"). The `summary` stays in the frontmatter but no longer shows on the index. An "All" link sits on the right of the section label and opens the GitHub repositories list. Details live on `/work/:slug`.
 - **Writing** uses the same row: the post title on the left, the read time on the right. Titles are short and in sentence case ("Caching in layers"), so each fits on one line.
 - **Focus by colour** (`.focus-index` in `src/index.css`): hovering or focusing an entry in Projects or Writing turns the other titles from ink to muted. Colour, not opacity, so dimmed titles keep AA contrast.

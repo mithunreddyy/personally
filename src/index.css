@@ -117,6 +117,22 @@
   }
 }
 
+/*
+ * Article text on phones and tablets: justified so every line runs the full column,
+ * with hyphenation so the narrow column doesn't open wide gaps between words.
+ * Unlayered, so it wins over the text-pretty utility on these paragraphs.
+ */
+@media (max-width: 720px) {
+  .prose-flow p,
+  .prose-flow li,
+  .prose-flow blockquote {
+    text-align: justify;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    text-wrap: wrap;
+  }
+}
+
 /* Entrance: each block fades up once, staggered by --appear-delay */
 @keyframes appear {
   from {

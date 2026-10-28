@@ -140,7 +140,7 @@ export function Row({ name, detail }: { name: ReactNode; detail?: ReactNode }) {
     <div className="grid grid-cols-[minmax(0,1fr)_auto] max-[359.98px]:grid-cols-1 items-baseline gap-x-4">
       <div className="min-w-0">{name}</div>
       {detail && (
-        <div className="text-muted text-[13px] leading-[23px] text-right max-[359.98px]:text-left">
+        <div className="text-muted text-[14px] leading-[23px] text-right max-[359.98px]:text-left">
           {detail}
         </div>
       )}
