@@ -1,18 +1,19 @@
 ---
 date: "2026-05-04"
-title: "Autonomous Career Architect"
-summary: "Turns job postings into tailored resumes and cover letters."
+title: "nook"
+summary: "Automatic window tiling for macOS."
 tech:
-  - "Python"
-  - "BM25"
-  - "LaTeX"
-  - "Streamlit"
-  - "Ollama"
-link: "https://github.com/mithunreddyy/career-architect"
-demoUrl: "https://career-architect-demo.vercel.app"
+  - "Swift"
+  - "AppKit"
+  - "SwiftUI"
+  - "Accessibility API"
+  - "Carbon"
+  - "Swift Testing"
+  - "Swift Package Manager"
+link: "https://github.com/mithunreddyy/nook"
 ---
 
-- An automated career intelligence suite designed to bridge the gap between job descriptions and application artifacts.
-- Engineered a zero-cost CLI pipeline that extracts high-fidelity role signals from unstructured job postings.
-- Developed a custom ranking engine using BM25 algorithms to align project evidence with target competencies.
-- Automated the production of ATS-optimized resumes and cover letters across multiple LaTeX templates.
+- Built a pure Swift layout engine with 4 layouts, 3 screen shapes, and a solver for gaps, split weights, and per-app minimum sizes.
+- Integrated Accessibility API observers, Carbon hotkeys, and a global mouse monitor. Each window event retiles the affected screens and moves only windows whose frames differ.
+- Added Focus mode, No Peek, Clean Space, Tab View, 27 shortcuts, drag to swap, stack, and resize, and a nook:// URL scheme with a CLI.
+- Wrote 30 unit tests and 54 end-to-end checks. The checks run the installed app against real windows.
