@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const appear = (delay: number) => ({ '--appear-delay': `${delay}ms` }) as CSSProperties;
 
-/** A labelled block under a hairline divider: the one section shape every page uses */
+/** A muted label over its content: the one section shape every page uses */
 export function Section({
   id,
   title,
@@ -23,7 +23,7 @@ export function Section({
     <section
       id={id}
       aria-labelledby={id ? `${id}-title` : undefined}
-      className="appear border-t border-line pt-3.5 pb-6 flex flex-col gap-3.5 scroll-mt-6"
+      className="appear pb-10 flex flex-col gap-3.5 scroll-mt-6"
       style={appear(delay)}
     >
       {action ? (
@@ -49,7 +49,7 @@ export function CollapsibleSection({ title, delay = 0, children }: { title: stri
   const bodyId = useId();
 
   return (
-    <section className="appear border-t border-line pt-3.5 pb-4 print:pt-2 print:pb-2 print:border-black/15 print:break-inside-avoid" style={appear(delay)}>
+    <section className="appear pb-4 print:pb-2 print:break-inside-avoid" style={appear(delay)}>
       <h2 className="font-normal">
         <button
           type="button"
@@ -134,13 +134,13 @@ export function Entry({
   );
 }
 
-/** Name on the left, quiet detail on the right; stacks on narrow phones */
+/** Name on the left, quiet detail on the right; stacks under 360px, like the reference */
 export function Row({ name, detail }: { name: ReactNode; detail?: ReactNode }) {
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_auto] max-[479px]:grid-cols-1 items-baseline gap-x-4">
+    <div className="grid grid-cols-[minmax(0,1fr)_auto] max-[359.98px]:grid-cols-1 items-baseline gap-x-4">
       <div className="min-w-0">{name}</div>
       {detail && (
-        <div className="text-muted text-right max-[479px]:text-left">
+        <div className="text-muted text-[13px] leading-[23px] text-right max-[359.98px]:text-left">
           {detail}
         </div>
       )}
@@ -149,7 +149,7 @@ export function Row({ name, detail }: { name: ReactNode; detail?: ReactNode }) {
 }
 
 export function RowList({ children }: { children: ReactNode }) {
-  return <div className="flex flex-col gap-1.5 max-[479px]:gap-2.5">{children}</div>;
+  return <div className="flex flex-col gap-1.5 max-[359.98px]:gap-2.5">{children}</div>;
 }
 
 /**

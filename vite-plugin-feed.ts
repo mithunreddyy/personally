@@ -22,6 +22,9 @@ function frontmatter(raw: string): Record<string, string> {
 }
 
 function buildFeed() {
+  // Dates are YYYY-MM-DD, or YYYY-MM-DDTHH:mm in Hyderabad time when several posts share a day
+  const published = (date = '') => new Date(date.includes('T') ? `${date}:00+05:30` : `${date}T00:00:00Z`);
+
   const posts = fs
     .readdirSync(BLOG_DIR)
     .filter(file => file.endsWith('.md'))
@@ -30,7 +33,7 @@ function buildFeed() {
       slug: file.replace(/\.md$/, '').replace(/^\d+-/, ''),
     }))
     .filter(post => post.published !== 'false')
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .sort((a, b) => published(b.date).getTime() - published(a.date).getTime());
 
   const items = posts
     .map(post => {
@@ -39,7 +42,7 @@ function buildFeed() {
       <title>${escape((post.title ?? '').replace(/\n/g, ' '))}</title>
       <link>${url}</link>
       <guid>${url}</guid>
-      <pubDate>${new Date(`${post.date}T00:00:00Z`).toUTCString()}</pubDate>
+      <pubDate>${published(post.date).toUTCString()}</pubDate>
       <description>${escape((post.excerpt ?? '').replace(/\*\*/g, ''))}</description>
     </item>`;
     })

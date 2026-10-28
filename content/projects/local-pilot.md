@@ -1,6 +1,6 @@
 ---
-date: "2026-05-01"
-title: "Local Pilot"
+date: "2026-08-01"
+title: "local pilot"
 summary: "A local AI coding companion for VS Code."
 tech:
   - "Python"

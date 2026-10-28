@@ -73,11 +73,11 @@ export function Hero({ personalInfo }: { personalInfo: PersonalInfo }) {
   const hasFlag = summary.includes(FLAG);
 
   return (
-    <section id="hero" aria-label="Introduction" className="flex flex-col gap-6 pb-9">
+    <section id="hero" aria-label="Introduction" className="flex flex-col gap-3 pb-10 max-[720px]:gap-2.5">
       <h1 className="sr-only">{personalInfo.name}, {personalInfo.role}</h1>
 
-      {/* The greeting stays at the reference 14px; the rest of the page is 16px */}
-      <p className="appear text-muted pt-6 text-[14px] leading-[22px]">
+      {/* 14px from the greeting to the intro, 12px between paragraphs (12 and 10 on phones) */}
+      <p className="appear text-muted mb-0.5">
         {hello} from {HOME_CITY}, where it's <time className="tabular-nums">{time}</time>
       </p>
 
@@ -87,7 +87,7 @@ export function Hero({ personalInfo }: { personalInfo: PersonalInfo }) {
         {hasFlag && <span className="text-ink">{afterFlag}</span>}
       </p>
 
-      <p className="appear text-muted" style={appear(60)}>I’ve worked across healthcare, fintech, dev tools, and AI. The one thing that’s
+      <p className="appear text-muted" style={appear(60)}>I’ve worked across healthcare, e-commerce, dev tools, and AI. The one thing that’s
         stayed the same is my curiosity to figure out how things work, take them apart, and make them better.</p>
 
       <p className="appear text-muted" style={appear(80)}>

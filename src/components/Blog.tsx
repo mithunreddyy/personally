@@ -1,10 +1,10 @@
 import { BlogPost } from "../types";
-import { Arrow, Section, TextLink } from "./List";
+import { Arrow, Row, Section, TextLink } from "./List";
 
-/** Ledger of posts: the year hangs in the left column once, beside the first post written that year */
+/** One line per post: title on the left, read time on the right */
 export function Blog({
   blogs,
-  title = "Writing",
+  title = "writing",
   delay = 0,
   showFeed = false,
 }: {
@@ -18,26 +18,19 @@ export function Blog({
       {blogs.length === 0 ? (
         <p className="text-muted">No posts yet. New writing will show up here.</p>
       ) : (
-        <ol className="focus-index flex flex-col gap-4">
-          {blogs.map((post, i) => {
-            const year = post.date.slice(0, 4);
-            const firstOfYear = i === 0 || blogs[i - 1].date.slice(0, 4) !== year;
-            return (
-              <li key={post.id} className="focus-item grid grid-cols-[3.5rem_minmax(0,1fr)] gap-x-1">
-                <span className="text-muted tabular-nums">
-                  {firstOfYear && <time dateTime={year}>{year}</time>}
-                </span>
-                <div className="flex flex-col">
+        <ol className="focus-index flex flex-col gap-1.5 max-[359.98px]:gap-2.5">
+          {blogs.map(post => (
+            <li key={post.id} className="focus-item">
+              <Row
+                name={
                   <span className="focus-title">
                     <TextLink to={`/blog/${post.slug}`}>{post.title.replace(/\n/g, " ")}</TextLink>
                   </span>
-                  <span className="text-muted mt-0.5">
-                    {[post.category, post.readTime].filter(Boolean).join(", ")}
-                  </span>
-                </div>
-              </li>
-            );
-          })}
+                }
+                detail={post.readTime}
+              />
+            </li>
+          ))}
         </ol>
       )}
       {showFeed && blogs.length > 0 && (

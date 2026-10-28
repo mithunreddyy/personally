@@ -1,12 +1,19 @@
+/** Reads a frontmatter date: YYYY-MM-DD, or YYYY-MM-DDTHH:mm when several posts share a day */
+export function parsePostDate(raw: string): Date {
+  return new Date(raw.includes('T') ? raw : `${raw}T00:00:00`);
+}
+
 /**
- * Formats a YYYY-MM-DD date as "Feb 2025" (short) or "21 February 2025" (long)
+ * Formats a post date as "Feb 2025" (short), "21 Feb 2025" (day) or "21 February 2025" (long)
  */
-export function formatPostDate(raw: string, style: 'short' | 'long' = 'short'): string {
-  const d = new Date(`${raw}T00:00:00`);
+export function formatPostDate(raw: string, style: 'short' | 'day' | 'long' = 'short'): string {
+  const d = parsePostDate(raw);
   if (isNaN(d.getTime())) return raw;
-  return d.toLocaleDateString('en-GB', style === 'short'
-    ? { month: 'short', year: 'numeric' }
-    : { day: 'numeric', month: 'long', year: 'numeric' });
+  const options: Intl.DateTimeFormatOptions =
+    style === 'short' ? { month: 'short', year: 'numeric' }
+    : style === 'day' ? { day: 'numeric', month: 'short', year: 'numeric' }
+    : { day: 'numeric', month: 'long', year: 'numeric' };
+  return d.toLocaleDateString('en-GB', options);
 }
 
 /**

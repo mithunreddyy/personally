@@ -1,5 +1,5 @@
 ---
-date: "2026-05-04"
+date: "2026-10-04"
 title: "nook"
 summary: "Automatic window tiling for macOS."
 tech:

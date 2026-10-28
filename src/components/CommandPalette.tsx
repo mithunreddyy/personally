@@ -152,7 +152,7 @@ export function CommandPalette() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full max-w-[440px] bg-bg border border-line rounded-xl overflow-hidden text-[16px] leading-[24px]"
+            className="relative w-full max-w-[440px] bg-bg border border-line rounded-xl overflow-hidden text-[15px] leading-[23px]"
           >
             <div className="flex items-center gap-3 px-4 py-3 border-b border-line">
               <input

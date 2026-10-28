@@ -208,7 +208,7 @@ function RichText({ segments }: { segments: InlineSegment[] }) {
         }
         if (seg.type === "code") {
           return (
-            <code key={i} className="px-1.5 py-0.5 rounded font-mono text-[13.5px] bg-ink/[0.06] text-ink">
+            <code key={i} className="px-1.5 py-0.5 rounded font-mono text-[0.88em] bg-ink/[0.06] text-ink">
               {seg.text}
             </code>
           );
@@ -247,13 +247,13 @@ function CodeBlock({ language, code }: { language?: string; code: string }) {
   };
 
   return (
-    <div className="my-5 w-full max-w-full min-w-0 rounded-lg border border-line bg-ink/[0.03] overflow-hidden text-[13.5px] leading-[22px] font-mono">
-      <div className="flex items-center justify-between px-3.5 py-1.5 border-b border-line text-xs text-muted select-none">
+    <div className="my-5 w-full max-w-full min-w-0 rounded-lg border border-line bg-ink/[0.03] overflow-hidden text-[14px] leading-[23px] max-[540px]:text-[13px] max-[540px]:leading-[21px] font-mono">
+      <div className="flex items-center justify-between px-3.5 py-1.5 border-b border-line text-[12px] text-muted select-none">
         <span className="font-mono text-muted/80">{language || "code"}</span>
         <button
           type="button"
           onClick={copy}
-          className="hover:text-ink transition-colors flex items-center gap-1.5 font-sans text-xs py-0.5 px-1 -my-0.5 rounded"
+          className="hover:text-ink transition-colors flex items-center gap-1.5 font-sans text-[12px] py-0.5 px-1 -my-0.5 rounded"
           aria-label="Copy code to clipboard"
         >
           {copied ? (
@@ -389,7 +389,7 @@ export function BlogPostView() {
         meta={
           <>
             Published <time dateTime={post.date}>{formatPostDate(post.date, "long")}</time>, {post.readTime}.{" "}
-            <button type="button" onClick={copyLink} className="link-line text-[15px] leading-[22px]">
+            <button type="button" onClick={copyLink} className="link-line">
               {linkCopied ? "Link copied" : "copy link"}
             </button>
             <span role="status" className="sr-only">

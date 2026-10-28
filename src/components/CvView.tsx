@@ -44,7 +44,7 @@ export function CvView() {
       <SEO title="CV" description={`${PERSONAL_INFO.name}, ${PERSONAL_INFO.role}.`} path="/cv" />
 
       <header
-        className="appear grid grid-cols-[minmax(0,1fr)_auto] max-[479px]:grid-cols-1 gap-x-4 gap-y-3 items-baseline pb-9"
+        className="appear grid grid-cols-[minmax(0,1fr)_auto] max-[479px]:grid-cols-1 gap-x-4 gap-y-3 items-baseline pb-7"
         style={appear(0)}
       >
         <div>
@@ -74,14 +74,14 @@ export function CvView() {
         <Entries section={section('Education')} />
       </CollapsibleSection>
 
-      <section className="appear border-t border-line pt-3.5 pb-16 print:hidden" style={appear(240)}>
+      <section className="appear pb-7 print:hidden" style={appear(240)}>
         <button type="button" onClick={() => downloadResume(PERSONAL_INFO.resumeUrl)} className="link-line">
           Download PDF
         </button>
       </section>
 
-      <footer className="appear flex items-baseline gap-2.5 text-[11.5px] sm:text-[12px] leading-5 text-muted tabular-nums print:hidden" style={appear(280)}>
-        <span className="tracking-[0.04em]">GMT+5:30</span>
+      <footer className="appear flex items-baseline gap-2.5 text-[10.5px] min-[721px]:text-[11px] leading-5 tracking-[0.02em] text-muted tabular-nums print:hidden" style={appear(280)}>
+        <span>GMT+5:30</span>
         <time>{time}</time>
       </footer>
 

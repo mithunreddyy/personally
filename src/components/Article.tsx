@@ -36,7 +36,7 @@ function useActiveHeading(ids: string[]) {
 
 /**
  * Reading page frame: a pinned index on wide screens (back link, issue number,
- * contents), then title, meta line, divider, and the body.
+ * contents), then title, meta line, and the body.
  */
 export function Article({
   index,
@@ -57,7 +57,7 @@ export function Article({
     <>
       <nav
         aria-label="Contents"
-        className="appear flex flex-col gap-3.5 mb-8 min-[1180px]:fixed min-[1180px]:left-16 min-[1180px]:top-[120px] min-[1180px]:w-[200px] min-[1180px]:mb-0"
+        className="appear flex flex-col gap-3.5 mb-6 text-[13px] leading-[19px] min-[1180px]:fixed min-[1180px]:left-16 min-[1180px]:top-[120px] min-[1180px]:w-[200px] min-[1180px]:mb-0"
         style={appear(0)}
       >
         <p className="flex items-center gap-1.5 text-muted">
@@ -88,12 +88,12 @@ export function Article({
         )}
       </nav>
 
-      <header className="appear flex flex-col gap-1.5 pb-6" style={appear(0)}>
+      <header className="appear flex flex-col gap-1.5 pb-7" style={appear(0)}>
         <h1 className="text-ink font-normal">{title}</h1>
         <p className="text-muted">{meta}</p>
       </header>
 
-      <div className="appear border-t border-line pt-6 flex flex-col gap-10 pb-10 min-w-0 max-w-full" style={appear(80)}>
+      <div className="appear flex flex-col gap-10 pb-7 min-w-0 max-w-full" style={appear(80)}>
         {children}
       </div>
     </>
@@ -105,7 +105,7 @@ export function ArticleSection({ id, title, children }: { id?: string; title?: R
   return (
     <section id={id} className="flex flex-col gap-3.5 scroll-mt-24 min-w-0 max-w-full">
       {title && <h2 className="text-muted font-normal">{title}</h2>}
-      <div className="prose-flow flex flex-col gap-4 text-ink/85 leading-[26px] min-w-0 max-w-full">{children}</div>
+      <div className="prose-flow flex flex-col gap-4 text-ink/85 leading-[25px] min-w-0 max-w-full">{children}</div>
     </section>
   );
 }

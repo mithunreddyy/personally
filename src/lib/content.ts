@@ -1,5 +1,5 @@
 import { BlogPost, CvSection, Experience, PersonalInfo, Project, SkillGroup } from '../types';
-import { calculateReadTime } from './utils';
+import { calculateReadTime, parsePostDate } from './utils';
 
 type Frontmatter = Record<string, string | number | boolean | string[]>;
 
@@ -144,4 +144,4 @@ export const BLOG_POSTS: BlogPost[] = files(
     readTime: calculateReadTime(body, str(data.excerpt)),
     published: true,
   }))
-  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  .sort((a, b) => parsePostDate(b.date).getTime() - parsePostDate(a.date).getTime());
