@@ -5,5 +5,8 @@ location: "Hyderabad, India"
 period: "2022 to 2023"
 ---
 
-- Led the move from a monolith to event-driven microservices on AWS SQS/SNS, with near-zero failed messages.
-- Cut API response times from 800ms to under 200ms and database load by 60% with PostgreSQL tuning and Redis caching.
+- Developed and maintained scalable backend services and REST APIs supporting e-commerce operations, including order management, shipping, transaction processing, and inventory workflows.
+
+- Built and optimized ETL data pipelines to extract, transform, and load data from multiple sources, ensuring data consistency, reliability, and availability for downstream systems.
+
+- Implemented and maintained data integration workflows, automating data processing and improving pipeline monitoring, error handling, and operational efficiency.

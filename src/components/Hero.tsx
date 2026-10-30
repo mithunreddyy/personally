@@ -87,7 +87,7 @@ export function Hero({ personalInfo }: { personalInfo: PersonalInfo }) {
         {hasFlag && <span className="text-ink">{afterFlag}</span>}
       </p>
 
-      <p className="appear text-muted" style={appear(60)}>I’ve worked across healthcare, e-commerce, dev tools, and AI. The one thing that’s
+      <p className="appear text-muted" style={appear(60)}>I’ve worked across healthcare,finance, e-commerce, dev tools, and AI. The one thing that’s
         stayed the same is my curiosity to figure out how things work, take them apart, and make them better.</p>
 
       <p className="appear text-muted" style={appear(80)}>

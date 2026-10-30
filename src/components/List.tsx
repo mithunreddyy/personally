@@ -94,7 +94,7 @@ export function PhoneMeta({ parts }: { parts: ReactNode[] }) {
   if (!shown.length) return null;
   return (
     // A span, not a p, so it is valid inside the Experience toggle button
-    <span className="block min-[480px]:hidden print:hidden mt-0.5 text-muted">
+    <span className="block min-[480px]:hidden print:hidden mt-0.5 text-muted text-[14px] leading-[23px]">
       {shown.map((part, i) => (
         <span key={i}>
           {i > 0 && ', '}
@@ -121,12 +121,12 @@ export function Entry({
     <div className="print:break-inside-avoid">
       <div className="flex items-baseline justify-between gap-4">
         <span className="text-ink min-w-0 print:text-black print:font-medium">{name}</span>
-        {detail && <span className="text-muted shrink-0 max-[479px]:hidden print:inline print:text-black/80">{detail}</span>}
+        {detail && <span className="text-muted text-[14px] leading-[23px] shrink-0 max-[479px]:hidden print:inline print:text-black/80">{detail}</span>}
       </div>
       {(sub || place) && (
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 text-muted print:text-black/70">
           {sub && <span className="min-w-0">{sub}</span>}
-          {place && <span className="shrink-0 max-[479px]:hidden print:inline">{place}</span>}
+          {place && <span className="text-[14px] leading-[23px] shrink-0 max-[479px]:hidden print:inline">{place}</span>}
         </div>
       )}
       <PhoneMeta parts={[detail, place]} />

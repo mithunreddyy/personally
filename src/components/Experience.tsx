@@ -23,7 +23,7 @@ function ExperienceEntry({ exp }: { exp: Experience }) {
         <span className="flex items-baseline justify-between gap-4">
           <span className="text-ink print:text-black print:font-medium">{exp.company}</span>
           <span className="flex items-baseline gap-3 text-muted print:text-black/80 shrink-0">
-            <span className="max-[479px]:hidden print:inline">{exp.period}</span>
+            <span className="text-[14px] leading-[23px] max-[479px]:hidden print:inline">{exp.period}</span>
             <span
               aria-hidden="true"
               className={`inline-block transition-transform duration-300 group-hover:text-ink print:hidden ${open ? 'rotate-45' : ''}`}
@@ -34,7 +34,7 @@ function ExperienceEntry({ exp }: { exp: Experience }) {
         </span>
         <span className="flex flex-wrap items-baseline justify-between gap-x-4 text-muted print:text-black/70">
           <span className="min-w-0">{exp.role}</span>
-          <span className="shrink-0 max-[479px]:hidden print:inline">{exp.location}</span>
+          <span className="text-[14px] leading-[23px] shrink-0 max-[479px]:hidden print:inline">{exp.location}</span>
         </span>
         <PhoneMeta parts={[exp.period, exp.location]} />
       </button>
@@ -49,7 +49,7 @@ function ExperienceEntry({ exp }: { exp: Experience }) {
             transition={{ duration: 0.3, ease: EASE }}
             className="overflow-hidden print:hidden"
           >
-            <ul className="pt-3 space-y-2 text-muted">
+            <ul className="pt-3 space-y-2 text-muted list-disc pl-5 marker:text-muted">
               {exp.highlights.map((h, i) => (
                 <li key={i}>{h}</li>
               ))}
