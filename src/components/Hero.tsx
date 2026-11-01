@@ -76,21 +76,37 @@ export function Hero({ personalInfo }: { personalInfo: PersonalInfo }) {
     <section id="hero" aria-label="Introduction" className="flex flex-col gap-3 pb-10 max-[720px]:gap-2.5">
       <h1 className="sr-only">{personalInfo.name}, {personalInfo.role}</h1>
 
+      {/* The favicon creature as the profile picture, masked to ink so it follows the theme toggle, not the OS scheme.
+          It peeks up from the bottom of a line-tinted tile, as it does from the bottom of the browser tab */}
+      <span aria-hidden="true" className="appear block w-12 h-12 mb-6 rounded-2xl bg-line max-[720px]:mb-6">
+        <span
+          className="block w-full h-full bg-ink"
+          style={{
+            maskImage: `url(${import.meta.env.BASE_URL}favicon.svg)`,
+            WebkitMaskImage: `url(${import.meta.env.BASE_URL}favicon.svg)`,
+            maskSize: 'contain',
+            WebkitMaskSize: 'contain',
+            maskRepeat: 'no-repeat',
+            WebkitMaskRepeat: 'no-repeat',
+          }}
+        />
+      </span>
+
       {/* 14px from the greeting to the intro, 12px between paragraphs (12 and 10 on phones) */}
-      <p className="appear text-muted mb-0.5">
+      <p className="appear text-muted mb-1" style={appear(20)}>
         {hello} from {HOME_CITY}, where it's <time className="tabular-nums">{time}</time>
       </p>
 
-      <p className="appear text-muted"  style={appear(40)}>
+      <p className="appear text-body" style={appear(40)}>
         I'm <span className="text-ink">{firstName}</span>,{' '}
         {hasFlag ? beforeFlag : summary}
         {hasFlag && <span className="text-ink">{afterFlag}</span>}
       </p>
 
-      <p className="appear text-muted" style={appear(60)}>I’ve worked across healthcare,finance, e-commerce, dev tools, and AI. The one thing that’s
+      <p className="appear text-body" style={appear(60)}>I’ve worked across healthcare, finance, e-commerce, dev tools, and AI. The one thing that’s
         stayed the same is my curiosity to figure out how things work, take them apart, and make them better.</p>
 
-      <p className="appear text-muted" style={appear(80)}>
+      <p className="appear text-body" style={appear(80)}>
         The full story is in my <Link to="/cv" className="link-line">CV</Link>, also a PDF you can{' '}
         <a href={personalInfo.resumeUrl} target="_blank" rel="noreferrer" className="group">
           <span className="link-line">view</span>
@@ -103,7 +119,7 @@ export function Hero({ personalInfo }: { personalInfo: PersonalInfo }) {
         .
       </p>
 
-      <p className="appear hidden sm:block text-muted" style={appear(120)}>
+      <p className="appear hidden sm:block text-body" style={appear(120)}>
         Shortcuts: <kbd className="font-sans text-ink">M</kbd> copies my email,{' '}
         <kbd className="font-sans text-ink">V</kbd> opens the resume,{' '}
         <kbd className="font-sans text-ink">D</kbd> downloads it,{' '}

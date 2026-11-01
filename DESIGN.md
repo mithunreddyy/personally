@@ -27,21 +27,24 @@ Dark is the default, set by the October 2026 owner request for "less black": a n
 |---|---|---|
 | `--color-bg` | `#040404` | `#f6f7f9` |
 | `--color-ink` | `#ececec` | `#15171a` |
-| `--color-muted` | `#a3a3a3` | `#636872` |
+| `--color-body` | `#b0b0b0` | `#4f4f4f` |
+| `--color-muted` | `#6e6e6e` | `#9f9f9f` |
 | `--color-line` | `rgba(255,255,255,0.08)` | `rgba(0,0,0,0.08)` |
 | `--color-accent` | `#3B82F6` | `#2563EB` |
 
 - Ink: names, links, the first-person name in the intro.
-- Muted: section labels, prose, dates, detail columns.
+- Body: prose, meaning the intro paragraphs, the shortcuts line, the Connect and RSS sentences, the 404 text, the CV role bullets, and article prose.
+- Muted: the greeting, section labels, dates, detail columns, empty states.
+- Body and muted are shedsgns.me's `--text` and `--text-muted`, taken as-is on 31 October 2026 at the owner's request. The one exception is light `body`: their `#000` came out darker than `ink`, so the intro read as solid black and the ink words looked lighter than the text around them. It is `#4f4f4f`, the mirror of dark `#b0b0b0`, so prose sits under ink in both themes. Known trade-off, accepted by the owner: muted is 4.0:1 on the dark `bg` and 2.5:1 on the light one, under WCAG AA's 4.5:1, so the greeting, labels, dates, and dimmed titles in Projects and Writing fall short of AA.
 - Accent: only the focus ring and the "copied" check. Nowhere else.
 
 ## Typography
 
 - One face, Inter (variable, weights 100 to 900 with optical sizing), for everything. Owner's choice, October 2026, replacing Hanken Grotesk. Optical sizing is on, so the 11px clock and the 15px body are each drawn for their size.
-- One size: 15px, line-height 23px, everywhere: body, greeting, labels, list rows, meta lines, the command menu. Article prose is 15px with a 25px line-height for long reading. Hierarchy comes from color (ink against muted), not from size or weight.
-- Scale origin: shedsgns.me's sizes (stylesheet read from the live site, October 2026), each raised 1px at the owner's request so the text is easier to read while the page stays quiet. Line heights rose 1px with them; spacing still follows the reference. (A +3px version was tried and set aside.)
+- One size: 15px, line-height 23px, everywhere: body, labels, list rows and their dates, meta lines, the command menu. The greeting line alone stays at the reference's 14px / 22px. Below 360px the row details drop to 13.5px / 19px. Article prose (blog posts and `/work/:slug`) uses the same 15px / 23px and the `body` colour, so it follows any change to the shared size. Hierarchy comes from color (ink against muted), not from size or weight.
+- Scale origin: shedsgns.me's sizes, taken exactly from its live stylesheet on 31 October 2026 (`body`, `.greetings`, `.information p`, `.link-section h2`, `.link-row`, `.dates` are all 14px / 22px). The same day the owner raised every size 1px above the reference except the greeting, which keeps the exact 14px / 22px.
 - The CV clock and the visit count: 11px / 20px (10.5px at 720px and below), tracked 0.02em.
-- Article contents rail (issue number and headings): 13px / 19px.
+- Article contents rail (issue number and headings): 13px / 19px only when it is pinned to the left at 1180px and wider. Below that it sits in the column above the title at the shared 15px / 23px.
 - Article text at 720px and below is justified with automatic hyphenation (`.prose-flow` in `src/index.css`), so each line fills the narrow column without wide gaps between words. Wider screens keep ragged-right text.
 - Code blocks: 14px / 23px (13px / 21px at 540px and below), language label and Copy button 12px, inline code 0.88em.
 - Print styles keep their own sizes, set for the A4 PDF.
@@ -54,10 +57,10 @@ Dark is the default, set by the October 2026 owner request for "less black": a n
 - No dividers between sections. Owner decision, October 2026, for a more minimal page: whitespace and the muted label do the separating.
 - Article pages start at the same 120px as the index; the pinned rail sits at 120px from the top.
 - Every section is the `Section` component in `src/components/List.tsx`: a muted label, then content.
-- List rows are the `Row` component: name left, detail right in muted 14px, a pixel under the body so the names lead. Below 360px the detail drops under the name.
+- List rows are the `Row` component: name left, detail right in muted, at the body size. Below 360px the detail drops under the name at 13.5px / 19px.
 - **Projects** are one line each: the title (with its arrow) on the left and the project's month on the right (`date` in its frontmatter, shown in lowercase as "may 2026"). The `summary` stays in the frontmatter but no longer shows on the index. An "All" link sits on the right of the section label and opens the GitHub repositories list. Details live on `/work/:slug`.
 - **Writing** uses the same row: the post title on the left, the read time on the right. Titles are short and in sentence case ("Caching in layers"), so each fits on one line.
-- **Focus by colour** (`.focus-index` in `src/index.css`): hovering or focusing an entry in Projects or Writing turns the other titles from ink to muted. Colour, not opacity, so dimmed titles keep AA contrast.
+- **Focus by colour** (`.focus-index` in `src/index.css`): hovering or focusing an entry in Projects or Writing turns the other titles from ink to muted. Colour, not opacity, so dimmed titles take the muted token.
 - Article pages (blog posts and `/work/:slug`) use `Article` in `src/components/Article.tsx`. At 1180px and wider, the back link, issue number, and contents are pinned to the left edge. On narrower screens they sit above the title.
 
 - The CV page (`/cv`) follows the same shapes. The header puts the name and an "Updated" date on the left and the email with its copy button on the right. Below it come Currently, Experience, then Earlier and Education as `CollapsibleSection` ("+" turns into "×"), a Download PDF link, and a live GMT+5:30 clock at 12px. Its entries come from `content/cv.md`, one `name | detail | line underneath | place` per line. The place ("Hyderabad, India") sits on the right of the line underneath in every section, Experience included. Below 480px the right-hand column goes away: each entry reads name (with its toggle), role, then one muted line of "dates, place" (`PhoneMeta` in `src/components/List.tsx`), so company names never break.
@@ -76,11 +79,12 @@ Dark is the default, set by the October 2026 owner request for "less black": a n
 - **Visit count:** the home page ends with one muted line, "1,284 visits", at the CV clock's 11px. Each browser session counts once. The number comes only from the worker's counter; when it can't be reached (local dev, the GitHub Pages backup), the line stays empty instead of showing a guess.
 - **RSS:** `/feed.xml` is generated from `content/blog/` by `vite-plugin-feed.ts`, linked in the page head and in one sentence under Writing on the index.
 - **Favicon:** a small hand-drawn creature (round head, a curl of hair, eyes glancing sideways) peeking up from the bottom edge with both hands on it, a nod to the curiosity in the intro. No background: `public/favicon.svg` sits straight on the browser tab, dark ink on light tabs and light ink on dark ones, with the eyes cut out so the tab shows through. `favicon.ico` is a transparent mid-grey version that shows on light and dark tabs alike; the Apple touch and manifest icons put the light creature on the charcoal `bg`, because iOS fills transparency with black. Bump the `?v=` in `index.html` and `manifest.json` whenever it changes.
+- **Profile picture:** the favicon creature at the top of the intro, 36px above the greeting (32px on phones), as on shedsgns.me. A 48px tile with a 12px radius, filled with the `line` tint, holds the creature peeking up from its bottom edge. The creature is `favicon.svg` used as a mask filled with `ink`, so tile and creature both follow the theme toggle rather than the OS setting.
 
 ## Shape and depth
 
 - No shadows anywhere.
-- Radius: the dock and its icons are fully round; the command menu is 12px. Nothing else has a radius.
+- Radius: the dock and its icons are fully round; the command menu and the profile picture tile are 12px. Nothing else has a radius.
 - No section dividers. The 1px `line` border is kept only on the dock, the command menu and code blocks, where it outlines a surface.
 
 ## Motion

@@ -5,7 +5,7 @@ import { Arrow, Section } from './List';
 export function Connect({ personalInfo, delay = 0 }: { personalInfo: PersonalInfo; delay?: number }) {
   return (
     <Section id="contact" title="connect" delay={delay}>
-      <p className="text-muted">
+      <p className="text-body">
         The quickest way to reach me is email: <EmailCopy email={personalInfo.email} />. My code lives on{' '}
         <a href={`https://github.com/${personalInfo.github}`} target="_blank" rel="noreferrer" className="group">
           <span className="link-line">GitHub</span>

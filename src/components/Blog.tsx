@@ -34,7 +34,7 @@ export function Blog({
         </ol>
       )}
       {showFeed && blogs.length > 0 && (
-        <p className="text-muted">
+        <p className="text-body">
           New posts also go out through the{" "}
           <a href={`${import.meta.env.BASE_URL}feed.xml`} className="group">
             <span className="link-line">RSS feed</span>

@@ -7,7 +7,9 @@
   /* Dark is the default: a neutral charcoal, lifted off pure black so long reading is easier on the eyes */
   --color-bg: #040404;
   --color-ink: #ececec;
-  --color-muted: #a3a3a3;
+  /* Body and muted are taken as-is from shedsgns.me: body for prose, muted for the greeting, labels, and dates */
+  --color-body: #b0b0b0;
+  --color-muted: #6e6e6e;
   --color-line: rgba(255, 255, 255, 0.08);
   --color-accent: #3B82F6;
 }
@@ -20,7 +22,8 @@
   color-scheme: light;
   --color-bg: #f6f7f9;
   --color-ink: #15171a;
-  --color-muted: #636872;
+  --color-body: #4f4f4f;
+  --color-muted: #9f9f9f;
   --color-line: rgba(0, 0, 0, 0.08);
   --color-accent: #2563EB;
 }
@@ -95,7 +98,7 @@
     transition: background-size 0.38s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  /* Focus by colour: pointing at one entry in an index turns the other titles muted (still AA) */
+  /* Focus by colour: pointing at one entry in an index turns the other titles muted */
   .focus-index .focus-title .link-line {
     transition: background-size 0.38s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s ease;
   }
