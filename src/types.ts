@@ -6,6 +6,8 @@ export interface Project {
   tech: string[];
   link?: string;
   demoUrl?: string;
+  /** Path under public/, e.g. "projects/nook.svg" */
+  logo?: string;
   date: string;
 }
 

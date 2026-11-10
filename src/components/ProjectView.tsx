@@ -27,7 +27,20 @@ export function ProjectView() {
 
       <Article
         index={`work / ${String(position + 1).padStart(2, '0')}`}
-        title={project.title}
+        title={
+          <span className="flex items-center gap-3.5">
+            {project.logo && (
+              <img
+                src={`${import.meta.env.BASE_URL}${project.logo}`}
+                alt=""
+                width={48}
+                height={48}
+                className="size-12 shrink-0"
+              />
+            )}
+            {project.title}
+          </span>
+        }
         meta={project.tech.join(', ')}
       >
         <ArticleSection>

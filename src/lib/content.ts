@@ -94,8 +94,9 @@ export const PROJECTS: Project[] = files(
   tech: Array.isArray(data.tech) ? data.tech : [],
   link: str(data.link) || undefined,
   demoUrl: str(data.demoUrl) || undefined,
+  logo: str(data.logo) || undefined,
   date: str(data.date),
-}));
+})).sort((a, b) => b.date.localeCompare(a.date)); // newest first (ISO dates)
 
 export const SKILL_GROUPS: SkillGroup[] = Object.values(
   import.meta.glob('/content/skills.md', { query: '?raw', import: 'default', eager: true }),

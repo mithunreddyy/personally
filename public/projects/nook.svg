@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <title>nook</title>
+  <!-- Redrawn from Sources/Nook/UI/AppIcon.swift (graphite style). -->
+  <rect x="100" y="100" width="824" height="824" rx="185.4" fill="#16181D"/>
+  <rect x="103.07" y="103.07" width="817.86" height="817.86" rx="182.3" fill="none" stroke="#3B4150" stroke-width="6.14"/>
+  <rect x="240.08" y="256.56" width="265.67" height="510.88" rx="24.47" fill="#7AA2F7"/>
+  <rect x="538.38" y="256.56" width="245.54" height="239.13" rx="24.47" fill="#2A2E37"/>
+  <rect x="538.38" y="528.32" width="245.54" height="239.13" rx="24.47" fill="#2A2E37"/>
+  <rect x="287.90" y="665.26" width="90.33" height="28.10" rx="14.05" fill="#16181D" fill-opacity="0.85"/>
+</svg>
