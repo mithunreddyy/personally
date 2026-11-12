@@ -5,7 +5,7 @@ import {defineConfig, loadEnv} from 'vite';
 import {feed} from './vite-plugin-feed';
 import {sitemap} from './vite-plugin-sitemap';
 
-export default defineConfig(({mode}) => {
+export default defineConfig(({mode, isSsrBuild}) => {
   const env = loadEnv(mode, '.', '');
   return {
     // Cloudflare serves from the domain root; the GitHub Pages backup (GITHUB_PAGES=true in its workflow) serves from /Portfolio/
@@ -14,7 +14,11 @@ export default defineConfig(({mode}) => {
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
     },
-    resolve: {
+    build: {
+ // The server build (scripts/prerender.mjs) only needs the render code, not a second copy of public/
+ copyPublicDir: !isSsrBuild,
+ },
+ resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
       },

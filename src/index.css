@@ -1,15 +1,16 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  /* Both faces are self-hosted (src/main.tsx, BlogPostView.tsx), so no third-party request sits in front of first paint */
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Dark is the default: a neutral charcoal, lifted off pure black so long reading is easier on the eyes */
   --color-bg: #040404;
   --color-ink: #ececec;
-  /* Body and muted are taken as-is from shedsgns.me: body for prose, muted for the greeting, labels, and dates */
+  /* Body is shedsgns.me's prose grey. Muted (greeting, labels, dates) is lifted from their #6e6e6e to pass AA at 4.8:1 */
   --color-body: #b0b0b0;
-  --color-muted: #6e6e6e;
+  --color-muted: #7a7a7a;
   --color-line: rgba(255, 255, 255, 0.08);
   --color-accent: #3B82F6;
 }
@@ -23,7 +24,7 @@
   --color-bg: #f6f7f9;
   --color-ink: #15171a;
   --color-body: #4f4f4f;
-  --color-muted: #9f9f9f;
+  --color-muted: #707070;
   --color-line: rgba(0, 0, 0, 0.08);
   --color-accent: #2563EB;
 }
@@ -153,9 +154,701 @@
   animation-delay: var(--appear-delay, 0ms);
 }
 
+/* The hero walker (Walker.tsx) walks in place while the path slides under him. A 0.55s step covers 19.9 units
+   (23.5-unit legs at 25deg), so the track and tufts move exactly that far and the planted foot holds still */
+.walker {
+  --step: 0.55s;
+  display: block;
+  width: 176px;
+  height: auto;
+  overflow: hidden;
+}
+
+.walker-ground {
+  stroke: var(--color-muted);
+}
+
+.walker-figure {
+  stroke: var(--color-ink);
+  animation: walker-bob var(--step) ease-in-out infinite;
+}
+
+.walker-limb,
+.walker-forearm,
+.walker-shin {
+  transform-box: view-box;
+}
+
+/* The far-side arm and leg sit back in half-tone, which is all the depth a stick figure needs */
+.walker-arm-b,
+.walker-leg-b {
+  opacity: 0.45;
+}
+
+.walker-arm-a,
+.walker-arm-b {
+  transform-origin: 60px 24px;
+}
+
+.walker-forearm {
+  transform-origin: 60px 33px;
+}
+
+.walker-leg-a,
+.walker-leg-b {
+  transform-origin: 60px 40px;
+}
+
+.walker-shin {
+  transform-origin: 60px 52px;
+}
+
+/* Resting pose, mid-stride: what reduced motion and print show */
+.walker-leg-a { transform: rotate(-18deg); }
+.walker-leg-b { transform: rotate(16deg); }
+.walker-leg-b .walker-shin { transform: rotate(10deg); }
+.walker-arm-a { transform: rotate(14deg); }
+.walker-arm-b { transform: rotate(-14deg); }
+.walker-forearm { transform: rotate(-12deg); }
+
+.walker-leg-a,
+.walker-leg-b {
+  animation: walker-thigh calc(var(--step) * 2) infinite;
+}
+
+.walker-shin {
+  animation: walker-shin calc(var(--step) * 2) infinite;
+}
+
+.walker-arm-a,
+.walker-arm-b {
+  animation: walker-arm calc(var(--step) * 2) ease-in-out infinite;
+}
+
+.walker-forearm {
+  animation: walker-forearm calc(var(--step) * 2) ease-in-out infinite;
+}
+
+/* The far side runs half a cycle behind the near side */
+.walker-leg-b,
+.walker-arm-b,
+.walker-leg-b .walker-shin,
+.walker-arm-b .walker-forearm {
+  animation-delay: calc(var(--step) * -1);
+}
+
+.walker-track {
+  animation: walker-track var(--step) linear infinite;
+}
+
+.walker-tufts {
+  animation: walker-tufts calc(var(--step) * 200 / 19.9) linear infinite;
+}
+
+.walker-paused * {
+  animation-play-state: paused;
+}
+
+/* Stance (0 to 50%) is linear so the planted foot moves back at exactly ground speed; the swing eases */
+@keyframes walker-thigh {
+  0% { transform: rotate(-25deg); animation-timing-function: linear; }
+  50% { transform: rotate(25deg); animation-timing-function: ease-in-out; }
+  100% { transform: rotate(-25deg); }
+}
+
+@keyframes walker-shin {
+  0% { transform: rotate(0deg); }
+  40% { transform: rotate(4deg); }
+  52% { transform: rotate(24deg); }
+  68% { transform: rotate(52deg); }
+  86% { transform: rotate(8deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes walker-arm {
+  0%, 100% { transform: rotate(22deg); }
+  50% { transform: rotate(-22deg); }
+}
+
+@keyframes walker-forearm {
+  0%, 100% { transform: rotate(-6deg); }
+  50% { transform: rotate(-26deg); }
+}
+
+@keyframes walker-bob {
+  0%, 100% { transform: translateY(0.7px); }
+  50% { transform: translateY(-0.7px); }
+}
+
+@keyframes walker-track {
+  to { stroke-dashoffset: 19.9; }
+}
+
+@keyframes walker-tufts {
+  to { transform: translateX(-200px); }
+}
+
+@media (max-width: 720px) {
+  .walker {
+    width: 160px;
+  }
+}
+
+/* His sky follows Hyderabad's clock (Walker.tsx): a sun by day and his shadow falling away from it; a
+   moon, a few stars and a lantern in his hand by night. All in ink, so it holds in both themes */
+.walker-sun,
+.walker-lantern {
+  stroke: var(--color-ink);
+}
+
+.walker-moon,
+.walker-flame,
+.walker-star {
+  fill: var(--color-ink);
+  stroke: none;
+}
+
+.walker-star {
+  opacity: 0.6;
+}
+
+/* Every third star twinkles, slowly and out of step with the others */
+.walker-star-twinkle {
+  animation: walker-twinkle 3.6s ease-in-out infinite;
+}
+
+@keyframes walker-twinkle {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 0.15; }
+}
+
+.walker-shadow {
+  stroke: var(--color-muted);
+  opacity: 0.45;
+}
+
+/* After 40 seconds without input he sits on a stone, elbows on his knees and chin in his hand. The path
+   stops with him. Walker.tsx eases him into and out of the pose from wherever his stride was */
+.walker-stone {
+  stroke: var(--color-muted);
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+}
+
+.walker-resting .walker-stone {
+  opacity: 1;
+}
+
+.walker-resting .walker-figure,
+.walker-resting .walker-limb,
+.walker-resting .walker-forearm,
+.walker-resting .walker-shin {
+  animation: none;
+}
+
+.walker-resting .walker-track,
+.walker-resting .walker-tufts,
+.walker-resting .walker-star-twinkle,
+.walker-standing .walker-figure,
+.walker-standing .walker-limb,
+.walker-standing .walker-forearm,
+.walker-standing .walker-shin,
+.walker-standing .walker-track,
+.walker-standing .walker-tufts {
+  animation-play-state: paused;
+}
+
+.walker-resting .walker-figure { transform: translateY(18px); }
+.walker-resting .walker-leg-a { transform: rotate(-100deg); }
+.walker-resting .walker-leg-a .walker-shin { transform: rotate(58deg); }
+.walker-resting .walker-leg-b { transform: rotate(-92deg); }
+.walker-resting .walker-leg-b .walker-shin { transform: rotate(52deg); }
+.walker-resting .walker-arm-a { transform: rotate(-45deg); }
+.walker-resting .walker-arm-a .walker-forearm { transform: rotate(-158deg); }
+.walker-resting .walker-arm-b { transform: rotate(-58deg); }
+.walker-resting .walker-arm-b .walker-forearm { transform: rotate(30deg); }
+
+/* Tapping the walker (Walker.tsx) stops him mid-stride: legs, ground and the far arm hold where they are,
+   and the near arm comes up to wave. With reduced motion the arm simply stays raised */
+.walker-button {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.walker-waving .walker-figure,
+.walker-waving .walker-leg-a,
+.walker-waving .walker-leg-b,
+.walker-waving .walker-shin,
+.walker-waving .walker-arm-b,
+.walker-waving .walker-arm-b .walker-forearm,
+.walker-waving .walker-track,
+.walker-waving .walker-tufts {
+  animation-play-state: paused;
+}
+
+.walker-waving .walker-arm-a {
+  transform: rotate(-122deg);
+  animation: walker-wave 0.3s ease-in-out infinite alternate;
+}
+
+.walker-waving .walker-arm-a .walker-forearm {
+  transform: rotate(-30deg);
+  animation: walker-wave-hand 0.3s ease-in-out infinite alternate;
+}
+
+/* The arm lifts forward and out beside the head, never across the face; the hand does the waving */
+@keyframes walker-wave {
+  from { transform: rotate(-114deg); }
+  to { transform: rotate(-130deg); }
+}
+
+@keyframes walker-wave-hand {
+  from { transform: rotate(-12deg); }
+  to { transform: rotate(-48deg); }
+}
+
+/* The same walker on the 404 page (LostWalker.tsx): stopped where the path breaks off, scratching his
+   head in short bursts, a question mark rising and fading over him */
+.lost-figure {
+  animation: none;
+}
+
+.lost-head,
+.lost-scratch {
+  transform-box: view-box;
+}
+
+.lost-head {
+  transform-origin: 96px 25px;
+  animation: lost-tilt 3.2s ease-in-out infinite;
+}
+
+.lost-scratch {
+  transform-origin: 104px 24px;
+  animation: lost-scratch 2.4s ease-in-out infinite;
+}
+
+.lost-question {
+  fill: var(--color-ink);
+  stroke: none;
+  font-family: var(--font-sans);
+  animation: lost-question 3.2s ease-in-out infinite;
+}
+
+@keyframes lost-tilt {
+  0%, 100% { transform: rotate(0deg); }
+  45%, 70% { transform: rotate(-8deg); }
+}
+
+@keyframes lost-scratch {
+  0%, 40%, 100% { transform: rotate(0deg); }
+  8%, 24% { transform: rotate(-16deg); }
+  16%, 32% { transform: rotate(4deg); }
+}
+
+@keyframes lost-question {
+  0%, 15% { opacity: 0; transform: translateY(3px); }
+  35%, 75% { opacity: 1; transform: none; }
+  95%, 100% { opacity: 0; transform: translateY(-2px); }
+}
+
+/* The reading path on blog posts (ReadingPath.tsx): pinned to the top of the screen once the title has
+   scrolled away, lined up with the reading column, on a band of bg that fades out below the path */
+.reading-path {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  padding-top: max(14px, env(safe-area-inset-top));
+  padding-bottom: 22px;
+  background: linear-gradient(var(--color-bg) calc(100% - 18px), transparent);
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition: opacity 0.35s ease-out, transform 0.35s ease-out;
+}
+
+.reading-path[data-on] {
+  opacity: 1;
+  transform: none;
+}
+
+.reading-path-track {
+  position: relative;
+  width: min(540px, calc(100% - 60px));
+  height: 44px;
+  margin: 0 auto;
+  /* The path comes in from nothing on the left, like the hero's */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 7%);
+  mask-image: linear-gradient(to right, transparent, #000 7%);
+}
+
+/* On phones the track stops short of the theme toggle in the top-right corner */
+@media (max-width: 720px) {
+  .reading-path-track {
+    width: auto;
+    margin: 0 58px 0 32px;
+  }
+}
+
+.reading-path-line,
+.reading-path-dashes {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+
+.reading-path-line {
+  bottom: 1px;
+  background: var(--color-muted);
+}
+
+.reading-path-dashes {
+  bottom: -4px;
+  background: repeating-linear-gradient(90deg, var(--color-muted) 0 5px, transparent 5px 15px);
+  opacity: 0.6;
+}
+
+.reading-path-marker {
+  position: absolute;
+  bottom: 2px;
+  width: 1px;
+  height: 5px;
+  background: var(--color-muted);
+}
+
+.reading-walker {
+  /* The hero's step length in time; his walk cycle is measured in it (see .walker) */
+  --step: 0.55s;
+  position: absolute;
+  left: 0;
+  bottom: 1px;
+  width: 21px;
+  height: 40px;
+  transition: opacity 0.3s ease-out;
+}
+
+.reading-walker svg {
+  display: block;
+  overflow: visible;
+}
+
+/* The hero's stride, held paused: ReadingPath.tsx sets its time from how far he has walked */
+.reading-walker .walker-figure,
+.reading-walker .walker-limb,
+.reading-walker .walker-forearm,
+.reading-walker .walker-shin {
+  animation-play-state: paused;
+}
+
+/* Each step leaves a small print on the path that fades behind him */
+.reading-prints {
+  position: absolute;
+  inset: 0;
+}
+
+.reading-print {
+  position: absolute;
+  bottom: 1px;
+  width: 3px;
+  height: 1.5px;
+  border-radius: 1px;
+  background: var(--color-ink);
+  animation: reading-print 2.4s ease-out forwards;
+}
+
+@keyframes reading-print {
+  from { opacity: 0.7; }
+  to { opacity: 0; }
+}
+
+/* Scrolling back up turns him round to face where he came from */
+.reading-walker-back svg {
+  transform: scaleX(-1);
+}
+
+.reading-park {
+  position: absolute;
+  right: 0;
+  bottom: 1px;
+  overflow: visible;
+}
+
+.reading-park-iron {
+  stroke: var(--color-muted);
+}
+
+.reading-lamp-bulb {
+  fill: none;
+  stroke: var(--color-muted);
+  stroke-width: 1;
+  transition: fill 0.4s ease-out, stroke 0.4s ease-out;
+}
+
+.reading-lamp-light {
+  stroke: var(--color-ink);
+  opacity: 0;
+  transition: opacity 0.6s ease-out 0.2s;
+}
+
+.reading-seated {
+  stroke: var(--color-ink);
+  opacity: 0;
+}
+
+/* Arriving: he turns round to face back along the path, then sits; the seated figure settles onto the bench */
+.reading-walker svg {
+  transition: transform 0.18s ease-out;
+}
+
+.reading-path[data-done] .reading-walker {
+  opacity: 0;
+  transition: opacity 0.2s ease-out 0.22s;
+}
+
+.reading-path[data-done] .reading-walker svg {
+  transform: scaleX(-1);
+}
+
+.reading-seated {
+  transform: translateY(-3px);
+  transition: opacity 0.3s ease-out 0.34s, transform 0.4s cubic-bezier(0.3, 1.4, 0.6, 1) 0.34s;
+}
+
+.reading-path[data-done] .reading-seated {
+  opacity: 1;
+  transform: none;
+}
+
+.reading-path[data-done] .reading-lamp-light {
+  opacity: 0.55;
+}
+
+.reading-path[data-done] .reading-lamp-bulb {
+  fill: var(--color-ink);
+  stroke: var(--color-ink);
+}
+
+/* Settled with his book, he idly swings the crossed foot */
+.reading-foot {
+  transform-box: view-box;
+  transform-origin: 27.4px 26.6px;
+}
+
+.reading-path[data-done] .reading-foot {
+  animation: reading-foot 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes reading-foot {
+  from { transform: rotate(-6deg); }
+  to { transform: rotate(10deg); }
+}
+
+/* Status pill (Island.tsx), in the spirit of the Dynamic Island: an ink capsule that inverts with the theme,
+   grows in from the top edge on a slight spring, holds, and folds back */
+.island-anchor {
+  position: fixed;
+  top: max(10px, env(safe-area-inset-top));
+  left: 0;
+  right: 0;
+  z-index: 60;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.island {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100vw - 32px);
+  padding: 8px 15px 8px 12px;
+  border-radius: 999px;
+  background: var(--color-ink);
+  color: var(--color-bg);
+  font-size: 13px;
+  line-height: 18px;
+  transform-origin: 50% 0;
+  animation: island-in 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+.island span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* The hand in the greeting waves twice, in time with the walker's arm */
+.island-hand {
+  transform-origin: 70% 85%;
+  animation: island-hand 0.3s ease-in-out 4 alternate 0.15s;
+}
+
+@keyframes island-hand {
+  from { transform: rotate(-12deg); }
+  to { transform: rotate(14deg); }
+}
+
+.island-folding {
+  animation: island-out 0.26s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+@keyframes island-in {
+  from { opacity: 0; transform: scale(0.35, 0.5); }
+  50% { opacity: 1; }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes island-out {
+  to { opacity: 0; transform: scale(0.5, 0.6); }
+}
+
+/* Keycaps for the shortcuts line: a raised lower edge like a real key, which flattens while that key
+   is held, so the reader sees which shortcut registered */
+.keycap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.65em;
+  height: 1.5em;
+  margin: 0 0.1em;
+  padding: 0 0.4em;
+  border: 1px solid color-mix(in srgb, var(--color-ink) 20%, transparent);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--color-ink) 5%, transparent);
+  color: var(--color-ink);
+  font: 500 12px/1 var(--font-sans);
+  vertical-align: 0.1em;
+  transition: transform 0.08s ease-out, border-bottom-width 0.08s ease-out, background-color 0.08s ease-out;
+}
+
+.keycap[data-pressed] {
+  transform: translateY(1px);
+  border-bottom-width: 1px;
+  background: color-mix(in srgb, var(--color-ink) 12%, transparent);
+}
+
+/* Glass for the two floating controls, the dock and the command menu, and nowhere in the content:
+   the page blurs and shows through, so the controls sit above the words without hiding them */
+.dock-glass,
+.palette-glass {
+  border: 1px solid var(--color-line);
+  background: color-mix(in srgb, var(--color-bg) 68%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(1.6);
+  backdrop-filter: blur(22px) saturate(1.6);
+}
+
+.palette-glass {
+  background: color-mix(in srgb, var(--color-bg) 80%, transparent);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .dock-glass,
+  .palette-glass {
+    background: var(--color-bg);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .dock-glass,
+  .palette-glass {
+    background: var(--color-bg);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Dock items swell toward a mouse pointer (--mag is set in Shell.tsx) and grow from their base, as
+   in the macOS Dock. The press is a separate inner scale so it never fights the magnification */
+.dock-item {
+  transform-origin: 50% 100%;
+  transform: translateY(calc((var(--mag, 1) - 1) * -8px)) scale(var(--mag, 1));
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.dock-glyph {
+  transition: background-color 0.15s ease-out, transform 0.12s ease-out;
+}
+
+.dock-item:hover .dock-glyph {
+  background: color-mix(in srgb, var(--color-ink) 7%, transparent);
+}
+
+.dock-item:active .dock-glyph {
+  transform: scale(0.9);
+}
+
+/* Each dock icon's name, shown above it on hover or keyboard focus. It scales back against the
+   magnification so the text stays its own size */
+.dock-label {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  translate: -50% 4px;
+  scale: calc(1 / var(--mag, 1));
+  transform-origin: 50% 100%;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--color-ink);
+  color: var(--color-bg);
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease-out, translate 0.2s ease-out;
+}
+
+@media (hover: hover) {
+  .dock-item:hover .dock-label {
+    opacity: 1;
+    translate: -50% 0;
+  }
+}
+
+.dock-item:focus-visible .dock-label {
+  opacity: 1;
+  translate: -50% 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .appear {
     animation: none;
+  }
+
+  .walker * {
+    animation: none !important;
+  }
+
+  .island,
+  .island-folding,
+  .island-hand,
+  .reading-walker *,
+  .reading-foot {
+    animation: none !important;
+  }
+
+  .reading-walker svg,
+  .reading-seated {
+    transition: none;
+  }
+
+  .dock-item {
+    transform: none;
+    transition: none;
+  }
+
+  .keycap,
+  .dock-glyph,
+  .dock-label {
+    transition: none;
   }
 
   .link-line,
@@ -248,6 +941,10 @@ pre::-webkit-scrollbar-thumb:hover {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  .walker * {
+    animation: none !important;
   }
 
   .link-line {

@@ -14,16 +14,17 @@ interface PaletteCommand {
   keepOpen?: boolean;
 }
 
-export function CommandPalette() {
+/** Loaded on the first ⌘K (see PaletteLoader in Shell.tsx), so it opens straight away and returns focus to `returnFocus` */
+export function CommandPalette({ defaultOpen = false, returnFocus = null }: { defaultOpen?: boolean; returnFocus?: HTMLElement | null }) {
   const personalInfo = PERSONAL_INFO;
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   const [search, setSearch] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
   const [emailCopied, setEmailCopied] = useState(false);
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { theme } = useTheme();
-  const returnFocusRef = useRef<HTMLElement | null>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(returnFocus);
 
   // Reset state and remember the trigger when opening; restore focus when closing
   const openPalette = useCallback(() => {
@@ -152,7 +153,7 @@ export function CommandPalette() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full max-w-[440px] bg-bg border border-line rounded-xl overflow-hidden text-[15px] leading-[23px]"
+            className="palette-glass relative w-full max-w-[440px] rounded-xl overflow-hidden text-[15px] leading-[23px]"
           >
             <div className="flex items-center gap-3 px-4 py-3 border-b border-line">
               <input

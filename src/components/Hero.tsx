@@ -5,8 +5,11 @@ import { toggleTheme } from '../hooks/useTheme';
 
 import { PersonalInfo } from '../types';
 import { appear, Arrow } from './List';
+import { announce } from './Island';
+import { Walker } from './Walker';
 
 const FLAG = '🇮🇳';
+const SHORTCUT_KEYS = ['m', 'v', 'd', 't'];
 const HOME_ZONE = 'Asia/Kolkata';
 const HOME_CITY = 'India';
 
@@ -20,12 +23,16 @@ function greeting(hour: number) {
   return 'hello';
 }
 
+// Null until the page is running in a browser: the prerendered HTML is built ahead of time, so it must not
+// carry a time of its own, and the first browser render has to match it before the clock fills in
 function useHomeClock() {
-  const [now, setNow] = useState(() => new Date());
+  const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
+    setNow(new Date());
     const timer = window.setInterval(() => setNow(new Date()), 15_000);
     return () => window.clearInterval(timer);
   }, []);
+  if (!now) return null;
   const time = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: HOME_ZONE });
   return { hello: greeting(Number(time.slice(0, 2))), time };
 }
@@ -40,32 +47,50 @@ export function downloadResume(url: string) {
 }
 
 export function Hero({ personalInfo }: { personalInfo: PersonalInfo }) {
-  const { hello, time } = useHomeClock();
-  const [emailCopied, setEmailCopied] = useState(false);
-
-  useEffect(() => {
-    if (!emailCopied) return;
-    const timer = setTimeout(() => setEmailCopied(false), 2000);
-    return () => clearTimeout(timer);
-  }, [emailCopied]);
+  const clock = useHomeClock();
+  // The keycap of the shortcut being held down, so its cap visibly presses in
+  const [pressed, setPressed] = useState<string | null>(null);
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
 
       const key = e.key.toLowerCase();
+      if (!SHORTCUT_KEYS.includes(key)) return;
+      setPressed(key);
+      if (e.repeat) return;
       if (key === 'm') {
         // Only confirm once the clipboard accepts it, so nothing false is claimed
-        navigator.clipboard?.writeText(personalInfo.email).then(() => setEmailCopied(true), () => {});
-      } else if (key === 't') toggleTheme();
-      else if (key === 'v') window.open(personalInfo.resumeUrl, '_blank');
-      else if (key === 'd') downloadResume(personalInfo.resumeUrl);
+        navigator.clipboard?.writeText(personalInfo.email).then(() => announce(`Copied ${personalInfo.email}`), () => {});
+      } else if (key === 't') {
+        toggleTheme();
+        announce(document.documentElement.getAttribute('data-theme') === 'light' ? 'Light appearance' : 'Dark appearance');
+      } else if (key === 'v') {
+        // A blocked popup returns null; only claim the tab opened if it did
+        if (window.open(personalInfo.resumeUrl, '_blank')) announce('Resume opened in a new tab');
+      } else if (key === 'd') {
+        downloadResume(personalInfo.resumeUrl);
+        announce('Resume downloading');
+      }
     };
+    const release = () => setPressed(null);
     window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
+    window.addEventListener('keyup', release);
+    window.addEventListener('blur', release);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+      window.removeEventListener('keyup', release);
+      window.removeEventListener('blur', release);
+    };
   }, [personalInfo.email, personalInfo.resumeUrl]);
+
+  const cap = (key: string, label = key.toUpperCase()) => (
+    <kbd className="keycap" data-pressed={pressed === key || undefined}>
+      {label}
+    </kbd>
+  );
 
   const firstName = (personalInfo.name || '').split(' ')[0];
   const summary = personalInfo.summary || '';
@@ -76,25 +101,19 @@ export function Hero({ personalInfo }: { personalInfo: PersonalInfo }) {
     <section id="hero" aria-label="Introduction" className="flex flex-col gap-3 pb-10 max-[720px]:gap-2.5">
       <h1 className="sr-only">{personalInfo.name}, {personalInfo.role}</h1>
 
-      {/* The favicon creature as the profile picture, masked to ink so it follows the theme toggle, not the OS scheme.
-          It peeks up from the bottom of a line-tinted tile, as it does from the bottom of the browser tab */}
-      <span aria-hidden="true" className="appear block w-12 h-12 mb-6 rounded-2xl bg-line max-[720px]:mb-6">
-        <span
-          className="block w-full h-full bg-ink"
-          style={{
-            maskImage: `url(${import.meta.env.BASE_URL}favicon.svg)`,
-            WebkitMaskImage: `url(${import.meta.env.BASE_URL}favicon.svg)`,
-            maskSize: 'contain',
-            WebkitMaskSize: 'contain',
-            maskRepeat: 'no-repeat',
-            WebkitMaskRepeat: 'no-repeat',
-          }}
-        />
-      </span>
+      {/* Decorative: the sr-only h1 above carries the name */}
+      <Walker className="self-start mb-3" />
 
       {/* 14px from the greeting to the intro, 12px between paragraphs (12 and 10 on phones) */}
       <p className="appear text-muted mb-1" style={appear(20)}>
-        {hello} from {HOME_CITY}, where it's <time className="tabular-nums">{time}</time>
+        {/* A non-breaking space holds the line's height until the clock arrives, so nothing below shifts */}
+        {clock ? (
+          <>
+            {clock.hello} from {HOME_CITY}, where it's <time className="tabular-nums">{clock.time}</time>
+          </>
+        ) : (
+          '\u00a0'
+        )}
       </p>
 
       <p className="appear text-body" style={appear(40)}>
@@ -120,14 +139,8 @@ export function Hero({ personalInfo }: { personalInfo: PersonalInfo }) {
       </p>
 
       <p className="appear hidden sm:block text-body" style={appear(120)}>
-        Shortcuts: <kbd className="font-sans text-ink">M</kbd> copies my email,{' '}
-        <kbd className="font-sans text-ink">V</kbd> opens the resume,{' '}
-        <kbd className="font-sans text-ink">D</kbd> downloads it,{' '}
-        <kbd className="font-sans text-ink">T</kbd> switches the theme, and{' '}
-        <kbd className="font-sans text-ink">⌘K</kbd> opens everything else.{' '}
-        <span role="status" className="text-ink">
-          {emailCopied ? `Copied ${personalInfo.email}.` : ''}
-        </span>
+        Shortcuts: {cap('m')} copies my email, {cap('v')} opens the resume, {cap('d')} downloads it,{' '}
+        {cap('t')} switches the theme, and <kbd className="keycap">⌘K</kbd> opens everything else.
       </p>
     </section>
   );

@@ -9,6 +9,8 @@ const listeners = new Set<() => void>();
 
 // Dark is the default; only an explicit earlier choice of light overrides it
 function readStoredTheme(): Theme {
+  // The build's prerender has no visitor and no stored choice
+  if (typeof window === 'undefined') return 'dark';
   try {
     return localStorage.getItem(STORAGE_KEY) === 'light' ? 'light' : 'dark';
   } catch {

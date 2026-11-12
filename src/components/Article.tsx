@@ -93,7 +93,8 @@ export function Article({
         <p className="text-muted">{meta}</p>
       </header>
 
-      <div className="appear flex flex-col gap-10 pb-7 min-w-0 max-w-full" style={appear(80)}>
+      {/* data-reading marks the body that the blog's ReadingPath measures progress against */}
+      <div data-reading className="appear flex flex-col gap-10 pb-7 min-w-0 max-w-full" style={appear(80)}>
         {children}
       </div>
     </>

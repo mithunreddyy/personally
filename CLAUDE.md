@@ -5,7 +5,7 @@ Personal portfolio for Mithun Reddy: case studies, an editorial blog, and a live
 ## Commands
 
 - `npm run dev`: dev server on port 3000
-- `npm run build`: production build
+- `npm run build`: production build, then `scripts/prerender.mjs` renders every route to its own HTML file (with its head tags), a real `404.html`, `llms.txt`, and the service worker `sw.js` from `scripts/sw.template.js`
 - `npm run lint`: type check (`tsc --noEmit`)
 - Deploy: `npm run deploy` builds and publishes to https://mithun.fyi as a Cloudflare Worker with static assets (`wrangler.jsonc`, `worker/index.ts` sends www to the bare domain). Run `npx wrangler login` once first. GitHub Pages backup publishes to https://mithunreddyy.github.io/Portfolio/. Production builds use `import.meta.env.BASE_URL` to reference public assets.
 

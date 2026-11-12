@@ -9,7 +9,7 @@ tech:
   - "FFmpeg"
   - "Swift Package Manager"
 link: "https://github.com/mithunreddyy/dropster"
-logo: "projects/dropster.png"
+logo: "projects/dropster.webp"
 ---
 
 - Built a native macOS app that compresses and converts images, video, audio, PDFs, and documents on the device. Files are never uploaded.

@@ -1,5 +1,5 @@
 import { MotionConfig } from 'motion/react';
-import { Suspense, lazy, useEffect } from 'react';
+import { ReactNode, Suspense, lazy, useEffect } from 'react';
 import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
 import { Blog } from './components/Blog';
 import { Connect } from './components/Connect';
@@ -40,12 +40,14 @@ function Portfolio() {
   );
 }
 
-export default function App() {
+/** Everything inside the router. The browser wraps it in BrowserRouter (App below); the build's
+    prerender (src/entry-server.tsx) wraps the same tree in a StaticRouter, so both render identical markup */
+export function Site({ router }: { router: (children: ReactNode) => ReactNode }) {
   return (
     // "user" honors the OS reduced-motion setting for every Motion animation
     <MotionConfig reducedMotion="user">
       <ErrorBoundary>
-        <Router basename={import.meta.env.BASE_URL}>
+        {router(
           <div className="min-h-screen bg-bg text-ink relative selection:bg-accent/20 selection:text-ink">
             <Shell>
               <Suspense fallback={<p className="text-muted" role="status">Loading the page</p>}>
@@ -58,10 +60,13 @@ export default function App() {
                 </Routes>
               </Suspense>
             </Shell>
-          </div>
-        </Router>
+          </div>,
+        )}
       </ErrorBoundary>
     </MotionConfig>
   );
 }
 
+export default function App() {
+  return <Site router={children => <Router basename={import.meta.env.BASE_URL}>{children}</Router>} />;
+}

@@ -6,20 +6,23 @@ import { CvSection } from '../types';
 import { EmailCopy } from './EmailCopy';
 import { ExperienceSection, Skills } from './Experience';
 import { downloadResume } from './Hero';
-import { appear, CollapsibleSection, Entry, Section } from './List';
+import { CollapsibleSection } from './CollapsibleSection';
+import { appear, Entry, Section } from './List';
 import { SEO } from './SEO';
 
 const HOME_ZONE = 'Asia/Kolkata';
 
+// Empty until mounted, so the prerendered page carries no build-time clock (see useHomeClock in Hero.tsx)
 function useSecondsClock() {
-  const [now, setNow] = useState(() => new Date());
+  const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
+    setNow(new Date());
     const timer = window.setInterval(() => setNow(new Date()), 1000);
     return () => window.clearInterval(timer);
   }, []);
   return now
-    .toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', timeZone: HOME_ZONE })
-    .toLowerCase();
+    ?.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', timeZone: HOME_ZONE })
+    .toLowerCase() ?? '';
 }
 
 function Entries({ section }: { section?: CvSection }) {

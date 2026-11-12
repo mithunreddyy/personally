@@ -1,3 +1,6 @@
+import "@fontsource-variable/inter/opsz-italic.css";
+import "@fontsource/geist-mono/latin-400.css";
+import "@fontsource/geist-mono/latin-500.css";
 import { Check, Copy } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -7,6 +10,7 @@ import { formatPostDate } from "../lib/utils";
 import { Article, ArticleSection } from "./Article";
 import { Blog } from "./Blog";
 import { NotFound } from "./NotFound";
+import { ReadingPath } from "./ReadingPath";
 import { SEO } from "./SEO";
 
 /* Content parser */
@@ -249,7 +253,7 @@ function CodeBlock({ language, code }: { language?: string; code: string }) {
   return (
     <div className="my-5 w-full max-w-full min-w-0 rounded-lg border border-line bg-ink/[0.03] overflow-hidden text-[14px] leading-[23px] max-[540px]:text-[13px] max-[540px]:leading-[21px] font-mono">
       <div className="flex items-center justify-between px-3.5 py-1.5 border-b border-line text-[12px] text-muted select-none">
-        <span className="font-mono text-muted/80">{language || "code"}</span>
+        <span className="font-mono text-muted">{language || "code"}</span>
         <button
           type="button"
           onClick={copy}
@@ -373,14 +377,20 @@ export function BlogPostView() {
           "@type": "BlogPosting",
           headline: post.title,
           description: post.excerpt,
-          author: { "@type": "Person", name: "Mithun Reddy" },
+          author: { "@type": "Person", "@id": "https://mithun.fyi/#person", name: "Mithun Reddy", url: "https://mithun.fyi" },
           datePublished: post.date,
+          dateModified: post.date,
+          image: "https://mithun.fyi/og-image.png",
+          url: `https://mithun.fyi/blog/${post.slug}`,
+          inLanguage: "en",
           mainEntityOfPage: {
             "@type": "WebPage",
             "@id": `https://mithun.fyi/blog/${post.slug}`,
           },
         }}
       />
+
+      <ReadingPath />
 
       <Article
         index={issue}
