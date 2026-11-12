@@ -95,6 +95,10 @@ export const PROJECTS: Project[] = files(
   link: str(data.link) || undefined,
   demoUrl: str(data.demoUrl) || undefined,
   logo: str(data.logo) || undefined,
+  outcome: str(data.outcome) || undefined,
+  media: str(data.media) || undefined,
+  mediaAlt: str(data.mediaAlt) || undefined,
+  mediaSize: str(data.mediaSize) || undefined,
   date: str(data.date),
 })).sort((a, b) => b.date.localeCompare(a.date)); // newest first (ISO dates)
 

@@ -43,14 +43,18 @@ export function Article({
   title,
   meta,
   toc = [],
+  variant = 'post',
   children,
 }: {
   index: string;
   title: ReactNode;
   meta: ReactNode;
   toc?: TocItem[];
+  /** A case study (/work/:slug) gets a type scale of its own: larger title, lead and labels */
+  variant?: 'post' | 'case';
   children: ReactNode;
 }) {
+  const kase = variant === 'case' || undefined;
   const active = useActiveHeading(toc.map(t => t.id));
 
   return (
@@ -88,13 +92,13 @@ export function Article({
         )}
       </nav>
 
-      <header className="appear flex flex-col gap-1.5 pb-7" style={appear(0)}>
+      <header data-case={kase} className="appear flex flex-col gap-1.5 pb-7" style={appear(0)}>
         <h1 className="text-ink font-normal">{title}</h1>
         <p className="text-muted">{meta}</p>
       </header>
 
       {/* data-reading marks the body that the blog's ReadingPath measures progress against */}
-      <div data-reading className="appear flex flex-col gap-10 pb-7 min-w-0 max-w-full" style={appear(80)}>
+      <div data-reading data-case={kase} className="appear flex flex-col gap-10 pb-7 min-w-0 max-w-full" style={appear(80)}>
         {children}
       </div>
     </>

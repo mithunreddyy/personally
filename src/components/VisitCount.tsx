@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+
+import { useHyderabadWeather } from '../lib/weather';
 import { appear } from './List';
 
 const COUNTED_KEY = 'visit-counted';
@@ -32,11 +34,24 @@ function useVisitTotal() {
 
 export function VisitCount({ delay = 0 }: { delay?: number }) {
   const total = useVisitTotal();
+  // The walker's weather comes from Open-Meteo, whose licence asks for a credit wherever it is shown
+  const weather = useHyderabadWeather();
 
   return (
     // The line keeps its height while loading, so nothing jumps when the number arrives
-    <footer className="appear min-h-5 text-[10.5px] min-[721px]:text-[11px] leading-5 tracking-[0.02em] text-muted tabular-nums" style={appear(delay)}>
-      {total !== null && `${total.toLocaleString('en-US')} ${total === 1 ? 'visit' : 'visits'}`}
+    <footer
+      className="appear min-h-5 flex flex-wrap gap-x-3 text-[10.5px] min-[721px]:text-[11px] leading-5 tracking-[0.02em] text-muted tabular-nums"
+      style={appear(delay)}
+    >
+      {total !== null && <span>{`${total.toLocaleString('en-US')} ${total === 1 ? 'visit' : 'visits'}`}</span>}
+      {weather && (
+        <span>
+          Weather from{' '}
+          <a href="https://open-meteo.com/" target="_blank" rel="noreferrer" className="link-line">
+            Open-Meteo
+          </a>
+        </span>
+      )}
     </footer>
   );
 }

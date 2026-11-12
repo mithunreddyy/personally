@@ -4,14 +4,15 @@ import { Link } from 'react-router-dom';
 import { toggleTheme } from '../hooks/useTheme';
 
 import { PersonalInfo } from '../types';
-import { appear, Arrow } from './List';
 import { announce } from './Island';
+import { appear, Arrow } from './List';
 import { Walker } from './Walker';
 
 const FLAG = '🇮🇳';
-const SHORTCUT_KEYS = ['m', 'v', 'd', 't'];
+// I is handled by the inspector loader in Shell.tsx; it's listed here so its keycap presses in too
+const SHORTCUT_KEYS = ['m', 'v', 'd', 't', 'i'];
 const HOME_ZONE = 'Asia/Kolkata';
-const HOME_CITY = 'India';
+const HOME_CITY = 'hyderabad, india';
 
 // Greets by the hour in Hyderabad so it agrees with the clock beside it; late night gets a plain hello
 function greeting(hour: number) {
@@ -109,7 +110,11 @@ export function Hero({ personalInfo }: { personalInfo: PersonalInfo }) {
         {/* A non-breaking space holds the line's height until the clock arrives, so nothing below shifts */}
         {clock ? (
           <>
-            {clock.hello} from {HOME_CITY}, where it's <time className="tabular-nums">{clock.time}</time>
+            {/* "where it's 19:42" stays on one line, so a narrow screen breaks before it, never inside it */}
+            {clock.hello} from {HOME_CITY},{' '}
+            <span className="whitespace-nowrap">
+              where it's <time className="tabular-nums">{clock.time}</time>
+            </span>
           </>
         ) : (
           '\u00a0'
@@ -140,7 +145,8 @@ export function Hero({ personalInfo }: { personalInfo: PersonalInfo }) {
 
       <p className="appear hidden sm:block text-body" style={appear(120)}>
         Shortcuts: {cap('m')} copies my email, {cap('v')} opens the resume, {cap('d')} downloads it,{' '}
-        {cap('t')} switches the theme, and <kbd className="keycap">⌘K</kbd> opens everything else.
+        {cap('t')} switches the theme, {cap('i')} inspects the design, and <kbd className="keycap">⌘K</kbd> opens everything
+        else.
       </p>
     </section>
   );

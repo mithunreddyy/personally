@@ -2,6 +2,7 @@
 date: "2026-11-10"
 title: "dropster"
 summary: "Compress and convert files on macOS, without uploading them."
+outcome: "Its JPEGs come out 13 to 34% smaller than Apple's own encoder at the same quality, measured with SSIM."
 tech:
   - "Swift"
   - "PDFKit"

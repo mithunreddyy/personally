@@ -13,6 +13,9 @@
   --color-muted: #7a7a7a;
   --color-line: rgba(255, 255, 255, 0.08);
   --color-accent: #3B82F6;
+  /* Inspect mode only (Inspector.tsx): Figma-style redlines. 4.8:1 behind white chip text, and over 3:1
+     as a line against both page backgrounds, so it is the same in both themes */
+  --color-redline: #D92D20;
 }
 
 :root {
@@ -958,4 +961,389 @@ pre::-webkit-scrollbar-thumb:hover {
     break-inside: avoid;
     page-break-inside: avoid;
   }
+}
+
+/* Games (src/components/games): the whole stage is the control. It is the one thing on the page that
+   leaves the reading column (owner request, November 2026): on tablets and desktops it widens to 820px,
+   centred on the column, and on phones it runs to the screen edges, so the scene has room. Its shape is
+   reserved by aspect ratio so the prerendered page doesn't shift when the canvas draws. Touch is fully
+   captured on the stage, so a held finger that wobbles stays a hold instead of turning into a scroll;
+   the page still scrolls from the text above and below it */
+.game {
+  container-type: inline-size;
+}
+
+.game-stage {
+  --stage-width: min(820px, calc(100vw - 64px));
+  display: block;
+  width: var(--stage-width);
+  max-width: none;
+  margin-inline: calc((100% - var(--stage-width)) / 2);
+  aspect-ratio: 100 / 34;
+  min-height: 170px;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.game-stage-tall {
+  aspect-ratio: 100 / 46;
+  min-height: 220px;
+}
+
+/* Free kick shows the whole pitch while aiming, so its view is set by width: a wider, shorter stage */
+.game-stage-wide {
+  aspect-ratio: 100 / 30;
+  min-height: 120px;
+}
+
+/* The Space hint after a game's rules is for keyboards; touch screens never see it */
+@media (hover: none), (pointer: coarse) {
+  .key-hint {
+    display: none;
+  }
+}
+
+/* Phones: edge to edge, the column's gutter given back on both sides */
+@media (max-width: 720px) {
+  .game-stage {
+    --stage-width: 100vw;
+  }
+}
+
+.game-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The game picker: plain words at body size, the one in play underlined in ink. Each word gets a 44px
+   tall tap target, pulled back with a negative margin so the row keeps the page's line rhythm */
+.games-picker {
+  margin-block: -10.5px;
+}
+
+.games-picker button {
+  padding-block: 10.5px;
+}
+
+.games-picked {
+  background-size: 100% 1px, 100% 1px;
+}
+
+/* The Space keycap in a game's rules is a real button. Its 22px cap keeps its look; an invisible
+   margin around it makes a 44px target for a thumb */
+.keycap-hold {
+  position: relative;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.keycap-hold::after {
+  content: '';
+  position: absolute;
+  inset: -11px -6px;
+}
+
+/* A project's screenshot or recording: the column's full width, outlined by the same 1px line that
+   outlines code blocks, so a dark screenshot on the dark page still has an edge. Square corners, as
+   everything in the reading column */
+.project-media {
+  margin: 0;
+}
+
+.project-media img,
+.project-media video {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--color-line);
+  background: color-mix(in srgb, var(--color-ink) 4%, transparent);
+}
+
+/* Case studies (/work/:slug) only: a small type scale of their own (owner request, November 2026). The
+   rest of the site keeps one 15px size; a long case study needs a clear way in. Title 26 / lead 18 /
+   body 15, about a 1.2 step each, all Inter. Blog posts are untouched */
+[data-case] h1 {
+  font-size: 26px;
+  line-height: 31px;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+}
+
+.case-lead {
+  font-size: 18px;
+  line-height: 27px;
+}
+
+/* Section labels in ink and medium weight: still the body size, but read as labels, not as muted asides */
+[data-case] h2 {
+  color: var(--color-ink);
+  font-weight: 500;
+}
+
+@media (max-width: 720px) {
+  [data-case] h1 {
+    font-size: 22px;
+    line-height: 27px;
+  }
+
+  .case-lead {
+    font-size: 17px;
+    line-height: 25px;
+  }
+}
+
+/* Hyderabad's weather on the walker (Walker.tsx, from /api/weather). Real conditions only, ink and muted
+   only, transform and opacity only. All of it pauses with him off screen and stops when he rests, and
+   reduced motion holds it still (the .walker * rule above) */
+.walker-cloud {
+  stroke: var(--color-muted);
+  fill: var(--color-bg);
+  animation: walker-cloud 16s ease-in-out infinite alternate;
+}
+
+.walker-cloud-slow {
+  animation-duration: 23s;
+}
+
+@keyframes walker-cloud {
+  to { transform: translateX(-14px); }
+}
+
+.walker-drop {
+  stroke: var(--color-muted);
+  opacity: 0.75;
+  animation: walker-rain 0.8s linear infinite;
+}
+
+.walker-drop-slow {
+  animation-duration: 1.3s;
+  opacity: 0.55;
+}
+
+@keyframes walker-rain {
+  to { transform: translate(-6px, 84px); }
+}
+
+.walker-windy .walker-drop {
+  animation-name: walker-rain-windy;
+}
+
+@keyframes walker-rain-windy {
+  to { transform: translate(-22px, 84px); }
+}
+
+.walker-fog {
+  stroke: var(--color-muted);
+  stroke-dasharray: 10 7;
+  opacity: 0.55;
+}
+
+.walker-fog line {
+  animation: walker-fog 9s linear infinite;
+}
+
+.walker-fog line:nth-child(2) {
+  animation-duration: 13s;
+}
+
+@keyframes walker-fog {
+  to { stroke-dashoffset: -34; }
+}
+
+/* A storm's flash: two quick flickers of the sky every seven seconds */
+.walker-flash {
+  fill: var(--color-ink);
+  opacity: 0;
+  animation: walker-flash 7s linear infinite;
+}
+
+@keyframes walker-flash {
+  0%, 90% { opacity: 0; }
+  91% { opacity: 0.12; }
+  92.5% { opacity: 0; }
+  94% { opacity: 0.08; }
+  95.5%, 100% { opacity: 0; }
+}
+
+/* The umbrella's canopy is filled, so the rain behind it stops at its edge and he stays dry */
+.walker-umbrella {
+  stroke: var(--color-ink);
+}
+
+.walker-canopy {
+  fill: var(--color-bg);
+}
+
+.walker-cap {
+  fill: var(--color-ink);
+  stroke: var(--color-ink);
+}
+
+/* In the rain his far arm holds the umbrella up, walking, waving or resting. Only his own figure: the
+   faint walkers of other visitors have no umbrella to hold */
+.walker-wet > .walker-figure .walker-arm-b {
+  animation: none;
+  transform: rotate(-165deg);
+}
+
+.walker-wet > .walker-figure .walker-arm-b .walker-forearm {
+  animation: none;
+  transform: none;
+}
+
+/* Wind past 25 km/h: the grass and the umbrella lean with it */
+.walker-windy .walker-tufts path {
+  transform: skewX(-20deg);
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+.walker-windy .walker-umbrella {
+  transform: rotate(-9deg);
+  transform-box: view-box;
+  transform-origin: 64.4px 7.6px;
+}
+
+.walker-resting .walker-cloud,
+.walker-resting .walker-drop,
+.walker-resting .walker-fog line,
+.walker-resting .walker-flash {
+  animation-play-state: paused;
+}
+
+/* Other people on the home page right now (Walker.tsx, from /api/presence): faint dashed walkers behind
+   him, each a fraction of a step out of time. They fade in when someone arrives and out when they leave */
+.walker-ghost {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.walker-ghost[data-on] {
+  opacity: 0.55;
+}
+
+.walker-ghost .walker-figure {
+  stroke: var(--color-muted);
+  stroke-dasharray: 2.4 1.8;
+  animation-delay: var(--lag);
+}
+
+.walker-ghost .walker-leg-a,
+.walker-ghost .walker-arm-a,
+.walker-ghost .walker-leg-a .walker-shin,
+.walker-ghost .walker-arm-a .walker-forearm {
+  animation-delay: var(--lag);
+}
+
+.walker-ghost .walker-leg-b,
+.walker-ghost .walker-arm-b,
+.walker-ghost .walker-leg-b .walker-shin,
+.walker-ghost .walker-arm-b .walker-forearm {
+  animation-delay: calc(var(--lag) - var(--step));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .walker-ghost {
+    transition: none;
+  }
+}
+
+/* Inspect mode (Inspector.tsx): outlines, measurement lines and size chips in the redline token, a spec
+   card on the page background with the 1px line border and the command menu's 12px radius, values in
+   Geist Mono like code. Nothing here takes the pointer except the Stop button */
+.inspector {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  pointer-events: none;
+}
+
+.inspector-box {
+  position: fixed;
+  outline: 1px solid var(--color-redline);
+}
+
+.inspector-pinned {
+  outline-width: 2px;
+}
+
+.inspector-line {
+  position: fixed;
+  background: var(--color-redline);
+}
+
+.inspector-chip {
+  position: fixed;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--color-redline);
+  color: #fff;
+  font: 500 11px/16px var(--font-mono);
+  white-space: nowrap;
+}
+
+.inspector-chip-centre {
+  translate: -50% -50%;
+}
+
+.inspector-card {
+  position: fixed;
+  width: 256px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.inspector-card-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+}
+
+.inspector-card dl div {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 8px;
+}
+
+.inspector-card dt {
+  color: var(--color-muted);
+}
+
+.inspector-card dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.inspector-hint {
+  margin-top: 6px;
+  color: var(--color-muted);
+}
+
+.inspector-stop {
+  /* Top left: the status pill takes the top centre and the theme toggle the top right */
+  position: fixed;
+  top: max(8px, env(safe-area-inset-top));
+  left: max(8px, env(safe-area-inset-left));
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  pointer-events: auto;
 }

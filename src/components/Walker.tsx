@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 
+import { usePresence } from '../lib/presence';
+import { useHyderabadWeather, weatherGreeting } from '../lib/weather';
 import { announce } from './Island';
 
 // A stick figure that keeps walking along a path at the top of the intro. It walks in place while the
@@ -41,6 +43,51 @@ function sky(minutes: number) {
   return { day, x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10, shadow };
 }
 
+// Rain falls across the sky band at these x positions; drizzle uses every other one
+const DROPS = [8, 24, 41, 57, 73, 89, 106, 122, 139, 155, 171, 188];
+// Other people on the page walk behind him, faint and dashed, at most this many
+const MAX_GHOSTS = 4;
+const GHOST_X = [-26, -48, -70, -92];
+
+/**
+ * The stick figure itself, shared by the walker and the faint walkers of other visitors: head, body, and
+ * the four limbs in the order that draws the far side behind the near side
+ */
+function Figure({ lantern, extras, className = '' }: { lantern?: ReactNode; extras?: ReactNode; className?: string }) {
+  return (
+    <g className={`walker-figure ${className}`} strokeWidth="2">
+      <circle cx="60" cy="13.5" r="5.5" />
+      <path d="M60 19 L60 40" />
+      <g className="walker-limb walker-arm-b">
+        <path d="M60 24 L60 33" />
+        <g className="walker-forearm">
+          <path d="M60 33 L60 41" />
+        </g>
+      </g>
+      <g className="walker-limb walker-leg-b">
+        <path d="M60 40 L60 52" />
+        <g className="walker-shin">
+          <path d="M60 52 L60 63.5" />
+        </g>
+      </g>
+      <g className="walker-limb walker-leg-a">
+        <path d="M60 40 L60 52" />
+        <g className="walker-shin">
+          <path d="M60 52 L60 63.5" />
+        </g>
+      </g>
+      <g className="walker-limb walker-arm-a">
+        <path d="M60 24 L60 33" />
+        <g className="walker-forearm">
+          <path d="M60 33 L60 41" />
+          {lantern}
+        </g>
+      </g>
+      {extras}
+    </g>
+  );
+}
+
 // Parts that change pose when he sits down or stands up
 const POSED = '.walker-figure, .walker-limb, .walker-forearm, .walker-shin';
 
@@ -52,6 +99,12 @@ export function Walker({ className = '' }: { className?: string }) {
   const [paused, setPaused] = useState(false);
   // Null until mounted, so the prerendered page carries no build-time sky
   const [minutes, setMinutes] = useState<number | null>(null);
+  // Hyderabad's real weather and how many others are on the page; both stay empty without the worker
+  const weather = useHyderabadWeather();
+  const others = usePresence(true);
+  // Slots for other visitors only grow, so someone leaving fades out instead of vanishing
+  const [ghostSlots, setGhostSlots] = useState(0);
+  useEffect(() => setGhostSlots(n => Math.max(n, Math.min(MAX_GHOSTS, others))), [others]);
 
   useEffect(() => {
     setMinutes(minutesInHyderabad(new Date()));
@@ -124,7 +177,7 @@ export function Walker({ className = '' }: { className?: string }) {
 
   const wave = () => {
     if (waving) return;
-    announce('Hi, thanks for stopping by', 'hello');
+    announce(weather ? weatherGreeting(weather) : 'Hi, thanks for stopping by', 'hello');
     // Tapping a resting walker wakes him first; he waves once he is back on his feet
     if (resting) window.setTimeout(() => setWaving(true), POSE_MS);
     else setWaving(true);
@@ -140,10 +193,18 @@ export function Walker({ className = '' }: { className?: string }) {
   }, []);
 
   const now = minutes === null ? null : sky(minutes);
+  const kind = weather?.kind;
+  // Under rain, storm or fog the sun, moon and stars are hidden and he casts no shadow
+  const overcast = kind === 'rain' || kind === 'storm' || kind === 'fog';
+  const wet = kind === 'rain' || kind === 'drizzle' || kind === 'storm';
+  const cloudy = kind === 'clouds' || kind === 'drizzle' || wet;
+  const hot = !!weather && !!now?.day && weather.temp >= 35 && !wet;
+  const windy = !!weather && weather.wind >= 25;
+  const label = `Wave at the walker${others > 0 ? `. ${others} other ${others === 1 ? 'person is' : 'people are'} here now` : ''}`;
 
   return (
     // Tap him and he stops mid-stride to wave; the status pill says hi for anyone who can't see it
-    <button type="button" onClick={wave} aria-label="Wave at the walker" className={`walker-button ${className}`}>
+    <button type="button" onClick={wave} aria-label={label} className={`walker-button ${className}`}>
       <svg
         ref={ref}
         aria-hidden="true"
@@ -155,6 +216,8 @@ export function Walker({ className = '' }: { className?: string }) {
         // Classes are also set directly during a pose change (see morph), and mirrored here so a re-render keeps them
         className={[
           'walker',
+          wet && 'walker-wet',
+          windy && 'walker-windy',
           waving && 'walker-waving',
           resting && 'walker-resting',
           standing && 'walker-standing',
@@ -176,7 +239,7 @@ export function Walker({ className = '' }: { className?: string }) {
           </mask>
         </defs>
 
-        {now && (
+        {now && !overcast && (
           <g className="walker-sky">
             {now.day ? (
               <g className="walker-sun" strokeWidth="1.3">
@@ -205,6 +268,34 @@ export function Walker({ className = '' }: { className?: string }) {
           </g>
         )}
 
+        {/* Weather over the sky band: drifting clouds, falling rain, low fog, and in a storm a faint flash */}
+        {cloudy && (
+          <g className="walker-clouds" strokeWidth="1">
+            <path className="walker-cloud" d="M118 4 h20 a4.5 4.5 0 0 0 -3 -8.5 a6.5 6.5 0 0 0 -12 -1.5 a4.5 4.5 0 0 0 -5 10 Z" />
+            <path className="walker-cloud walker-cloud-slow" d="M150 -6 h16 a3.8 3.8 0 0 0 -2.5 -7 a5.5 5.5 0 0 0 -10 -1.2 a3.8 3.8 0 0 0 -3.5 8.2 Z" />
+          </g>
+        )}
+        {kind === 'storm' && <rect className="walker-flash" x="0" y="-18" width="200" height="82" />}
+        {wet && (
+          <g className="walker-rain" strokeWidth="1">
+            {(kind === 'drizzle' ? DROPS.filter((_, i) => i % 2 === 0) : DROPS).map((x, i) => (
+              <path
+                key={x}
+                className={`walker-drop${kind === 'drizzle' ? ' walker-drop-slow' : ''}`}
+                d={`M${x} -16 l-1.2 3.4`}
+                style={{ animationDelay: `${-((i * 0.37) % 1)}s` }}
+              />
+            ))}
+          </g>
+        )}
+        {kind === 'fog' && (
+          <g className="walker-fog" strokeWidth="1">
+            <line x1="0" y1="48" x2="200" y2="48" />
+            <line x1="0" y1="54" x2="200" y2="54" />
+            <line x1="0" y1="59.5" x2="200" y2="59.5" />
+          </g>
+        )}
+
         <g mask="url(#walker-mask)" className="walker-ground">
           <line x1="0" y1={GROUND} x2="200" y2={GROUND} strokeWidth="1" />
           <line className="walker-track" x1="-40" y1="69" x2="240" y2="69" strokeWidth="1" strokeDasharray="5 14.9" />
@@ -215,49 +306,62 @@ export function Walker({ className = '' }: { className?: string }) {
           </g>
         </g>
 
-        {now?.shadow ? (
+        {now?.shadow && !overcast ? (
           <line className="walker-shadow" x1="60" y1={GROUND} x2={60 + now.shadow} y2={GROUND} strokeWidth="2.6" />
         ) : null}
 
         {/* The stone he sits on when he rests */}
         <path className="walker-stone" d="M49 64.5 Q51 58 59.5 58 Q68 58 70 64.5" strokeWidth="1" />
 
-        <g className="walker-figure" strokeWidth="2">
-          <circle cx="60" cy="13.5" r="5.5" />
-          <path d="M60 19 L60 40" />
-          <g className="walker-limb walker-arm-b">
-            <path d="M60 24 L60 33" />
-            <g className="walker-forearm">
-              <path d="M60 33 L60 41" />
-            </g>
-          </g>
-          <g className="walker-limb walker-leg-b">
-            <path d="M60 40 L60 52" />
-            <g className="walker-shin">
-              <path d="M60 52 L60 63.5" />
-            </g>
-          </g>
-          <g className="walker-limb walker-leg-a">
-            <path d="M60 40 L60 52" />
-            <g className="walker-shin">
-              <path d="M60 52 L60 63.5" />
-            </g>
-          </g>
-          <g className="walker-limb walker-arm-a">
-            <path d="M60 24 L60 33" />
-            <g className="walker-forearm">
-              <path d="M60 33 L60 41" />
-              {/* After dark he carries a lantern, which swings with his hand */}
-              {now && !now.day && (
-                <g className="walker-lantern" strokeWidth="1.2">
-                  <path d="M60 41 L60 43.4" />
-                  <rect x="58.1" y="43.4" width="3.8" height="4.6" rx="0.9" />
-                  <circle cx="60" cy="45.7" r="0.9" className="walker-flame" />
+        {/* Other people on the page right now: faint dashed walkers behind him, each a step out of time */}
+        {Array.from({ length: ghostSlots }, (_, i) => (
+          <svg
+            key={i}
+            x={GHOST_X[i]}
+            y="-18"
+            width="200"
+            height="90"
+            viewBox="0 -18 200 90"
+            overflow="visible"
+            className="walker-ghost"
+            data-on={i < others || undefined}
+            style={{ ['--lag' as string]: `${-0.17 * (i + 1)}s` }}
+          >
+            <Figure />
+          </svg>
+        ))}
+
+        <Figure
+          lantern={
+            // After dark he carries a lantern, which swings with his hand
+            now &&
+            !now.day && (
+              <g className="walker-lantern" strokeWidth="1.2">
+                <path d="M60 41 L60 43.4" />
+                <rect x="58.1" y="43.4" width="3.8" height="4.6" rx="0.9" />
+                <circle cx="60" cy="45.7" r="0.9" className="walker-flame" />
+              </g>
+            )
+          }
+          extras={
+            <>
+              {/* In the rain he holds an umbrella up in his far hand, so the near one is free to wave */}
+              {wet && (
+                <g className="walker-umbrella" strokeWidth="1.3">
+                  <path d="M64.4 7.6 L64.4 -5" />
+                  {/* Dome with a scalloped hem, and a centre rib */}
+                  <path
+                    className="walker-canopy"
+                    d="M52.4 -5 A12 12 0 0 1 76.4 -5 q-3 -2.4 -6 0 q-3 -2.4 -6 0 q-3 -2.4 -6 0 q-3 -2.4 -6 0 Z"
+                  />
+                  <path d="M64.4 -17 L64.4 -7.4" strokeWidth="0.8" />
                 </g>
               )}
-            </g>
-          </g>
-        </g>
+              {/* On a hot day, a cap */}
+              {hot && <path className="walker-cap" d="M54.5 11.3 A5.5 5.5 0 0 1 65.5 11.3 Z M65.5 11.3 L69.4 11.3" strokeWidth="1.3" />}
+            </>
+          }
+        />
       </svg>
     </button>
   );

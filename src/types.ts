@@ -8,6 +8,14 @@ export interface Project {
   demoUrl?: string;
   /** Path under public/, e.g. "projects/nook.svg" */
   logo?: string;
+  /** One measured result, shown as the page's lead. Real numbers only; leave it out otherwise */
+  outcome?: string;
+  /** A screenshot (.png, .jpg, .webp) or screen recording (.mp4, .webm) under public/, shown above the details */
+  media?: string;
+  /** What the media shows, for screen readers */
+  mediaAlt?: string;
+  /** "width x height" of the media in pixels, so the page keeps its space before it loads */
+  mediaSize?: string;
   date: string;
 }
 

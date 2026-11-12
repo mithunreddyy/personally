@@ -7,6 +7,7 @@ import { EmailCopy } from './EmailCopy';
 import { ExperienceSection, Skills } from './Experience';
 import { downloadResume } from './Hero';
 import { CollapsibleSection } from './CollapsibleSection';
+import { Connect } from './Connect';
 import { appear, Entry, Section } from './List';
 import { SEO } from './SEO';
 
@@ -77,13 +78,18 @@ export function CvView() {
         <Entries section={section('Education')} />
       </CollapsibleSection>
 
-      <section className="appear pb-7 print:hidden" style={appear(240)}>
+      {/* The printed CV already carries the email in its header */}
+      <div className="print:hidden">
+        <Connect personalInfo={PERSONAL_INFO} delay={240} />
+      </div>
+
+      <section className="appear pb-7 print:hidden" style={appear(280)}>
         <button type="button" onClick={() => downloadResume(PERSONAL_INFO.resumeUrl)} className="link-line">
           Download PDF
         </button>
       </section>
 
-      <footer className="appear flex items-baseline gap-2.5 text-[10.5px] min-[721px]:text-[11px] leading-5 tracking-[0.02em] text-muted tabular-nums print:hidden" style={appear(280)}>
+      <footer className="appear flex items-baseline gap-2.5 text-[10.5px] min-[721px]:text-[11px] leading-5 tracking-[0.02em] text-muted tabular-nums print:hidden" style={appear(320)}>
         <span>GMT+5:30</span>
         <time>{time}</time>
       </footer>

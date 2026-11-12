@@ -9,7 +9,7 @@ Personal portfolio for Mithun Reddy: case studies, an editorial blog, and a live
 - `npm run lint`: type check (`tsc --noEmit`)
 - Deploy: `npm run deploy` builds and publishes to https://mithun.fyi as a Cloudflare Worker with static assets (`wrangler.jsonc`, `worker/index.ts` sends www to the bare domain). Run `npx wrangler login` once first. GitHub Pages backup publishes to https://mithunreddyy.github.io/Portfolio/. Production builds use `import.meta.env.BASE_URL` to reference public assets.
 
-No forms or environment variables. The only stored data is the visit total: a Durable Object (`VisitCounter` in `worker/index.ts`) behind `/api/visits`, shown by `src/components/VisitCount.tsx`.
+No forms or environment variables. The only stored data is the visit total: a Durable Object (`VisitCounter` in `worker/index.ts`) behind `/api/visits`, shown by `src/components/VisitCount.tsx`. The worker also serves `/api/weather` (Hyderabad's current weather from Open-Meteo, edge-cached for 30 minutes, for the hero walker) and `/api/presence` (a `Presence` Durable Object counting open home pages over WebSockets; it stores nothing). Both only work under the worker (`npx wrangler dev` locally, after a build); `npm run dev` and the GitHub Pages backup quietly go without them.
 
 ## Layout
 

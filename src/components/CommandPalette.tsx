@@ -21,6 +21,13 @@ export function CommandPalette({ defaultOpen = false, returnFocus = null }: { de
   const [search, setSearch] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
   const [emailCopied, setEmailCopied] = useState(false);
+  // Whether Inspect mode is on, so its command reads "Stop inspecting" while it is
+  const [inspecting, setInspecting] = useState(() => typeof document !== 'undefined' && document.documentElement.hasAttribute('data-inspecting'));
+  useEffect(() => {
+    const onChange = (e: Event) => setInspecting(Boolean((e as CustomEvent<boolean>).detail));
+    window.addEventListener('inspector-change', onChange);
+    return () => window.removeEventListener('inspector-change', onChange);
+  }, []);
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { theme } = useTheme();
@@ -75,9 +82,15 @@ export function CommandPalette({ defaultOpen = false, returnFocus = null }: { de
   }, [pathname, navigate]);
 
   const commands = useMemo<PaletteCommand[]>(() => [
+    {
+      id: 'inspect',
+      name: inspecting ? 'Stop inspecting' : 'Inspect the design',
+      run: () => window.dispatchEvent(new Event('toggle-inspector')),
+    },
     { id: 'cv', name: 'CV', run: () => navigate('/cv') },
     { id: 'projects', name: 'Projects', run: () => goTo('projects') },
     { id: 'blog', name: 'Writing', run: () => goTo('blog') },
+    { id: 'games', name: 'Games', run: () => goTo('games') },
     { id: 'contact', name: 'Connect', run: () => goTo('contact') },
     {
       id: 'theme',
@@ -101,7 +114,7 @@ export function CommandPalette({ defaultOpen = false, returnFocus = null }: { de
       name: `Read ${post.title.replace(/\n/g, ' ')}`,
       run: () => navigate(`/blog/${post.slug}`),
     })),
-  ], [theme, emailCopied, personalInfo.resumeUrl, navigate, goTo]);
+  ], [theme, emailCopied, inspecting, personalInfo.resumeUrl, navigate, goTo]);
 
   const filtered = commands.filter((cmd) => cmd.name.toLowerCase().includes(search.trim().toLowerCase()));
   const currentIndex = Math.min(activeIndex, Math.max(filtered.length - 1, 0));

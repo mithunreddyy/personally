@@ -3,11 +3,50 @@ import { lazy, PointerEvent, ReactNode, Suspense, useEffect, useRef, useState } 
 import { Link, useLocation } from 'react-router-dom';
 
 import { PERSONAL_INFO } from '../constants';
-import { Island } from './Island';
+import { Island, announce } from './Island';
 import { toggleTheme, useTheme } from '../hooks/useTheme';
 
 // The command menu (and the Motion library it animates with) loads on first use, not with every page
 const CommandPalette = lazy(() => import('./CommandPalette').then(module => ({ default: module.CommandPalette })));
+// Inspect mode loads the first time someone asks for it
+const Inspector = lazy(() => import('./Inspector'));
+
+/** I (or the command menu) turns Inspect mode on and off; the inspector itself loads on the first turn-on */
+function InspectorLoader() {
+  const [on, setOn] = useState(false);
+  const onRef = useRef(false);
+
+  useEffect(() => {
+    const toggle = () => {
+      const next = !onRef.current;
+      onRef.current = next;
+      setOn(next);
+      announce(next ? 'Inspecting, press I or Esc to stop' : 'Stopped inspecting');
+      // The command menu names its toggle from this
+      window.dispatchEvent(new CustomEvent('inspector-change', { detail: next }));
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() !== 'i' || e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
+      if (document.querySelector('[role="dialog"]')) return;
+      toggle();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('toggle-inspector', toggle);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('toggle-inspector', toggle);
+    };
+  }, []);
+
+  if (!on) return null;
+  return (
+    <Suspense fallback={null}>
+      <Inspector onExit={() => window.dispatchEvent(new Event('toggle-inspector'))} />
+    </Suspense>
+  );
+}
 
 /** Waits for the first ⌘K, then loads the menu already open; from then on the menu handles ⌘K itself */
 function PaletteLoader() {
@@ -141,6 +180,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <a href="#content" className="skip-link print:hidden">Skip to content</a>
       <ThemeToggle />
       <PaletteLoader />
+      <InspectorLoader />
       <Island />
       <main id="content" tabIndex={-1} className="outline-none relative mx-auto w-full max-w-[600px] min-w-0 px-[30px] pt-[120px] pb-36 max-[720px]:max-w-[624px] max-[720px]:px-8 max-[720px]:pt-16 max-[359.98px]:px-5 text-[15px] leading-[23px] print:p-0 print:max-w-none print:w-full">
         {children}

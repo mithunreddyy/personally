@@ -5,7 +5,7 @@ import { Arrow, Row, Section, TextLink } from './List';
 
 const allProjects = `https://github.com/${PERSONAL_INFO.github}?tab=repositories`;
 
-/** One line per project: title on the left, month on the right */
+/** Each project: title on the left, month on the right, and what it is in one muted line underneath */
 export function Projects({ projects, delay = 0 }: { projects: Project[]; delay?: number }) {
   return (
     <Section
@@ -22,7 +22,7 @@ export function Projects({ projects, delay = 0 }: { projects: Project[]; delay?:
       {projects.length === 0 ? (
         <p className="text-muted">No projects listed yet.</p>
       ) : (
-        <ol className="focus-index flex flex-col gap-1.5 max-[359.98px]:gap-2.5">
+        <ol className="focus-index flex flex-col gap-3 max-[359.98px]:gap-3.5">
           {projects.map(project => (
             <li key={project.id} className="focus-item">
               <Row
@@ -33,6 +33,7 @@ export function Projects({ projects, delay = 0 }: { projects: Project[]; delay?:
                 }
                 detail={project.date && <time dateTime={project.date}>{formatPostDate(project.date).toLowerCase()}</time>}
               />
+              {project.summary && <p className="text-muted text-pretty">{project.summary}</p>}
             </li>
           ))}
         </ol>
