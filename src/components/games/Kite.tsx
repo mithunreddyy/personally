@@ -111,7 +111,9 @@ export default function Kite() {
     draw(ctx, W, H, colors) {
       const f = g.f;
       const motion = !reducedMotion();
-      const s = Math.max(MIN_SCALE, (H - 16) / (TOP + 0.9));
+      // Fit the sky's height, but keep at least 16 m of path in view, so on a tall portrait stage the kite
+      // still has room ahead of it to see what's coming
+      const s = Math.max(MIN_SCALE, Math.min((H - 16) / (TOP + 0.9), W / 16));
       const view = W / s;
       const left = f.w - 1.6;
       const p = makePen(ctx, colors, s, left, H - 10);

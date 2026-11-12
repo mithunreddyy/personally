@@ -963,24 +963,31 @@ pre::-webkit-scrollbar-thumb:hover {
   }
 }
 
-/* Games (src/components/games): the whole stage is the control. It is the one thing on the page that
-   leaves the reading column (owner request, November 2026): on tablets and desktops it widens to 820px,
-   centred on the column, and on phones it runs to the screen edges, so the scene has room. Its shape is
-   reserved by aspect ratio so the prerendered page doesn't shift when the canvas draws. Touch is fully
-   captured on the stage, so a held finger that wobbles stays a hold instead of turning into a scroll;
+/* Games (src/components/games): the whole stage is the control, and the one thing on the page that leaves
+   the reading column (owner request, November 2026). Its shape follows the screen (owner request, "follow
+   the screen's shape"): each game has a height-to-width share for landscape screens and a taller one for
+   portrait, so phones held upright get room to play, and the height never passes the screen minus the
+   room its score and rules need, so the whole game fits in view. Up to 900px wide on big screens, edge
+   to edge on phones. Sized in CSS, so the prerendered page reserves the space before the canvas draws.
+   Touch is fully captured on the stage, so a held finger that wobbles stays a hold instead of a scroll;
    the page still scrolls from the text above and below it */
 .game {
   container-type: inline-size;
 }
 
 .game-stage {
-  --stage-width: min(820px, calc(100vw - 64px));
+  --stage-width: min(900px, calc(100vw - 64px));
+  /* Height as a share of width: landscape, then portrait. Each shape below sets its own pair */
+  --ratio: 0.34;
+  --ratio-portrait: 0.5;
+  --min-height: 170px;
+  --r: var(--ratio);
   display: block;
   width: var(--stage-width);
   max-width: none;
   margin-inline: calc((100% - var(--stage-width)) / 2);
-  aspect-ratio: 100 / 34;
-  min-height: 170px;
+  height: clamp(var(--min-height), calc(var(--stage-width) * var(--r)), max(var(--min-height), calc(100vh - 240px)));
+  height: clamp(var(--min-height), calc(var(--stage-width) * var(--r)), max(var(--min-height), calc(100svh - 240px)));
   cursor: pointer;
   touch-action: none;
   user-select: none;
@@ -988,15 +995,24 @@ pre::-webkit-scrollbar-thumb:hover {
   -webkit-touch-callout: none;
 }
 
+@media (orientation: portrait) {
+  .game-stage {
+    --r: var(--ratio-portrait);
+  }
+}
+
+/* Keepy-uppy and Kite play upward: tall, and taller still on a phone held upright */
 .game-stage-tall {
-  aspect-ratio: 100 / 46;
-  min-height: 220px;
+  --ratio: 0.46;
+  --ratio-portrait: 0.75;
+  --min-height: 220px;
 }
 
 /* Free kick shows the whole pitch while aiming, so its view is set by width: a wider, shorter stage */
 .game-stage-wide {
-  aspect-ratio: 100 / 30;
-  min-height: 120px;
+  --ratio: 0.32;
+  --ratio-portrait: 0.4;
+  --min-height: 130px;
 }
 
 /* The Space hint after a game's rules is for keyboards; touch screens never see it */

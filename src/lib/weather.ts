@@ -68,5 +68,5 @@ const WORDS: Record<WeatherKind, string> = {
 
 /** "Hi from a rainy Hyderabad, 24°", for the walker's wave */
 export function weatherGreeting(weather: Weather) {
-  return `Hi from ${WORDS[weather.kind]} Hyderabad, ${weather.temp}°`;
+  return `hi from ${WORDS[weather.kind]} hyderabad, ${weather.temp}°`;
 }
