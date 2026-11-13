@@ -109,15 +109,12 @@ export default function KeepyUppy() {
     },
     draw(ctx, W, H, colors) {
       const j = g.j;
-      // Fit the yard between its two side walls, never shorter than 3.5 m of headroom
-      const s = Math.min(W / (HALF_WIDTH * 2 + 0.6), (H - 12) / 3.5);
+      // Fit the yard edge to edge, so the stage's own sides are where the ball comes back off; never
+      // shorter than 3.5 m of headroom
+      const s = Math.min(W / ((HALF_WIDTH + BALL_R) * 2), (H - 12) / 3.5);
       const left = -W / s / 2;
       const p = makePen(ctx, colors, s, left, H - 10);
       p.grass(left, -left, 1.7);
-      // The yard's walls, which the ball comes back off
-      const wall = HALF_WIDTH + BALL_R;
-      p.line([[-wall, 0], [-wall, 3.4]], colors.muted, 1, 0.6);
-      p.line([[wall, 0], [wall, 3.4]], colors.muted, 1, 0.6);
 
       const { boy, ball } = j;
       const motion = !reducedMotion();
@@ -180,7 +177,6 @@ export default function KeepyUppy() {
   return (
     <GameShell
       stage={stage}
-      shape="tall"
       label={hud.over ? 'Start again' : hud.started ? 'Tap to touch the ball' : 'Tap to drop the ball and start'}
       meta={
         hud.started

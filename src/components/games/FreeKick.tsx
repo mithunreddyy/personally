@@ -28,6 +28,35 @@ import { useStage } from './useStage';
 const CHARGE_MS = 1200;
 const KICK_SWING = 0.16;
 const NEXT_KICK_MS = 650;
+
+// Clouds passing over the pitch, in the walker's cloud shape (20 units wide): where each starts across a
+// lap, its height as a share of the stage, its size, and its speed in px/s. They sit in screen space and
+// slide a little against the camera, so they read as far off
+const CLOUD = new Path2D('M0 0 h20 a4.5 4.5 0 0 0 -3 -8.5 a6.5 6.5 0 0 0 -12 -1.5 a4.5 4.5 0 0 0 -5 10 Z');
+const CLOUDS = [
+  { at: 0.08, y: 0.2, size: 3.6, speed: 9 },
+  { at: 0.42, y: 0.12, size: 2.6, speed: 6 },
+  { at: 0.7, y: 0.32, size: 3, speed: 11 },
+];
+
+function drawClouds(ctx: CanvasRenderingContext2D, W: number, H: number, ink: string, bg: string, now: number, camLeft: number) {
+  const fit = Math.max(0.6, W / 700);
+  const lap = W + 160 * fit;
+  for (const c of CLOUDS) {
+    const k = c.size * fit;
+    const x = ((((c.at * lap + (now / 1000) * c.speed * fit - camLeft * 6) % lap) + lap) % lap) - 80 * fit;
+    ctx.save();
+    ctx.translate(x, c.y * H);
+    ctx.scale(k, k);
+    ctx.fillStyle = bg;
+    ctx.fill(CLOUD);
+    ctx.globalAlpha = 0.7;
+    ctx.strokeStyle = ink;
+    ctx.lineWidth = 1 / k;
+    ctx.stroke(CLOUD);
+    ctx.restore();
+  }
+}
 // The camera never zooms out past 18.5px a metre, so the figures stay readable on a phone
 // The aiming view runs from just behind the power meter to just past the corner flag
 const BEHIND = 2;
@@ -190,7 +219,8 @@ export default function FreeKick() {
         g.cam.scale += (target.scale - g.cam.scale) * k;
         moving = Math.abs(target.left - g.cam.left) > 0.01 || Math.abs(target.scale - g.cam.scale) > 0.05;
       }
-      return g.phase === 'charging' || g.phase === 'flight' || moving;
+      // The clouds keep drifting, so the stage keeps drawing while it's on screen (never under reduced motion)
+      return g.phase === 'charging' || g.phase === 'flight' || moving || !reducedMotion();
     },
     draw(ctx, W, H, colors, now) {
       if (!g.plan.length) return;
@@ -199,6 +229,7 @@ export default function FreeKick() {
       const right = left + W / s;
       const p = makePen(ctx, colors, s, left, H - Math.max(10, H * 0.08));
       const { X, Y, line, figure } = p;
+      drawClouds(ctx, W, H, colors.muted, colors.bg, reducedMotion() ? 0 : now, left);
       p.grass(left, right);
 
       const flight = g.flight;
@@ -405,7 +436,6 @@ export default function FreeKick() {
   return (
     <GameShell
       stage={stage}
-      shape="wide"
       label={hud.over ? 'Start a new round of ten kicks' : `Free kick from ${hud.distance} metres. Hold to wind up, let go to kick.`}
       meta={hud.distance ? `Kick ${hud.kick} of 10, ${hud.distance} m${windText(hud.wind)}` : 'Ten kicks'}
       score={`${hud.points} ${hud.points === 1 ? 'point' : 'points'}${hud.best !== null ? `, best ${hud.best}` : ''}`}

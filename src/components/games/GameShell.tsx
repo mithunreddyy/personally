@@ -31,7 +31,6 @@ export function GameShell({
   action,
   rules,
   keyAction,
-  shape,
 }: {
   stage: Stage;
   /** Accessible name for the stage, saying what a press does right now */
@@ -44,8 +43,6 @@ export function GameShell({
   rules: ReactNode;
   /** What holding Space does, for the keyboard hint after the rules */
   keyAction: string;
-  /** Free kick is wide and short, Keepy-uppy and Kite tall; the rest use the default */
-  shape?: 'wide' | 'tall';
 }) {
   return (
     <div className="game flex flex-col gap-2">
@@ -60,7 +57,7 @@ export function GameShell({
         <button
           ref={stage.buttonRef}
           type="button"
-          className={`game-stage${shape ? ` game-stage-${shape}` : ''}`}
+          className="game-stage"
           aria-label={label}
           {...stage.holdProps}
         >

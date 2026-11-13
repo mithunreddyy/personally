@@ -9,4 +9,4 @@ birthYear: 1999
 resumeUrl: "/mithunresume.pdf"
 ---
 
-a full-stack software engineer and designer who build and ships with effort, care and taste.
+a full-stack software engineer and designer who builds and ships with effort, care and taste.

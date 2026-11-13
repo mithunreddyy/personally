@@ -287,7 +287,6 @@ export default function Kite() {
   return (
     <GameShell
       stage={stage}
-      shape="tall"
       label={hud.over ? 'Fly again' : 'Hold to pull the kite up, let go to let it sink'}
       meta={hud.started ? `${hud.metres} m walked${hud.ahead && !hud.over ? `, ${hud.ahead}` : ''}` : 'Kite up, ready to walk'}
       score={hud.best !== null ? `best ${hud.best} m` : ''}
