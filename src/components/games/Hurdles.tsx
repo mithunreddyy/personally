@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { LIVES, PIT_START, createRace, press, release, stepRace } from '../../lib/games/hurdles';
+import { drawClouds } from './clouds';
 import { HIP, Pose, Pt, liveBest, makePen, reducedMotion, stridePose } from './draw';
 import { GameShell } from './GameShell';
 import { useStage } from './useStage';
@@ -136,9 +137,10 @@ export default function Hurdles() {
       }
       const toppling = r.hurdles.some(h => h.hit !== null && h.fall < 1);
       const splashing = g.splashAt !== null && r.t - g.splashAt.t < 0.6;
-      return (r.started && !r.over) || toppling || splashing;
+      // The clouds keep drifting, so the stage keeps drawing while it's on screen (never under reduced motion)
+      return (r.started && !r.over) || toppling || splashing || !reducedMotion();
     },
-    draw(ctx, W, H, colors) {
+    draw(ctx, W, H, colors, now) {
       const r = g.r;
       // Frame by height (3.6 m: a high jump and the figure) so he is large on any stage, but keep at least
       // VIEW metres of track in sight so there is time to see what's coming
@@ -147,6 +149,7 @@ export default function Hurdles() {
       const left = r.x - view * 0.2;
       const p = makePen(ctx, colors, s, left, H - 12);
       const { X, Y, line } = p;
+      drawClouds(ctx, W, H, colors, now, { sky: 2, camLeft: left });
       p.grass(left, left + view);
 
       // Water pits: the ground opens after the barrier into a shallow pit with a rippled surface

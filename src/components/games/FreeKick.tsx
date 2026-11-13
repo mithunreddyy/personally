@@ -20,43 +20,20 @@ import {
   stepFlight,
   wallLift,
 } from '../../lib/games/freekick';
+import { drawClouds } from './clouds';
 import { HIP, Pose, Pt, liveBest, makePen, reducedMotion } from './draw';
 import { GameShell } from './GameShell';
 import { useStage } from './useStage';
 
-// The meter fills over 1.2s and then holds full, so holding too long overhits instead of looping back
+// The meter rises over 1.2s, falls back over the next 1.2s, and keeps going up and down while held, so
+// the kick is timed by letting go at the right height rather than by counting
 const CHARGE_MS = 1200;
+const meterAt = (held: number) => {
+  const phase = (Math.max(0, held) / CHARGE_MS) % 2;
+  return phase <= 1 ? phase : 2 - phase;
+};
 const KICK_SWING = 0.16;
 const NEXT_KICK_MS = 650;
-
-// Clouds passing over the pitch, in the walker's cloud shape (20 units wide): where each starts across a
-// lap, its height as a share of the stage, its size, and its speed in px/s. They sit in screen space and
-// slide a little against the camera, so they read as far off
-const CLOUD = new Path2D('M0 0 h20 a4.5 4.5 0 0 0 -3 -8.5 a6.5 6.5 0 0 0 -12 -1.5 a4.5 4.5 0 0 0 -5 10 Z');
-const CLOUDS = [
-  { at: 0.08, y: 0.2, size: 3.6, speed: 9 },
-  { at: 0.42, y: 0.12, size: 2.6, speed: 6 },
-  { at: 0.7, y: 0.32, size: 3, speed: 11 },
-];
-
-function drawClouds(ctx: CanvasRenderingContext2D, W: number, H: number, ink: string, bg: string, now: number, camLeft: number) {
-  const fit = Math.max(0.6, W / 700);
-  const lap = W + 160 * fit;
-  for (const c of CLOUDS) {
-    const k = c.size * fit;
-    const x = ((((c.at * lap + (now / 1000) * c.speed * fit - camLeft * 6) % lap) + lap) % lap) - 80 * fit;
-    ctx.save();
-    ctx.translate(x, c.y * H);
-    ctx.scale(k, k);
-    ctx.fillStyle = bg;
-    ctx.fill(CLOUD);
-    ctx.globalAlpha = 0.7;
-    ctx.strokeStyle = ink;
-    ctx.lineWidth = 1 / k;
-    ctx.stroke(CLOUD);
-    ctx.restore();
-  }
-}
 // The camera never zooms out past 18.5px a metre, so the figures stay readable on a phone
 // The aiming view runs from just behind the power meter to just past the corner flag
 const BEHIND = 2;
@@ -175,7 +152,7 @@ export default function FreeKick() {
     },
     release() {
       if (g.phase !== 'charging') return;
-      g.power = Math.min(1, (performance.now() - g.chargeStart) / CHARGE_MS);
+      g.power = meterAt(performance.now() - g.chargeStart);
       const setup = setupNow();
       if (!setup) return;
       g.flight = createFlight(setup, g.power);
@@ -187,7 +164,7 @@ export default function FreeKick() {
       g.power = 0;
     },
     frame(dt, now) {
-      if (g.phase === 'charging') g.power = Math.min(1, (now - g.chargeStart) / CHARGE_MS);
+      if (g.phase === 'charging') g.power = meterAt(now - g.chargeStart);
       const f = g.flight;
       if (f && !f.done) {
         stepFlight(f, dt);
@@ -229,7 +206,7 @@ export default function FreeKick() {
       const right = left + W / s;
       const p = makePen(ctx, colors, s, left, H - Math.max(10, H * 0.08));
       const { X, Y, line, figure } = p;
-      drawClouds(ctx, W, H, colors.muted, colors.bg, reducedMotion() ? 0 : now, left);
+      drawClouds(ctx, W, H, colors, now, { camLeft: left });
       p.grass(left, right);
 
       const flight = g.flight;

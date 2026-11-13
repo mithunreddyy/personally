@@ -15,6 +15,7 @@ import {
   stormAt,
   wind,
 } from '../../lib/games/kite';
+import { drawClouds } from './clouds';
 import { Pt, liveBest, makePen, reducedMotion, stridePose } from './draw';
 import { GameShell } from './GameShell';
 import { useStage } from './useStage';
@@ -106,9 +107,10 @@ export default function Kite() {
         const passed = g.best.offer(g.metres);
         pushHud(passed ? 'New best, keep going' : undefined);
       }
-      return f.started && (!f.over || f.ky > 0.15);
+      // The clouds keep drifting, so the stage keeps drawing while it's on screen (never under reduced motion)
+      return (f.started && (!f.over || f.ky > 0.15)) || !reducedMotion();
     },
-    draw(ctx, W, H, colors) {
+    draw(ctx, W, H, colors, now) {
       const f = g.f;
       const motion = !reducedMotion();
       // Fit the sky's height, but keep at least 16 m of path in view, so on a tall portrait stage the kite
@@ -118,6 +120,8 @@ export default function Kite() {
       const left = f.w - 1.6;
       const p = makePen(ctx, colors, s, left, H - 10);
       const { X, Y, line } = p;
+      // Fainter here: the gusts and the storm share this sky and carry the play
+      drawClouds(ctx, W, H, colors, now, { sky: 3, camLeft: left, strength: 0.55 });
       p.grass(left, left + view, 2.6);
 
       // Gusts: short muted dashes riding the wind, brighter where it blows harder

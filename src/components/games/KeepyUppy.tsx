@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { BALL_R, HALF_WIDTH, Part, TOUCH_TIME, createJuggle, multiplier, stepJuggle, tap } from '../../lib/games/keepyuppy';
+import { drawClouds } from './clouds';
 import { HEAD_R, HIP, Pose, Pt, liveBest, makePen, reducedMotion, stridePose } from './draw';
 import { GameShell } from './GameShell';
 import { useStage } from './useStage';
@@ -105,15 +106,17 @@ export default function KeepyUppy() {
         );
       }
       // Keep drawing while anything moves: the ball in play, a touch finishing, the last bounces
-      return j.started && (!j.over || j.t - j.overAt < 2);
+      // The clouds keep drifting, so the stage keeps drawing while it's on screen (never under reduced motion)
+      return (j.started && (!j.over || j.t - j.overAt < 2)) || !reducedMotion();
     },
-    draw(ctx, W, H, colors) {
+    draw(ctx, W, H, colors, now) {
       const j = g.j;
       // Fit the yard edge to edge, so the stage's own sides are where the ball comes back off; never
       // shorter than 3.5 m of headroom
       const s = Math.min(W / ((HALF_WIDTH + BALL_R) * 2), (H - 12) / 3.5);
       const left = -W / s / 2;
       const p = makePen(ctx, colors, s, left, H - 10);
+      drawClouds(ctx, W, H, colors, now, { sky: 1 });
       p.grass(left, -left, 1.7);
 
       const { boy, ball } = j;

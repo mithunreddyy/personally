@@ -23,6 +23,9 @@ const ZONE = 'Asia/Kolkata';
 const SUNRISE = 6 * 60;
 const SUNSET = 18 * 60 + 30;
 const GROUND = 64.5;
+// His head's centre, and how far the sun or moon (rays included) keeps from it
+const HEAD = [60, 13.5];
+const HEAD_CLEAR = 18;
 
 function minutesInHyderabad(date: Date) {
   const [h, m] = date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: ZONE }).split(':');
@@ -34,10 +37,14 @@ function sky(minutes: number) {
   const day = minutes >= SUNRISE && minutes < SUNSET;
   const span = day ? SUNSET - SUNRISE : 24 * 60 - (SUNSET - SUNRISE);
   const t = ((minutes - (day ? SUNRISE : SUNSET) + 24 * 60) % (24 * 60)) / span;
-  const height = Math.sin(Math.PI * t);
-  const x = 186 - t * 150;
-  // Rise and set inside the sky band above the path (30 at the horizon, -10 at the top), never on it
-  const y = 30 - height * 40;
+  // Flattened at the top, so the arc is still high where it crosses over him in the afternoon
+  const height = Math.pow(Math.sin(Math.PI * t), 0.7);
+  const x = 186 - t * 176;
+  // Rise and set inside the sky band above the path (30 at the horizon, -9 at the top, so the rays clear
+  // the edge), never on the path and never on him: within HEAD_CLEAR of his head it rides over it instead
+  const dx = Math.abs(x - HEAD[0]);
+  const over = dx < HEAD_CLEAR ? HEAD[1] - Math.sqrt(HEAD_CLEAR ** 2 - dx ** 2) : Infinity;
+  const y = Math.min(30 - height * 39, over);
   // The shadow falls away from the sun, long near the horizon and short at noon
   const shadow = day ? Math.round((x > 60 ? -1 : 1) * (5 + (1 - height) * 30) * 10) / 10 : 0;
   return { day, x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10, shadow };
