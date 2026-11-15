@@ -380,7 +380,6 @@ export function BlogPostView() {
           author: { "@type": "Person", "@id": "https://mithun.fyi/#person", name: "Mithun Reddy", url: "https://mithun.fyi" },
           datePublished: post.date,
           dateModified: post.date,
-          image: "https://mithun.fyi/og-image.png",
           url: `https://mithun.fyi/blog/${post.slug}`,
           inLanguage: "en",
           mainEntityOfPage: {

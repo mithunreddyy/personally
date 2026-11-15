@@ -34,7 +34,6 @@ function homeSchemas() {
       name: PERSONAL_INFO.name,
       alternateName: SITE_NAME,
       url: SITE_URL,
-      image: `${SITE_URL}/og-image.png`,
       jobTitle: PERSONAL_INFO.role,
       description: SITE_DESCRIPTION,
       sameAs,
