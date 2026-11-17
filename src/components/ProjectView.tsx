@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 
 import { PROJECTS } from '../constants';
+import { sinceWords, useLastPush } from '../lib/github';
 import { displayUrl } from '../lib/utils';
 import { Article, ArticleSection } from './Article';
 import { ProjectMedia } from './ProjectMedia';
@@ -72,7 +73,11 @@ export function ProjectView() {
           <Section title="Links" delay={120}>
             <RowList>
               {links.map(l => (
-                <Row key={l.label} name={<TextLink to={l.url}>{displayUrl(l.url)}</TextLink>} detail={l.label} />
+                <Row
+                  key={l.label}
+                  name={<TextLink to={l.url}>{displayUrl(l.url)}</TextLink>}
+                  detail={l.label === 'Source' ? <SourceDetail link={l.url} /> : l.label}
+                />
               ))}
             </RowList>
           </Section>
@@ -80,6 +85,17 @@ export function ProjectView() {
       )}
 
       <Projects projects={PROJECTS.filter(p => p.id !== slug)} delay={160} />
+    </>
+  );
+}
+
+/** "Source", then when the repo last changed once GitHub answers, however long ago that was */
+function SourceDetail({ link }: { link: string }) {
+  const pushed = useLastPush(link);
+  if (!pushed) return <>Source</>;
+  return (
+    <>
+      Source, updated <time dateTime={pushed.toISOString()}>{sinceWords(pushed)}</time>
     </>
   );
 }

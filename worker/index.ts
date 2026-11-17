@@ -14,7 +14,13 @@ interface Env {
 }
 
 interface CounterState {
-  storage: { get(key: string): Promise<number | undefined>; put(key: string, value: number): Promise<void> };
+  storage: { get<T>(key: string): Promise<T | undefined>; put(key: string, value: unknown): Promise<void> };
+}
+
+/** Where a visit came from, as Cloudflare reports it: a city and a two-letter country code, never the address */
+interface Place {
+  city?: string;
+  country?: string;
 }
 
 // The Workers runtime pieces this file uses, declared here so the project needs no extra type package
@@ -52,17 +58,36 @@ const json = (body: unknown, status = 200, cache = 'no-store') =>
     headers: { 'content-type': 'application/json', 'cache-control': cache },
   });
 
-/** One counter for the whole site; a Durable Object handles one request at a time, so no visit is lost */
+const PLACE_HEADER = 'x-visit-place';
+
+/** The visitor's city and country from Cloudflare's request data, trimmed so nothing odd gets stored */
+function visitPlace(request: Request): Place | null {
+  const cf = (request as Request & { cf?: { city?: unknown; country?: unknown } }).cf;
+  const city = typeof cf?.city === 'string' ? cf.city.trim().slice(0, 60) : '';
+  // XX is "unknown" and T1 is Tor: neither names a place
+  const country = typeof cf?.country === 'string' && /^[A-Z]{2}$/.test(cf.country) && !['XX', 'T1'].includes(cf.country) ? cf.country : '';
+  if (!city && !country) return null;
+  return { ...(city && { city }), ...(country && { country }) };
+}
+
+/**
+ * One counter for the whole site; a Durable Object handles one request at a time, so no visit is lost.
+ * It also keeps where the latest counted visit came from (city and country only). A new visit is told
+ * where the one before it came from, then becomes the one the next visitor hears about
+ */
 export class VisitCounter {
   constructor(private state: CounterState) {}
 
   async fetch(request: Request): Promise<Response> {
-    let total = (await this.state.storage.get('total')) ?? 0;
+    let total = (await this.state.storage.get<number>('total')) ?? 0;
+    const last = (await this.state.storage.get<Place>('last')) ?? null;
     if (request.method === 'POST') {
       total += 1;
       await this.state.storage.put('total', total);
+      const header = request.headers.get(PLACE_HEADER);
+      if (header) await this.state.storage.put('last', JSON.parse(header) as Place);
     }
-    return json({ total });
+    return json({ total, last });
   }
 }
 
@@ -184,6 +209,43 @@ async function weather(): Promise<Response> {
   }
 }
 
+const GITHUB_USER = 'mithunreddyy';
+const GITHUB_URL = `https://api.github.com/users/${GITHUB_USER}/repos?per_page=100&type=owner&sort=pushed`;
+const GITHUB_TTL = 30 * 60;
+// GitHub allows 60 unsigned requests an hour per address, and Cloudflare shares addresses, so a refused
+// refresh falls back to the last good list for up to a week
+const GITHUB_STALE_TTL = 7 * 24 * 60 * 60;
+
+/** When each of the site owner's own public repos was last pushed to, keyed by lowercase repo name */
+async function repos(): Promise<Response> {
+  const fresh = new Request('https://mithun.fyi/api/github/v1');
+  const stale = new Request('https://mithun.fyi/api/github/v1-stale');
+  const hit = await caches.default.match(fresh);
+  if (hit) return hit;
+  try {
+    const upstream = await fetch(GITHUB_URL, { headers: { 'user-agent': HOST, accept: 'application/vnd.github+json' } });
+    if (!upstream.ok) throw new Error(String(upstream.status));
+    const list = (await upstream.json()) as { name?: unknown; pushed_at?: unknown; fork?: unknown }[];
+    if (!Array.isArray(list)) throw new Error('shape');
+    const pushed: Record<string, string> = {};
+    for (const repo of list) {
+      if (repo.fork === true || typeof repo.name !== 'string' || typeof repo.pushed_at !== 'string') continue;
+      pushed[repo.name.toLowerCase()] = repo.pushed_at;
+    }
+    const res = json({ pushed }, 200, `public, max-age=${GITHUB_TTL}`);
+    await Promise.all([
+      caches.default.put(fresh, res.clone()),
+      caches.default.put(stale, json({ pushed }, 200, `public, max-age=${GITHUB_STALE_TTL}`)),
+    ]);
+    return res;
+  } catch {
+    const old = await caches.default.match(stale);
+    if (old) return json(await old.json(), 200, 'public, max-age=300');
+    // Nothing to show: the project rows keep their months
+    return json({ error: 'github unavailable' }, 503);
+  }
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -200,8 +262,18 @@ export default {
       if (request.method === 'POST' && request.headers.get('origin') !== `https://${HOST}`) {
         return json({ error: 'forbidden' }, 403);
       }
+      // The place travels as a header the worker sets itself; one sent by a browser is dropped first
+      const headers = new Headers(request.headers);
+      headers.delete(PLACE_HEADER);
+      const place = request.method === 'POST' ? visitPlace(request) : null;
+      if (place) headers.set(PLACE_HEADER, JSON.stringify(place));
       const counter = env.VISITS.get(env.VISITS.idFromName('site'));
-      return counter.fetch(request);
+      return counter.fetch(new Request(request.url, { method: request.method, headers }));
+    }
+
+    if (url.pathname === '/api/github') {
+      if (request.method !== 'GET') return json({ error: 'method not allowed' }, 405);
+      return repos();
     }
 
     if (url.pathname === '/api/weather') {
