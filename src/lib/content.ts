@@ -139,12 +139,6 @@ export const PROJECTS: Project[] = files(
       const { label, value } = pair(line);
       return { at: seconds(label), title: value };
     }),
-  timeline: list(data.timeline)
-    .filter(line => line.includes(' | '))
-    .map(line => {
-      const { label, value } = pair(line);
-      return { date: label, event: value };
-    }),
   notes: list(data.notes)
     .filter(line => line.includes(' | '))
     .map(line => {

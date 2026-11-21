@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 
 import { PROJECTS } from '../constants';
 import { sinceWords, useLastPush } from '../lib/github';
-import { displayUrl, formatPostDate } from '../lib/utils';
+import { displayUrl } from '../lib/utils';
 import { Project } from '../types';
 import { Article, ArticleSection } from './Article';
 import { Block } from './CaseProse';
@@ -34,7 +34,7 @@ const url = (link: string) =>
 
 /**
  * A case study, kept like a lab notebook: a dateline under the name, the result and what it is, the film,
- * the model to try, the write-up in numbered chapters (with its timeline), and the details and sources last
+ * the model to try, the write-up in numbered chapters, and the details and sources last
  */
 export function ProjectView() {
   const { slug } = useParams();
@@ -43,20 +43,12 @@ export function ProjectView() {
 
   if (!project) return <NotFound />;
 
-  // The write-up's own sections, with the timeline before the limits (or last, when there are none)
+  // The write-up's own sections, in order
   const sections: { id: string; title: string; body: ReactNode }[] = project.sections.map(section => ({
     id: section.id,
     title: section.title,
     body: section.blocks.map((block, j) => <Block key={j} block={block} />),
   }));
-  if (project.timeline.length > 1) {
-    const limits = sections.findIndex(s => s.id === 'what-it-doesn-t-do');
-    sections.splice(limits >= 0 ? limits : sections.length, 0, {
-      id: 'timeline',
-      title: 'Timeline',
-      body: <Timeline project={project} />,
-    });
-  }
   sections.push({ id: 'details', title: 'Details', body: <Details project={project} /> });
   if (hasModel(project.id)) sections.unshift({ id: 'try-it', title: 'Try it', body: <ProjectModel id={project.id} title={project.title} /> });
 
@@ -151,32 +143,6 @@ function Details({ project }: { project: Project }) {
         </ol>
       )}
     </>
-  );
-}
-
-/**
- * The repo's history as posts along a path: dated commits from its log, then, once GitHub answers, when it
- * last changed. Without the worker the live post is simply left off
- */
-function Timeline({ project }: { project: Project }) {
-  const pushed = useLastPush(project.link);
-  const latest = project.timeline[project.timeline.length - 1].date;
-  const posts = [
-    ...project.timeline.map(t => ({ key: `${t.date}-${t.event}`, date: t.date, when: formatPostDate(t.date, 'day'), event: t.event })),
-    // Only when it moved after the last milestone listed, so the path never runs backwards
-    ...(pushed && pushed.toISOString().slice(0, 10) > latest
-      ? [{ key: 'latest', date: pushed.toISOString(), when: sinceWords(pushed), event: 'Last change to the repo' }]
-      : []),
-  ];
-  return (
-    <ol className="case-timeline">
-      {posts.map(post => (
-        <li key={post.key}>
-          <time dateTime={post.date}>{post.when}</time>
-          <span>{post.event}</span>
-        </li>
-      ))}
-    </ol>
   );
 }
 

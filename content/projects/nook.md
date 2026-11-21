@@ -26,10 +26,6 @@ scenes:
   - "0:16 | More windows than tiles stack"
   - "0:20 | Drag an edge, the neighbours follow"
   - "0:23 | No peek"
-timeline:
-  - "2026-10-28 | First commit, with unit tests, end-to-end tests and build scripts"
-  - "2026-10-28 | Hidden windows handled, and a steadier reflow"
-  - "2026-11-10 | The window bar: app icons and window navigation"
 notes:
   - "Architecture in nook's README, which names each private API and why | https://github.com/mithunreddyy/nook#architecture"
 ---

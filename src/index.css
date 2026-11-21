@@ -1884,49 +1884,6 @@ header[data-case] {
   text-align: center;
 }
 
-/* Timeline: the repo's history as posts along a dashed path, oldest first */
-.case-timeline {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 0;
-  padding: 0 0 0 18px;
-  list-style: none;
-  background: linear-gradient(var(--color-muted) 50%, transparent 0) 3px 6px / 1px 6px repeat-y;
-}
-
-.case-timeline li {
-  /* Short lines: ragged, not the phone column's justified prose */
-  text-align: left;
-  hyphens: manual;
-  position: relative;
-  display: grid;
-  grid-template-columns: 104px minmax(0, 1fr);
-  column-gap: 16px;
-}
-
-/* Each post: a short tick across the path */
-.case-timeline li::before {
-  content: '';
-  position: absolute;
-  left: -18px;
-  top: 11px;
-  width: 7px;
-  height: 1px;
-  background: var(--color-ink);
-}
-
-.case-timeline time {
-  color: var(--color-muted);
-  white-space: nowrap;
-}
-
-@media (max-width: 359.98px) {
-  .case-timeline li {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .nook-window,
   .clover-bead,
@@ -2210,6 +2167,10 @@ header[data-case] {
   width: 100%;
 }
 
+.home-hero {
+  flex-direction: column;
+}
+
 .home-spacer {
   display: none;
 }
@@ -2276,18 +2237,50 @@ header[data-case] {
   letter-spacing: -0.02em;
 }
 
-/* The way on: a chevron just above the dock, centred on the screen, with a 44px target */
+/* The way on: a small round button on the dock's glass, fixed just above the dock (which is 20px, or the
+   home indicator's safe area, from the bottom and 54px tall), so no phone or browser bar can put it under
+   the dock. It fades out over the first quarter screen of scrolling. A 44px target around the 32px circle */
 .home-next {
-  position: absolute;
+  position: fixed;
+  z-index: 50;
   left: 50%;
-  bottom: 80px;
+  bottom: calc(max(20px, env(safe-area-inset-bottom)) + 66px);
   translate: -50% 0;
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
   color: var(--color-muted);
   transition: color 0.2s ease;
+}
+
+.home-next::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+}
+
+@supports (animation-timeline: scroll()) {
+  .home-next {
+    animation: next-away linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 25vh;
+  }
+}
+
+/* Without scroll timelines it could not fade, and a fixed button would float over the page for good */
+@supports not (animation-timeline: scroll()) {
+  .home-next {
+    display: none;
+  }
+}
+
+@keyframes next-away {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
 }
 
 .home-next:hover,
@@ -2332,6 +2325,9 @@ header[data-case] {
 /* His line: hidden until he turns to wave, then it eases in beside him */
 .hero-said {
   flex: 1 1 200px;
+  /* Two steps under the hero's 14px (owner request) */
+  font-size: 12px;
+  line-height: 18px;
   min-width: 0;
   opacity: 0;
   translate: -6px 0;

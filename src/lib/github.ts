@@ -58,8 +58,3 @@ export function sinceWords(at: Date, now = Date.now()): string {
   if (days < 365) return relative.format(-Math.round(days / 30), 'month');
   return relative.format(-Math.round(days / 365), 'year');
 }
-
-/** Pushed to within the last two months: recent enough that "updated" says more than the project's month */
-export function isRecent(at: Date, now = Date.now()): boolean {
-  return now - at.getTime() < 60 * DAY_MS;
-}

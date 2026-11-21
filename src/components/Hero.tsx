@@ -179,15 +179,16 @@ export function Hero({ personalInfo }: { personalInfo: PersonalInfo }) {
       </p>
 
       </div>
-
-      <a href="#projects" className="home-next" aria-label="Scroll to projects">
-        <svg viewBox="0 0 22 10" width="22" height="10" fill="none" aria-hidden="true">
-          <path d="M2 2 L11 8 L20 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </a>
     </section>
     {/* Holds the first screen's place in the page, so the rest starts at its foot */}
     <div className="home-spacer" aria-hidden="true" />
+    {/* The way on: a small floating button just above the dock, outside the hero so it never scrolls under
+        the dock; it fades out once the page starts to move */}
+    <a href="#projects" className="home-next dock-glass" aria-label="Scroll to projects">
+      <svg viewBox="0 0 22 10" width="16" height="8" fill="none" aria-hidden="true">
+        <path d="M2 2 L11 8 L20 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </a>
     </>
   );
 }

@@ -10,8 +10,6 @@ export interface Project {
   facts: { label: string; value: string }[];
   /** "0:04 | Title" lines: moments in the film a reader can jump to */
   scenes: { at: number; title: string }[];
-  /** "2026-11-10 | What happened" lines from the repo's commit log, oldest first */
-  timeline: { date: string; event: string }[];
   /** "What it is | url" lines; the write-up cites them in order as [1], [2] */
   notes: { text: string; url: string }[];
   tech: string[];
