@@ -116,7 +116,22 @@ export function CommandPalette({ defaultOpen = false, returnFocus = null }: { de
     })),
   ], [theme, emailCopied, inspecting, personalInfo.resumeUrl, navigate, goTo]);
 
-  const filtered = commands.filter((cmd) => cmd.name.toLowerCase().includes(search.trim().toLowerCase()));
+  // Every scene of every project film, opened at its moment; shown only once something is typed, so the
+  // resting list stays short
+  const scenes = useMemo(
+    () =>
+      PROJECTS.flatMap(project =>
+        project.scenes.map((scene): PaletteCommand => ({
+          id: `scene-${project.id}-${scene.at}`,
+          name: `${project.title}: ${scene.title}`,
+          run: () => navigate(`/work/${project.id}?t=${scene.at}`),
+        })),
+      ),
+    [navigate],
+  );
+
+  const query = search.trim().toLowerCase();
+  const filtered = (query ? [...commands, ...scenes] : commands).filter((cmd) => cmd.name.toLowerCase().includes(query));
   const currentIndex = Math.min(activeIndex, Math.max(filtered.length - 1, 0));
   const activeCommand = filtered[currentIndex];
 

@@ -1,4 +1,4 @@
-import { BlogPost, CvSection, Experience, PersonalInfo, Project, SkillGroup } from '../types';
+import { BlogPost, CaseBlock, CaseSection, CvSection, Experience, PersonalInfo, Project, SkillGroup } from '../types';
 import { calculateReadTime, parsePostDate } from './utils';
 
 type Frontmatter = Record<string, string | number | boolean | string[]>;
@@ -84,14 +84,74 @@ export const EXPERIENCES: Experience[] = files(
   highlights: bulletsOf(body),
 }));
 
+const list = (v: Frontmatter[string] | undefined) => (Array.isArray(v) ? v : []);
+
+const pair = (line: string) => {
+  const at = line.indexOf(' | ');
+  return { label: line.slice(0, at).trim(), value: line.slice(at + 3).trim() };
+};
+
+// "1:05" → 65
+const seconds = (stamp: string) => stamp.split(':').reduce((total, part) => total * 60 + Number(part), 0);
+
+function blocksOf(text: string): CaseBlock[] {
+  return text
+    .split(/\n\s*\n/)
+    .map(chunk => chunk.trim())
+    .filter(Boolean)
+    .map((chunk): CaseBlock => {
+      const items = bulletsOf(chunk);
+      if (!items.length) return { kind: 'text', text: chunk.replace(/\s*\n\s*/g, ' ') };
+      return items.every(item => item.includes(' | '))
+        ? { kind: 'rows', rows: items.map(pair) }
+        : { kind: 'list', items };
+    });
+}
+
+/** A case study body: a lead paragraph, then "## " sections */
+function caseOf(body: string): { intro: string; sections: CaseSection[] } {
+  const [intro, ...parts] = body.split(/^##\s+/m);
+  return {
+    intro: intro.trim().replace(/\s*\n\s*/g, ' '),
+    sections: parts.map(part => {
+      const [title, ...rest] = part.split('\n');
+      const name = title.trim();
+      return {
+        id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+        title: name,
+        blocks: blocksOf(rest.join('\n')),
+      };
+    }),
+  };
+}
+
 export const PROJECTS: Project[] = files(
   import.meta.glob('/content/projects/*.md', { query: '?raw', import: 'default', eager: true }),
 ).map(({ path, data, body }) => ({
   id: slugOf(path),
   title: str(data.title),
   summary: str(data.summary),
-  description: bulletsOf(body),
-  tech: Array.isArray(data.tech) ? data.tech : [],
+  ...caseOf(body),
+  facts: list(data.facts).filter(line => line.includes(' | ')).map(pair),
+  scenes: list(data.scenes)
+    .filter(line => line.includes(' | '))
+    .map(line => {
+      const { label, value } = pair(line);
+      return { at: seconds(label), title: value };
+    }),
+  timeline: list(data.timeline)
+    .filter(line => line.includes(' | '))
+    .map(line => {
+      const { label, value } = pair(line);
+      return { date: label, event: value };
+    }),
+  notes: list(data.notes)
+    .filter(line => line.includes(' | '))
+    .map(line => {
+      const { label, value } = pair(line);
+      return { text: label, url: value };
+    }),
+  tech: list(data.tech),
   link: str(data.link) || undefined,
   demoUrl: str(data.demoUrl) || undefined,
   logo: str(data.logo) || undefined,
@@ -99,6 +159,7 @@ export const PROJECTS: Project[] = files(
   media: str(data.media) || undefined,
   mediaAlt: str(data.mediaAlt) || undefined,
   mediaSize: str(data.mediaSize) || undefined,
+  poster: str(data.poster) || undefined,
   date: str(data.date),
 })).sort((a, b) => b.date.localeCompare(a.date)); // newest first (ISO dates)
 

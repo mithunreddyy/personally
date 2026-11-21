@@ -30,6 +30,8 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   // Only this site, and never the live visit count
   if (url.origin !== self.location.origin || url.pathname.startsWith(`${BASE}api/`)) return;
+  // Project films stream in byte ranges, and a partial (206) answer can't be cached: leave them to the network
+  if (request.headers.has('range') || /\.(mp4|webm|mov)$/i.test(url.pathname)) return;
 
   // Pages: the network first so a new post shows up at once; the cached copy when offline
   if (request.mode === 'navigate') {

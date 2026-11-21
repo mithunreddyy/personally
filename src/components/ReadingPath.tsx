@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 
+import { StrideFigure } from './StrideFigure';
+
 // Reading progress on blog posts, told with the hero's walker. Scrolling moves him and also drives his stride,
 // so his feet stay planted at any speed; at the end he turns round and sits on the bench with a book
 const EDGE = 0.6; // progress is measured where the reader's eye is, 60% down the screen
@@ -110,36 +112,7 @@ export function ReadingPath() {
 
         {/* The hero's figure at a smaller size, with the same limbs and stride */}
         <div ref={walker} className="reading-walker">
-          <svg viewBox="44 4 32 62" width={WALKER} height="40" fill="none" strokeLinecap="round" strokeLinejoin="round">
-            <g className="walker-figure" strokeWidth="2.2">
-              <circle cx="60" cy="13.5" r="5.5" />
-              <path d="M60 19 L60 40" />
-              <g className="walker-limb walker-arm-b">
-                <path d="M60 24 L60 33" />
-                <g className="walker-forearm">
-                  <path d="M60 33 L60 41" />
-                </g>
-              </g>
-              <g className="walker-limb walker-leg-b">
-                <path d="M60 40 L60 52" />
-                <g className="walker-shin">
-                  <path d="M60 52 L60 63.5" />
-                </g>
-              </g>
-              <g className="walker-limb walker-leg-a">
-                <path d="M60 40 L60 52" />
-                <g className="walker-shin">
-                  <path d="M60 52 L60 63.5" />
-                </g>
-              </g>
-              <g className="walker-limb walker-arm-a">
-                <path d="M60 24 L60 33" />
-                <g className="walker-forearm">
-                  <path d="M60 33 L60 41" />
-                </g>
-              </g>
-            </g>
-          </svg>
+          <StrideFigure width={WALKER} />
         </div>
 
         {/* The path ends at a park bench under a street lamp, which lights when he arrives. He sits facing

@@ -1062,18 +1062,70 @@ pre::-webkit-scrollbar-thumb:hover {
    rest of the site keeps one 15px size; a long case study needs a clear way in. Title 26 / lead 18 /
    body 15, about a 1.2 step each, all Inter. Blog posts are untouched */
 [data-case] h1 {
-  font-size: 26px;
-  line-height: 31px;
-  font-weight: 500;
-  letter-spacing: -0.012em;
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+}
+
+/* The header, centred like a product page: icon, name, what it is, then the dateline */
+header[data-case] {
+  align-items: center;
+  text-align: center;
+  padding-bottom: 36px;
+}
+
+.case-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.case-logo {
+  width: 56px;
+  height: 56px;
+}
+
+.case-summary,
+.case-dateline {
+  display: block;
+}
+
+.case-summary {
+  color: var(--color-body);
+}
+
+.case-dateline {
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 19px;
+}
+
+/* Inter, set for reading (case studies only): open digits (ss01), the tailed l (cv05) and round quotes and
+   commas (ss03) make long text calmer than the UI cut; lines are balanced to avoid single-word last lines */
+[data-case] {
+  font-feature-settings: 'ss01', 'cv05', 'ss03';
+}
+
+[data-case] p,
+[data-case] li {
+  text-wrap: pretty;
 }
 
 .case-lead {
-  font-size: 18px;
-  line-height: 27px;
+  font-size: 19px;
+  line-height: 29px;
+  letter-spacing: -0.008em;
 }
 
-/* Section labels in ink and medium weight: still the body size, but read as labels, not as muted asides */
+/* Case prose a step up from the site's 15px: these pages are read, not scanned */
+[data-case] .prose-flow {
+  font-size: 16px;
+  line-height: 26px;
+}
+
+/* Section labels in ink and medium weight: read as labels, not as muted asides */
 [data-case] h2 {
   color: var(--color-ink);
   font-weight: 500;
@@ -1081,13 +1133,808 @@ pre::-webkit-scrollbar-thumb:hover {
 
 @media (max-width: 720px) {
   [data-case] h1 {
-    font-size: 22px;
-    line-height: 27px;
+    font-size: 26px;
+    line-height: 32px;
   }
 
+  .case-logo {
+    width: 48px;
+    height: 48px;
+  }
+
+  /* On phones the lead stays ragged (justifying so few large words a line opens wide gaps), a size smaller
+     so lines carry more words, with the line breaks evened out */
   .case-lead {
-    font-size: 17px;
+    font-size: 16.5px;
     line-height: 25px;
+  }
+
+  .case-lead p {
+    text-wrap: pretty;
+  }
+
+  [data-case] .prose-flow {
+    font-size: 15.5px;
+    line-height: 25px;
+  }
+}
+
+/* Chapter labels carry their number in muted figures, so the case study reads as a sequence and the
+   contents rail matches it */
+.case-chapter {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.case-chapter-n {
+  color: var(--color-muted);
+  font-weight: 400;
+}
+
+/* With room to spare, the numbers hang in the margin so every title starts on the text's left edge */
+@media (min-width: 900px) {
+  .case-chapter {
+    position: relative;
+  }
+
+  .case-chapter-n {
+    position: absolute;
+    right: calc(100% + 14px);
+  }
+}
+
+/* The write-up's lists as run-in paragraphs: the lead-in is the head, in ink, and there are no markers */
+.case-runin {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.case-runin-head {
+  color: var(--color-ink);
+  font-weight: 500;
+}
+
+/* A source reference: a small raised number, linking to the list under Details */
+.case-ref {
+  font-size: 0.68em;
+  line-height: 0;
+  margin-left: 0.12em;
+}
+
+.case-ref a {
+  position: relative;
+  color: var(--color-muted);
+  transition: color 0.2s ease;
+}
+
+.case-ref a:hover,
+.case-ref a:focus-visible {
+  color: var(--color-ink);
+}
+
+/* A thumb-sized target around the small number */
+.case-ref a::after {
+  content: '';
+  position: absolute;
+  inset: -14px -12px;
+}
+
+.case-sources {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.case-sources li {
+  text-align: left;
+  hyphens: manual;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  scroll-margin-top: 96px;
+}
+
+.case-sources-n {
+  color: var(--color-muted);
+}
+
+.case-sources li.case-sources-label {
+  display: block;
+  color: var(--color-muted);
+}
+
+/* Arriving from a reference: its number turns ink */
+.case-sources li:target .case-sources-n {
+  color: var(--color-ink);
+}
+
+/* At a glance: a spec sheet, label in muted on the left and the fact beside it. Stacks on narrow phones */
+.case-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+
+.case-sheet > div {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  column-gap: 16px;
+}
+
+.case-sheet dt {
+  color: var(--color-muted);
+}
+
+.case-sheet dd {
+  margin: 0;
+  min-width: 0;
+  /* Links carry <wbr> after each slash; only a single over-long word may break anywhere */
+  overflow-wrap: break-word;
+  text-align: left;
+  hyphens: manual;
+}
+
+@media (max-width: 359.98px) {
+  .case-sheet {
+    gap: 10px;
+  }
+
+  .case-sheet > div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Measured results, one line each: the number first in ink at a fixed width, so the figures line up as a
+   column and read before what was measured */
+.case-figures {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+
+.case-figures > div {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  column-gap: 16px;
+  align-items: baseline;
+}
+
+.case-figures dd {
+  margin: 0;
+  color: var(--color-ink);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.case-figures dt {
+  color: var(--color-muted);
+  text-align: left;
+  hyphens: manual;
+}
+
+.case-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.88em;
+  color: var(--color-ink);
+}
+
+/* A project's film (ProjectFilm.tsx). Like the games' stage it leaves the reading column, up to 700px and
+   the full screen width on phones, and on wide screens it stops short of the pinned contents rail. The
+   seek bar is the hero's path with the walker at the playhead, so the film belongs to the same world */
+.film {
+  --film-width: min(700px, calc(100vw - 64px));
+  width: var(--film-width);
+  margin: 0 calc((100% - var(--film-width)) / 2);
+}
+
+@media (min-width: 1180px) {
+  .film {
+    --film-width: min(700px, calc(100vw - 560px));
+  }
+}
+
+/* On phones the film keeps to the column, so its rounded corners show */
+@media (max-width: 720px) {
+  .film {
+    --film-width: 100%;
+  }
+}
+
+
+
+.film-screen {
+  position: relative;
+}
+
+/* Rounded like a screen: 14px (10px on phones). The model surfaces share the radius, so every
+   "screen" on the page has the same corner */
+.film-screen,
+.nook-screen,
+.fold {
+  border-radius: var(--screen-radius);
+}
+
+:root {
+  --screen-radius: 14px;
+}
+
+@media (max-width: 720px) {
+  :root {
+    --screen-radius: 10px;
+  }
+}
+
+.film-screen {
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.film-screen video {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--color-ink) 4%, transparent);
+  cursor: pointer;
+}
+
+/* The hairline sits inside the corner, over the picture, so light and dark films both get an edge */
+.film-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--color-line);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.film-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: color-mix(in srgb, var(--color-bg) 90%, transparent);
+  color: var(--color-body);
+}
+
+.film-path {
+  position: relative;
+  height: 48px;
+  cursor: pointer;
+  /* A sideways drag scrubs; an upward swipe still scrolls the page */
+  touch-action: pan-y;
+}
+
+.film-path-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+
+.film-path-line {
+  bottom: 5px;
+  background: var(--color-muted);
+}
+
+
+
+.film-walker {
+  --step: 0.55s;
+  position: absolute;
+  left: 0;
+  bottom: 5px;
+  width: 21px;
+  height: 40px;
+  pointer-events: none;
+}
+
+.film-walker svg {
+  display: block;
+  overflow: visible;
+  transition: transform 0.18s ease-out;
+}
+
+/* His stride, held paused: ProjectFilm.tsx sets its time from how far he has walked */
+.film-walker .walker-figure,
+.film-walker .walker-limb,
+.film-walker .walker-forearm,
+.film-walker .walker-shin {
+  animation-play-state: paused;
+}
+
+/* Dragging back along the path turns him round */
+.film-walker-back svg {
+  transform: scaleX(-1);
+}
+
+.film-controls {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+/* Text buttons with a 44px target pulled back by a negative margin, as in the games' picker */
+.film-word {
+  padding: 11px 8px;
+  margin: -11px -8px;
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+/* The sound toggle sits at the far end of the bar */
+.film-word-end {
+  margin-left: auto;
+}
+
+.film-scenes {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: -16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.film-scene {
+  display: grid;
+  grid-template-columns: 3em minmax(0, 1fr);
+  gap: 12px;
+  width: 100%;
+  padding: 2px 0;
+  text-align: left;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.film-scene:hover,
+.film-scene:focus-visible {
+  color: var(--color-ink);
+}
+
+/* The scene on screen: ink, and underlined so it doesn't rest on colour alone */
+.film-scene[aria-current] {
+  color: var(--color-ink);
+}
+
+.film-scene[aria-current] .film-scene-title {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+@media (pointer: coarse) {
+  .film-scenes {
+    gap: 0;
+  }
+
+  .film-scene {
+    padding: 10.5px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .film-walker *,
+  .film-scene {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* The film bar wraps on narrow phones rather than squeezing its words together */
+.film-controls {
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+
+.film-word:disabled {
+  color: var(--color-muted);
+  cursor: default;
+}
+
+/* Case studies' working models (src/components/models). Drawn in the walker's ink lines on the page's own
+   background: ink for what is chosen or showing, muted for the rest, the 1px line for surfaces */
+.model {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.model-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 20px;
+}
+
+.model-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 16px;
+}
+
+/* A choice among several, like the games' picker: the chosen one in ink and underlined, the rest muted */
+.model-word {
+  color: var(--color-muted);
+  transition: color 0.3s ease;
+}
+
+.model-word:hover,
+.model-word:focus-visible,
+.model-word[aria-pressed='true'] {
+  color: var(--color-ink);
+}
+
+.model-word[aria-pressed='true'] {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.model-said {
+  color: var(--color-ink);
+  min-height: 23px;
+  /* A short result line: ragged, not the phone column's justified prose */
+  text-align: left;
+  hyphens: manual;
+}
+
+/* nook: a 1440 by 900 screen in miniature. Windows move to their new frames over 0.3s */
+.nook-screen {
+  position: relative;
+  aspect-ratio: 1440 / 900;
+  border: 1px solid var(--color-line);
+  background: color-mix(in srgb, var(--color-ink) 3%, transparent);
+  container-type: inline-size;
+}
+
+/* The work area: frames are percentages of it, inside nook's outer margin */
+.nook-area {
+  position: absolute;
+  inset: 8px;
+}
+
+.nook-window {
+  position: absolute;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border: 1px solid var(--color-muted);
+  /* Concentric with the screen: its 14px corner less the 8px work-area inset */
+  border-radius: max(var(--screen-radius) - 8px, 3px);
+  background: var(--color-bg);
+  transition: left 0.3s ease, top 0.3s ease, width 0.3s ease, height 0.3s ease, border-color 0.3s ease;
+  animation: nook-open 0.3s ease;
+}
+
+.nook-window[data-active] {
+  border-color: var(--color-ink);
+}
+
+@keyframes nook-open {
+  from {
+    opacity: 0;
+  }
+}
+
+.nook-title {
+  padding: 4px 8px;
+  text-align: left;
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--color-ink);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* The whole window is the target for choosing it, so a thumb never needs to find the title */
+.nook-title::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.nook-close {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.nook-close:hover,
+.nook-close:focus-visible {
+  color: var(--color-ink);
+}
+
+/* A 44px target around the 27px mark */
+.nook-close::after {
+  content: '';
+  position: absolute;
+  inset: -8.5px;
+}
+
+.nook-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+@container (max-width: 360px) {
+  .nook-title {
+    padding: 3px 6px;
+    font-size: 12px;
+  }
+}
+
+/* sieve: one output folded in place. The block keeps the output's height cap; a thin ink line under it
+   is the token count to scale and shrinks to the receipt's share when folded */
+.fold {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-line);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.fold-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--color-line);
+  color: var(--color-ink);
+}
+
+.fold-head span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fold-text {
+  margin: 0;
+  padding: 12px 14px;
+  height: 260px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 19px;
+  color: var(--color-body);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  text-align: left;
+  hyphens: none;
+  animation: fold-in 0.3s ease;
+}
+
+/* The receipt is ink: it is what the model keeps */
+.fold[data-folded] .fold-text {
+  color: var(--color-ink);
+}
+
+@keyframes fold-in {
+  from {
+    opacity: 0;
+    translate: 0 -4px;
+  }
+}
+
+.fold-meter {
+  height: 2px;
+  background: var(--color-line);
+}
+
+.fold-meter span {
+  display: block;
+  height: 100%;
+  background: var(--color-ink);
+  transform-origin: left;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* dropster: the clover, in lines. The open leaf and its beads in ink, the rest muted */
+.clover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.clover svg {
+  display: block;
+  width: min(100%, 370px);
+  height: auto;
+  overflow: visible;
+  font-family: inherit;
+}
+
+.clover-bezel {
+  fill: none;
+  stroke: var(--color-line);
+  stroke-dasharray: 1 7.2;
+}
+
+.clover-leaf path,
+.clover-core {
+  fill: var(--color-bg);
+  stroke: var(--color-muted);
+  stroke-width: 1;
+  transition: stroke 0.2s ease, fill 0.2s ease;
+}
+
+.clover-leaf {
+  cursor: pointer;
+  outline: none;
+}
+
+.clover-leaf text {
+  font-size: 14px;
+  fill: var(--color-body);
+  pointer-events: none;
+}
+
+.clover-leaf:hover path,
+.clover-leaf[data-open] path {
+  stroke: var(--color-ink);
+  fill: color-mix(in srgb, var(--color-ink) 6%, var(--color-bg));
+}
+
+.clover-leaf:hover text,
+.clover-leaf[data-open] text {
+  fill: var(--color-ink);
+}
+
+.clover-leaf[data-off] {
+  cursor: default;
+}
+
+.clover-leaf[data-off] text {
+  fill: var(--color-muted);
+}
+
+.clover-leaf:focus-visible path,
+.clover-bead:focus-visible circle:first-child {
+  stroke: var(--color-accent);
+  stroke-width: 2;
+}
+
+.clover-bead {
+  cursor: pointer;
+  outline: none;
+  animation: clover-fan 0.24s ease both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes clover-fan {
+  from {
+    opacity: 0;
+    scale: 0.6;
+  }
+}
+
+.clover-bead circle:first-child {
+  fill: var(--color-bg);
+  stroke: var(--color-ink);
+  stroke-width: 1;
+}
+
+.clover-bead[data-chosen] circle:first-child {
+  fill: var(--color-ink);
+}
+
+.clover-hit {
+  fill: transparent;
+}
+
+.clover-bead text {
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  fill: var(--color-ink);
+  pointer-events: none;
+}
+
+.clover-bead[data-chosen] text {
+  fill: var(--color-bg);
+}
+
+.clover-count {
+  font-size: 20px;
+  font-weight: 600;
+  fill: var(--color-ink);
+}
+
+.clover-files {
+  font-size: 11px;
+  fill: var(--color-muted);
+}
+
+.clover-caption {
+  min-height: 23px;
+  color: var(--color-ink);
+  text-align: center;
+}
+
+/* Timeline: the repo's history as posts along a dashed path, oldest first */
+.case-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0 0 0 18px;
+  list-style: none;
+  background: linear-gradient(var(--color-muted) 50%, transparent 0) 3px 6px / 1px 6px repeat-y;
+}
+
+.case-timeline li {
+  /* Short lines: ragged, not the phone column's justified prose */
+  text-align: left;
+  hyphens: manual;
+  position: relative;
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  column-gap: 16px;
+}
+
+/* Each post: a short tick across the path */
+.case-timeline li::before {
+  content: '';
+  position: absolute;
+  left: -18px;
+  top: 11px;
+  width: 7px;
+  height: 1px;
+  background: var(--color-ink);
+}
+
+.case-timeline time {
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+@media (max-width: 359.98px) {
+  .case-timeline li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nook-window,
+  .clover-bead,
+  .fold-text,
+  .fold-meter span,
+  .model-word {
+    animation: none !important;
+    transition: none !important;
   }
 }
 
@@ -1338,4 +2185,235 @@ pre::-webkit-scrollbar-thumb:hover {
   background: var(--color-bg);
   color: var(--color-ink);
   pointer-events: auto;
+}
+
+/* Home (owner request, November 2026, after austinvalleskey.com): the intro fills the first screen and sits
+   in its middle, in the reading column; the text inside reads left-aligned, and the sections below
+   continue in the same column as the quiet lists they always were */
+/* By default (short screens, where the intro would not fit a fixed stage) the hero fills the first screen
+   and scrolls away like any section, still blurring and fading as it goes */
+.home-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100svh;
+  margin-top: -120px;
+  padding-block: 96px 144px;
+  /* One step under the site's 15px / 23px (owner request) */
+  font-size: 14px;
+  line-height: 22px;
+  transform-origin: 50% 45%;
+}
+
+.home-hero-inner {
+  width: 100%;
+}
+
+.home-spacer {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .home-hero {
+    margin-top: -64px;
+    padding-block: 72px 144px;
+  }
+}
+
+/* Where the whole intro fits the screen, it becomes a fixed stage and the content slides up over it, as on
+   austinvalleskey.com: a spacer one screen tall holds its place in the page */
+@media (min-width: 721px) and (min-height: 700px), (max-width: 720px) and (min-height: 760px) {
+  .home-hero {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    margin-top: 0;
+    min-height: 0;
+  }
+
+  .home-hero-inner {
+    width: min(540px, calc(100% - 60px));
+  }
+
+  .home-spacer {
+    display: block;
+    height: calc(100svh - 120px);
+  }
+}
+
+@media (max-width: 720px) and (min-height: 760px) {
+  .home-hero-inner {
+    width: min(560px, calc(100% - 64px));
+  }
+
+  .home-spacer {
+    height: calc(100svh - 64px);
+  }
+}
+
+@media (max-width: 359.98px) and (min-height: 760px) {
+  .home-hero-inner {
+    width: calc(100% - 40px);
+  }
+}
+
+/* The content rides over the hero on the page's background, which reaches the screen's edges */
+.home-over {
+  position: relative;
+  z-index: 1;
+  background: var(--color-bg);
+  box-shadow: 0 0 0 100vmax var(--color-bg);
+  clip-path: inset(0 -100vmax -100vmax);
+  padding-top: 40px;
+}
+
+.home-name {
+  color: var(--color-ink);
+  font-size: 20px;
+  line-height: 27px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* The way on: a chevron just above the dock, centred on the screen, with a 44px target */
+.home-next {
+  position: absolute;
+  left: 50%;
+  bottom: 80px;
+  translate: -50% 0;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  color: var(--color-muted);
+  transition: color 0.2s ease;
+}
+
+.home-next:hover,
+.home-next:focus-visible {
+  color: var(--color-ink);
+}
+
+/* The walker arrives (Hero, Walker.tsx `arrive`): three real strides in from the left over 1.65s, 59.7 units
+   at 19.9 a step, with the ground held still so every planted foot stays put. Then he stops and waves,
+   and the greeting appears beside him in quotes, as what he says. After that he walks on as always */
+.walker-arriving > .walker-figure {
+  animation: walker-bob var(--step) ease-in-out infinite, walker-arrive calc(var(--step) * 3) linear both;
+}
+
+.walker-arriving .walker-shadow {
+  animation: walker-arrive calc(var(--step) * 3) linear both;
+}
+
+.walker-arriving .walker-track,
+.walker-arriving .walker-tufts {
+  animation-play-state: paused;
+}
+
+@keyframes walker-arrive {
+  from {
+    translate: -59.7px 0;
+  }
+}
+
+.hero-arrival {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 18px;
+  row-gap: 4px;
+}
+
+.hero-arrival .walker-button {
+  flex: none;
+}
+
+/* His line: hidden until he turns to wave, then it eases in beside him */
+.hero-said {
+  flex: 1 1 200px;
+  min-width: 0;
+  opacity: 0;
+  translate: -6px 0;
+  transition: opacity 0.6s ease, translate 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero-said[data-said] {
+  opacity: 1;
+  translate: 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-said {
+    transition: none;
+  }
+}
+
+/* As the content slides up over it, the hero shrinks a little, blurs and fades (owner request, November 2026,
+   after austinvalleskey.com): driven by the scroll position, no script. By 60% of a screen it is gone (blur
+   12px, scale 0.9) and hidden, so its links can't be reached underneath. Browsers without scroll timelines
+   still get the content sliding over a still hero; reduced motion keeps the hero still */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .home-hero {
+      animation: hero-under linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 60vh;
+    }
+  }
+}
+
+@keyframes hero-under {
+  to {
+    opacity: 0;
+    filter: blur(12px);
+    scale: 0.9;
+    visibility: hidden;
+  }
+}
+
+/* Hero links drawn with a pencil (owner request, November 2026): the intro is all ink, so its links carry a
+   hand-drawn underline in the walker's line language, slightly uneven, a firm stroke over a fainter second
+   pass, with the text at weight 500. At rest the stroke is muted; on hover or keyboard focus it is drawn
+   again from left to right in ink. The stroke is a mask, so it takes the theme's colours */
+.pencil {
+  position: relative;
+  display: inline-block;
+  color: var(--color-ink);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.pencil::after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  bottom: -5px;
+  height: 7px;
+  background: var(--color-muted);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 7' preserveAspectRatio='none'%3E%3Cpath d='M1.5 4.4C14 3.1 27 4.9 41 3.9S69 3.2 82 4.1 95 4.6 98.5 3.6' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M4 5.6C22 4.9 40 6.1 61 5.2S87 4.9 96 5.4' fill='none' stroke='%23000' stroke-opacity='.45' stroke-width='.9' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 0 0 / 100% 100%;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 7' preserveAspectRatio='none'%3E%3Cpath d='M1.5 4.4C14 3.1 27 4.9 41 3.9S69 3.2 82 4.1 95 4.6 98.5 3.6' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M4 5.6C22 4.9 40 6.1 61 5.2S87 4.9 96 5.4' fill='none' stroke='%23000' stroke-opacity='.45' stroke-width='.9' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat 0 0 / 100% 100%;
+  transition: background-color 0.2s ease;
+}
+
+:where(a, button):hover > .pencil::after,
+:where(a, button):focus-visible > .pencil::after,
+.pencil:hover::after,
+.pencil:focus-visible::after {
+  background: var(--color-ink);
+  animation: pencil-draw 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes pencil-draw {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pencil::after {
+    animation: none !important;
+    transition: none;
+  }
 }

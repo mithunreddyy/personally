@@ -15,6 +15,8 @@ const STARS: [number, number, number][] = [
 
 // How long he stops to wave before walking on, and how long without input before he sits down to rest
 const WAVE_MS = 2400;
+// Arriving: three strides in from the left, with the ground held still so each planted foot stays put
+const ARRIVE_MS = 1650;
 const IDLE_MS = 40_000;
 const POSE_MS = 520;
 
@@ -98,9 +100,30 @@ function Figure({ lantern, extras, className = '' }: { lantern?: ReactNode; extr
 // Parts that change pose when he sits down or stands up
 const POSED = '.walker-figure, .walker-limb, .walker-forearm, .walker-shin';
 
-export function Walker({ className = '' }: { className?: string }) {
+/**
+ * With `arrive`, he walks in from the left on load, stops to wave at the reader, then walks on; `onGreet`
+ * fires as the wave starts, so the page can show what he says. Under reduced motion he is already there
+ */
+export function Walker({ className = '', arrive = false, onGreet }: { className?: string; arrive?: boolean; onGreet?: () => void }) {
   const ref = useRef<SVGSVGElement>(null);
   const [waving, setWaving] = useState(false);
+  const [arriving, setArriving] = useState(false);
+  const greet = useRef(onGreet);
+  greet.current = onGreet;
+
+  useEffect(() => {
+    if (!arrive || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      greet.current?.();
+      return;
+    }
+    setArriving(true);
+    const timer = window.setTimeout(() => {
+      setArriving(false);
+      setWaving(true);
+      greet.current?.();
+    }, ARRIVE_MS);
+    return () => window.clearTimeout(timer);
+  }, [arrive]);
   const [resting, setResting] = useState(false);
   const [standing, setStanding] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -190,13 +213,33 @@ export function Walker({ className = '' }: { className?: string }) {
     else setWaving(true);
   };
 
-  // Off screen the walk pauses, so a long read further down the page costs no animation work
+  // Off screen the walk pauses, so a long read further down the page costs no animation work. On the home
+  // page the hero is a fixed stage that never leaves the screen, so being scrolled past it counts as off
+  // screen too: by 60% of a screen the content has covered him
   useEffect(() => {
     const el = ref.current;
     if (!el || typeof IntersectionObserver === 'undefined') return;
-    const observer = new IntersectionObserver(([entry]) => setPaused(!entry.isIntersecting));
+    let seen = true;
+    let covered = false;
+    const update = () => setPaused(!seen || covered);
+    const observer = new IntersectionObserver(([entry]) => {
+      seen = entry.isIntersecting;
+      update();
+    });
     observer.observe(el);
-    return () => observer.disconnect();
+    const onScroll = () => {
+      const now = window.scrollY > window.innerHeight * 0.6;
+      if (now !== covered) {
+        covered = now;
+        update();
+      }
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('scroll', onScroll);
+    };
   }, []);
 
   const now = minutes === null ? null : sky(minutes);
@@ -223,6 +266,7 @@ export function Walker({ className = '' }: { className?: string }) {
         // Classes are also set directly during a pose change (see morph), and mirrored here so a re-render keeps them
         className={[
           'walker',
+          arriving && 'walker-arriving',
           wet && 'walker-wet',
           windy && 'walker-windy',
           waving && 'walker-waving',

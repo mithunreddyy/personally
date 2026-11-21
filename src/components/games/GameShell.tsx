@@ -46,7 +46,7 @@ export function GameShell({
 }) {
   return (
     <div className="game flex flex-col gap-2">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-4 text-muted tabular-nums">
+      <div className="game-meta flex flex-wrap items-baseline justify-between gap-x-4 text-muted tabular-nums">
         <span>{meta}</span>
         <span>{score}</span>
       </div>

@@ -33,11 +33,14 @@ function Portfolio() {
     <>
       <SEO />
       <Hero personalInfo={personalInfo} />
-      <Projects projects={projects} delay={160} />
-      <Blog blogs={blogs} delay={200} showFeed />
-      <Games delay={240} />
-      <Connect personalInfo={personalInfo} delay={280} />
-      <VisitCount delay={320} />
+      {/* Everything below rides up over the hero on the page's own background */}
+      <div className="home-over">
+        <Projects projects={projects} delay={160} />
+        <Blog blogs={blogs} delay={200} showFeed />
+        <Games delay={240} />
+        <Connect personalInfo={personalInfo} delay={280} />
+        <VisitCount delay={320} />
+      </div>
     </>
   );
 }

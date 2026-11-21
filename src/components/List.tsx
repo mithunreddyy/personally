@@ -26,7 +26,7 @@ export function Section({
       style={appear(delay)}
     >
       {action ? (
-        <div className="flex items-baseline justify-between gap-4">
+        <div className="section-head flex items-baseline justify-between gap-4">
           <h2 id={id ? `${id}-title` : undefined} className="text-muted font-normal">
             {title}
           </h2>
@@ -91,7 +91,7 @@ export function Entry({
 /** Name on the left, quiet detail on the right; stacks under 360px, like the reference */
 export function Row({ name, detail }: { name: ReactNode; detail?: ReactNode }) {
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_auto] max-[359.98px]:grid-cols-1 items-baseline gap-x-4">
+    <div className="row grid grid-cols-[minmax(0,1fr)_auto] max-[359.98px]:grid-cols-1 items-baseline gap-x-4">
       <div className="min-w-0">{name}</div>
       {detail && (
         <div className="text-muted text-right max-[359.98px]:text-left max-[359.98px]:text-[13.5px] max-[359.98px]:leading-[19px]">
