@@ -140,11 +140,19 @@ export function Hero({ personalInfo }: { personalInfo: PersonalInfo }) {
       <p className="appear text-ink" style={appear(40)}>
         I'm <span className="text-ink">{firstName}</span>,{' '}
         {hasFlag ? beforeFlag : summary}
-        {hasFlag && <span className="text-ink">{afterFlag}</span>}
+        {hasFlag && <span className="text-ink">{afterFlag}</span>} I like figuring out how things work, taking them
+        apart, and making them better.
       </p>
 
-      <p className="appear text-ink" style={appear(60)}>I’ve worked across healthcare, finance, e-commerce, dev tools, and AI. The one thing that’s
-        stayed the same is my curiosity to figure out how things work, take them apart, and make them better.</p>
+      <p className="appear text-ink" style={appear(50)}>
+        At work that means data pipelines and the APIs on top of them. In my own time it means local tools for AI
+        coding agents, and small apps for the Mac.
+      </p>
+
+      <p className="appear text-ink" style={appear(70)}>
+        I’ve built for e-commerce at Zensar Technologies, for blockchain analytics at Pentagram InfoTech, and now for
+        banking at HSBC.
+      </p>
 
       <p className="appear text-ink" style={appear(80)}>
         The full story is in my <Link to="/cv" className="pencil">CV</Link>, also a PDF you can{' '}

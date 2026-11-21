@@ -1,10 +1,11 @@
-## Languages
+## Data Engineering
 
-- TypeScript
-- JavaScript (ES6+)
-- Python
-- HTML5
-- CSS3
+- PySpark
+- Databricks
+- PostgreSQL
+- MongoDB
+- Redis
+- Cassandra
 
 ## AI & LLMs
 
@@ -14,14 +15,10 @@
 - PyTorch
 - TensorFlow
 
-## Data Engineering
+## Languages
 
-- PySpark
-- Databricks
-- PostgreSQL
-- MongoDB
-- Redis
-- Cassandra
+- Python
+- TypeScript
 
 ## Cloud & DevOps
 

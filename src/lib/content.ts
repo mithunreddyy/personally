@@ -155,7 +155,8 @@ export const PROJECTS: Project[] = files(
   mediaSize: str(data.mediaSize) || undefined,
   poster: str(data.poster) || undefined,
   date: str(data.date),
-})).sort((a, b) => b.date.localeCompare(a.date)); // newest first (ISO dates)
+  featured: data.featured === true,
+})).sort((a, b) => Number(b.featured) - Number(a.featured) || b.date.localeCompare(a.date)); // featured, then newest first (ISO dates)
 
 export const SKILL_GROUPS: SkillGroup[] = Object.values(
   import.meta.glob('/content/skills.md', { query: '?raw', import: 'default', eager: true }),

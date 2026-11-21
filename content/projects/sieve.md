@@ -1,5 +1,6 @@
 ---
 date: "2026-11-10"
+featured: true
 title: "sieve"
 summary: "A local context engine for AI coding agents."
 outcome: "On tasks it was not tuned on, Claude Code sessions cost 7% less with it, and all 20 answers stayed correct."

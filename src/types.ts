@@ -19,6 +19,8 @@ export interface Project {
   logo?: string;
   /** One measured result, shown as the page's lead. Real numbers only; leave it out otherwise */
   outcome?: string;
+  /** Listed first in Projects (`featured: true` in frontmatter) */
+  featured?: boolean;
   /** A screenshot (.png, .jpg, .webp) or screen recording (.mp4, .webm) under public/, shown above the details */
   media?: string;
   /** What the media shows, for screen readers */

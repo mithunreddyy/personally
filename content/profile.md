@@ -1,6 +1,6 @@
 ---
 name: "Mithun Reddy Sudireddy"
-role: "Full-Stack Software Engineer"
+role: "AI and Data Engineer"
 # location: "Hyderabad, India"
 email: "hi@mithun.fyi"
 github: "mithunreddyy"
@@ -9,4 +9,4 @@ birthYear: 1999
 resumeUrl: "/mithunresume.pdf"
 ---
 
-a full-stack software engineer and designer who builds and ships with effort, care and taste.
+a data engineer who also builds AI tools.

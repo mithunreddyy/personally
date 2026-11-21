@@ -2197,7 +2197,7 @@ header[data-case] {
 
 /* Where the whole intro fits the screen, it becomes a fixed stage and the content slides up over it, as on
    austinvalleskey.com: a spacer one screen tall holds its place in the page */
-@media (min-width: 721px) and (min-height: 700px), (max-width: 720px) and (min-height: 760px) {
+@media (min-width: 721px) and (min-height: 700px), (max-width: 720px) and (min-height: 800px) {
   .home-hero {
     position: fixed;
     inset: 0;
@@ -2216,7 +2216,7 @@ header[data-case] {
   }
 }
 
-@media (max-width: 720px) and (min-height: 760px) {
+@media (max-width: 720px) and (min-height: 800px) {
   .home-hero-inner {
     width: min(560px, calc(100% - 64px));
   }
@@ -2226,7 +2226,7 @@ header[data-case] {
   }
 }
 
-@media (max-width: 359.98px) and (min-height: 760px) {
+@media (max-width: 359.98px) and (min-height: 800px) {
   .home-hero-inner {
     width: calc(100% - 40px);
   }
@@ -2287,6 +2287,13 @@ header[data-case] {
 
 /* Without scroll timelines it could not fade, and a fixed button would float over the page for good */
 @supports not (animation-timeline: scroll()) {
+  .home-next {
+    display: none;
+  }
+}
+
+/* Where the intro is too tall for a fixed stage it scrolls normally, and the button would sit on its last lines */
+@media (min-width: 721px) and (max-height: 699.98px), (max-width: 720px) and (max-height: 799.98px) {
   .home-next {
     display: none;
   }

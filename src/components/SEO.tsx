@@ -8,7 +8,7 @@ const SITE_NAME = 'Mithun Reddy';
 // The home page describes itself in the hero's own words (content/profile.md), so search results and
 // link previews say what the page says
 const firstName = PERSONAL_INFO.name.split(' ')[0];
-export const SITE_DESCRIPTION = `I'm ${firstName}, ${PERSONAL_INFO.summary.trim()} I've worked across healthcare, finance, e-commerce, dev tools, and AI.`;
+export const SITE_DESCRIPTION = `I'm ${firstName}, ${PERSONAL_INFO.summary.trim()} I build data pipelines at work and local tools for AI coding agents in my own time.`;
 
 interface SEOProps {
   title?: string;
