@@ -319,6 +319,15 @@ export function Walker({ className = '', arrive = false, onGreet }: { className?
           </g>
         )}
 
+        {/* Fair-weather clouds: two small, faint ones always in his sky (owner request, November 2026), unless
+            the weather has brought its own clouds or fog */}
+        {!cloudy && kind !== 'fog' && (
+          <g className="walker-clouds walker-clouds-fair" strokeWidth="1">
+            <path className="walker-cloud" d="M14 -3 h15 a3.4 3.4 0 0 0 -2.3 -6.4 a5 5 0 0 0 -9.2 -1.1 a3.4 3.4 0 0 0 -3.5 7.5 Z" />
+            <path className="walker-cloud walker-cloud-slow" d="M92 -10 h12 a2.9 2.9 0 0 0 -2 -5.4 a4.2 4.2 0 0 0 -7.6 -0.9 a2.9 2.9 0 0 0 -2.4 6.3 Z" />
+          </g>
+        )}
+
         {/* Weather over the sky band: drifting clouds, falling rain, low fog, and in a storm a faint flash */}
         {cloudy && (
           <g className="walker-clouds" strokeWidth="1">

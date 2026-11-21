@@ -1912,6 +1912,19 @@ header[data-case] {
   to { transform: translateX(-14px); }
 }
 
+/* The fair-weather pair sits further back: fainter, and drifting a little more slowly */
+.walker-clouds-fair {
+  opacity: 0.6;
+}
+
+.walker-clouds-fair .walker-cloud {
+  animation-duration: 21s;
+}
+
+.walker-clouds-fair .walker-cloud-slow {
+  animation-duration: 29s;
+}
+
 .walker-drop {
   stroke: var(--color-muted);
   opacity: 0.75;
@@ -2223,6 +2236,9 @@ header[data-case] {
 .home-over {
   position: relative;
   z-index: 1;
+  /* The sections below the hero at the hero's 14px / 22px, one step under the site's 15px (owner request) */
+  font-size: 14px;
+  line-height: 22px;
   background: var(--color-bg);
   box-shadow: 0 0 0 100vmax var(--color-bg);
   clip-path: inset(0 -100vmax -100vmax);
@@ -2325,9 +2341,9 @@ header[data-case] {
 /* His line: hidden until he turns to wave, then it eases in beside him */
 .hero-said {
   flex: 1 1 200px;
-  /* Two steps under the hero's 14px (owner request) */
-  font-size: 12px;
-  line-height: 18px;
+  /* One step under the hero's 14px (owner request) */
+  font-size: 13px;
+  line-height: 19px;
   min-width: 0;
   opacity: 0;
   translate: -6px 0;
