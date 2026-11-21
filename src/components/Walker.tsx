@@ -1,6 +1,5 @@
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 
-import { usePresence } from '../lib/presence';
 import { useHyderabadWeather, weatherGreeting } from '../lib/weather';
 import { announce } from './Island';
 
@@ -54,13 +53,9 @@ function sky(minutes: number) {
 
 // Rain falls across the sky band at these x positions; drizzle uses every other one
 const DROPS = [8, 24, 41, 57, 73, 89, 106, 122, 139, 155, 171, 188];
-// Other people on the page walk behind him, faint and dashed, at most this many
-const MAX_GHOSTS = 4;
-const GHOST_X = [-26, -48, -70, -92];
 
 /**
- * The stick figure itself, shared by the walker and the faint walkers of other visitors: head, body, and
- * the four limbs in the order that draws the far side behind the near side
+ * The stick figure itself: head, body, and the four limbs in the order that draws the far side behind the near side
  */
 function Figure({ lantern, extras, className = '' }: { lantern?: ReactNode; extras?: ReactNode; className?: string }) {
   return (
@@ -129,12 +124,8 @@ export function Walker({ className = '', arrive = false, onGreet }: { className?
   const [paused, setPaused] = useState(false);
   // Null until mounted, so the prerendered page carries no build-time sky
   const [minutes, setMinutes] = useState<number | null>(null);
-  // Hyderabad's real weather and how many others are on the page; both stay empty without the worker
+  // Hyderabad's real weather; it stays empty without the worker
   const weather = useHyderabadWeather();
-  const others = usePresence(true);
-  // Slots for other visitors only grow, so someone leaving fades out instead of vanishing
-  const [ghostSlots, setGhostSlots] = useState(0);
-  useEffect(() => setGhostSlots(n => Math.max(n, Math.min(MAX_GHOSTS, others))), [others]);
 
   useEffect(() => {
     setMinutes(minutesInHyderabad(new Date()));
@@ -250,11 +241,10 @@ export function Walker({ className = '', arrive = false, onGreet }: { className?
   const cloudy = kind === 'clouds' || kind === 'drizzle' || wet;
   const hot = !!weather && !!now?.day && weather.temp >= 35 && !wet;
   const windy = !!weather && weather.wind >= 25;
-  const label = `Wave at the walker${others > 0 ? `. ${others} other ${others === 1 ? 'person is' : 'people are'} here now` : ''}`;
 
   return (
     // Tap him and he stops mid-stride to wave; the status pill says hi for anyone who can't see it
-    <button type="button" onClick={wave} aria-label={label} className={`walker-button ${className}`}>
+    <button type="button" onClick={wave} aria-label="Wave at the walker" className={`walker-button ${className}`}>
       <svg
         ref={ref}
         aria-hidden="true"
@@ -372,24 +362,6 @@ export function Walker({ className = '', arrive = false, onGreet }: { className?
 
         {/* The stone he sits on when he rests */}
         <path className="walker-stone" d="M49 64.5 Q51 58 59.5 58 Q68 58 70 64.5" strokeWidth="1" />
-
-        {/* Other people on the page right now: faint dashed walkers behind him, each a step out of time */}
-        {Array.from({ length: ghostSlots }, (_, i) => (
-          <svg
-            key={i}
-            x={GHOST_X[i]}
-            y="-18"
-            width="200"
-            height="90"
-            viewBox="0 -18 200 90"
-            overflow="visible"
-            className="walker-ghost"
-            data-on={i < others || undefined}
-            style={{ ['--lag' as string]: `${-0.17 * (i + 1)}s` }}
-          >
-            <Figure />
-          </svg>
-        ))}
 
         <Figure
           lantern={

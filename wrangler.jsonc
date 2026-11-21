@@ -12,16 +12,17 @@
     // The worker sees every request first, so www can be sent to the bare domain
     "run_worker_first": true
   },
-  // The visit counter behind /api/visits, and who is on the home page right now behind /api/presence
+  // The visit counter behind /api/visits
   "durable_objects": {
     "bindings": [
-      { "name": "VISITS", "class_name": "VisitCounter" },
-      { "name": "PRESENCE", "class_name": "Presence" }
+      { "name": "VISITS", "class_name": "VisitCounter" }
     ]
   },
   "migrations": [
     { "tag": "v1", "new_sqlite_classes": ["VisitCounter"] },
-    { "tag": "v2", "new_sqlite_classes": ["Presence"] }
+    { "tag": "v2", "new_sqlite_classes": ["Presence"] },
+    // The walkers of other visitors on the home page were removed, and their Presence object with them
+    { "tag": "v3", "deleted_classes": ["Presence"] }
   ],
   // Custom domains: Cloudflare creates the DNS records and the certificate for these on deploy
   "routes": [

@@ -2027,43 +2027,6 @@ header[data-case] {
   animation-play-state: paused;
 }
 
-/* Other people on the home page right now (Walker.tsx, from /api/presence): faint dashed walkers behind
-   him, each a fraction of a step out of time. They fade in when someone arrives and out when they leave */
-.walker-ghost {
-  opacity: 0;
-  transition: opacity 0.6s ease;
-}
-
-.walker-ghost[data-on] {
-  opacity: 0.55;
-}
-
-.walker-ghost .walker-figure {
-  stroke: var(--color-muted);
-  stroke-dasharray: 2.4 1.8;
-  animation-delay: var(--lag);
-}
-
-.walker-ghost .walker-leg-a,
-.walker-ghost .walker-arm-a,
-.walker-ghost .walker-leg-a .walker-shin,
-.walker-ghost .walker-arm-a .walker-forearm {
-  animation-delay: var(--lag);
-}
-
-.walker-ghost .walker-leg-b,
-.walker-ghost .walker-arm-b,
-.walker-ghost .walker-leg-b .walker-shin,
-.walker-ghost .walker-arm-b .walker-forearm {
-  animation-delay: calc(var(--lag) - var(--step));
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .walker-ghost {
-    transition: none;
-  }
-}
-
 /* Inspect mode (Inspector.tsx): outlines, measurement lines and size chips in the redline token, a spec
    card on the page background with the 1px line border and the command menu's 12px radius, values in
    Geist Mono like code. Nothing here takes the pointer except the Stop button */
