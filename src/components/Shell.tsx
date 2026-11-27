@@ -1,4 +1,4 @@
-import { Contrast, CornerDownLeft, Github, Linkedin, Mail } from 'lucide-react';
+import { Contrast, CornerDownLeft, Github, Linkedin, Mail, Map as MapIcon } from 'lucide-react';
 import { lazy, PointerEvent, ReactNode, Suspense, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
@@ -6,11 +6,14 @@ import { PERSONAL_INFO } from '../constants';
 import { Island, announce } from './Island';
 import { TransitionLink } from './List';
 import { toggleTheme, useTheme } from '../hooks/useTheme';
+import { recordVisit } from '../lib/visits';
 
 // The command menu (and the Motion library it animates with) loads on first use, not with every page
 const CommandPalette = lazy(() => import('./CommandPalette').then(module => ({ default: module.CommandPalette })));
 // Inspect mode loads the first time someone asks for it
 const Inspector = lazy(() => import('./Inspector'));
+// The plan of the site loads the first time someone opens it
+const Plan = lazy(() => import('./Plan'));
 
 /** I (or the command menu) turns Inspect mode on and off; the inspector itself loads on the first turn-on */
 function InspectorLoader() {
@@ -45,6 +48,39 @@ function InspectorLoader() {
   return (
     <Suspense fallback={null}>
       <Inspector onExit={() => window.dispatchEvent(new Event('toggle-inspector'))} />
+    </Suspense>
+  );
+}
+
+/** P (or the dock's Plan button, or the command menu) unfolds the plan of the site; P or Esc folds it away.
+    The plan loads on first use */
+function PlanLoader() {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const toggle = () => setOpen(was => !was);
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() !== 'p' || e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
+      // Another dialog (the command menu) keeps the key
+      const other = document.querySelector('[role="dialog"]:not(.plan)');
+      if (other) return;
+      e.preventDefault();
+      toggle();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('toggle-plan', toggle);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('toggle-plan', toggle);
+    };
+  }, []);
+
+  if (!open) return null;
+  return (
+    <Suspense fallback={null}>
+      <Plan onClose={() => setOpen(false)} />
     </Suspense>
   );
 }
@@ -148,6 +184,17 @@ function Dock({ showIndex }: { showIndex: boolean }) {
             </DockGlyph>
           </TransitionLink>
         )}
+        <button
+          type="button"
+          aria-label="Plan of the site"
+          aria-keyshortcuts="P"
+          onClick={() => window.dispatchEvent(new Event('toggle-plan'))}
+          className={`${dockIcon} text-muted`}
+        >
+          <DockGlyph label="Plan">
+            <MapIcon size={16} strokeWidth={1.75} aria-hidden="true" />
+          </DockGlyph>
+        </button>
         <a href={`mailto:${email}`} aria-label={`Email ${email}`} className={dockIcon}>
           <DockGlyph label="Email">
             <Mail size={16} strokeWidth={1.75} aria-hidden="true" />
@@ -172,8 +219,23 @@ function Dock({ showIndex }: { showIndex: boolean }) {
 export function Shell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
 
+  // Losing or regaining the connection is said once in the pill: every page is saved for offline reading,
+  // so the only things that stop are the films and the live lines (visits, weather)
+  useEffect(() => {
+    const offline = () => announce("You're offline. Everything here still works, except the films");
+    const online = () => announce('Back online');
+    window.addEventListener('offline', offline);
+    window.addEventListener('online', online);
+    return () => {
+      window.removeEventListener('offline', offline);
+      window.removeEventListener('online', online);
+    };
+  }, []);
+
   useEffect(() => {
     window.scrollTo(0, 0);
+    // The plan's footprints: pages opened in this visit
+    recordVisit(pathname);
   }, [pathname]);
 
   return (
@@ -182,6 +244,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <ThemeToggle />
       <PaletteLoader />
       <InspectorLoader />
+      <PlanLoader />
       <Island />
       {/* .page-column sets the margins on every side from the screen's size (src/index.css). data-path is
           the route actually on screen, which a page change waits for (lib/viewTransition.ts) */}

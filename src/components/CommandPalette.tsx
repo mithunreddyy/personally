@@ -87,6 +87,7 @@ export function CommandPalette({ defaultOpen = false, returnFocus = null }: { de
       name: inspecting ? 'Stop inspecting' : 'Inspect the design',
       run: () => window.dispatchEvent(new Event('toggle-inspector')),
     },
+    { id: 'plan', name: 'Plan of the site', run: () => window.dispatchEvent(new Event('toggle-plan')) },
     { id: 'cv', name: 'CV', run: () => navigate('/cv') },
     { id: 'projects', name: 'Projects', run: () => goTo('projects') },
     { id: 'blog', name: 'Writing', run: () => goTo('blog') },

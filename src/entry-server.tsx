@@ -18,6 +18,20 @@ export function routes(): string[] {
   ];
 }
 
+/** The link-preview card for each page (scripts/og-cards.mjs draws them). Paths match ogImage() in SEO.tsx */
+export function cards(): { file: string; title: string; line: string; kind: 'home' | 'bench' | 'signpost' }[] {
+  return [
+    { file: 'og-image.png', title: PERSONAL_INFO.name, line: `${PERSONAL_INFO.role}. Case studies, writing and small games.`, kind: 'home' },
+    ...PROJECTS.map(project => ({ file: `og/work/${project.id}.png`, title: project.title, line: project.summary, kind: 'signpost' as const })),
+    ...BLOG_POSTS.map(post => ({
+      file: `og/blog/${post.slug}.png`,
+      title: post.title.replace(/\n/g, ' '),
+      line: [post.category, post.readTime].filter(Boolean).join(', '),
+      kind: 'bench' as const,
+    })),
+  ];
+}
+
 /** Renders one route to HTML, waiting for its lazy chunks so the page is complete, not a loading state */
 export async function render(url: string, basename: string): Promise<string> {
   const { prelude } = await prerenderToNodeStream(

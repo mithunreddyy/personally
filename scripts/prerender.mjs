@@ -5,13 +5,15 @@ import { mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync }
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import { writeCards } from './og-cards.mjs';
+
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'dist');
 const ssrDir = join(root, '.ssr');
 // Same switch as vite.config.ts: the GitHub Pages backup lives under /Portfolio/
 const base = process.env.GITHUB_PAGES ? '/Portfolio/' : '/';
 
-const { render, routes, llmsTxt } = await import(pathToFileURL(join(ssrDir, 'entry-server.js')).href);
+const { render, routes, llmsTxt, cards } = await import(pathToFileURL(join(ssrDir, 'entry-server.js')).href);
 const template = readFileSync(join(dist, 'index.html'), 'utf8');
 
 function walk(dir) {
@@ -55,6 +57,9 @@ writeFileSync(join(dist, '404.html'), await page('/404'));
 
 writeFileSync(join(dist, 'llms.txt'), llmsTxt());
 
+// Link-preview cards, one per page, in the walker's world (scripts/og-cards.mjs)
+const cardCount = writeCards(cards(), dist);
+
 // Service worker: the pages, the app code and styles, the first-paint font and the icons are cached up
 // front, so the site opens offline after one visit. Everything else is cached the first time it is used
 const files = walk(dist);
@@ -77,4 +82,4 @@ const sw = readFileSync(join(root, 'scripts', 'sw.template.js'), 'utf8')
 writeFileSync(join(dist, 'sw.js'), sw);
 
 rmSync(ssrDir, { recursive: true, force: true });
-console.log(`prerender: ${written.length} pages + 404, llms.txt, sw.js (${precache.length} precached, cache ${version})`);
+console.log(`prerender: ${written.length} pages + 404, ${cardCount} share cards, llms.txt, sw.js (${precache.length} precached, cache ${version})`);

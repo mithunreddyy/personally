@@ -148,9 +148,10 @@ export function Arrow({ newTab = false }: { newTab?: boolean }) {
 export function TransitionLink({
   to,
   travel = false,
+  beforeChange,
   onClick,
   ...props
-}: Omit<ComponentProps<typeof Link>, 'to'> & { to: string; travel?: boolean }) {
+}: Omit<ComponentProps<typeof Link>, 'to'> & { to: string; travel?: boolean; beforeChange?: () => void }) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const warm = () => preloadRoute(to);
@@ -163,10 +164,14 @@ export function TransitionLink({
       onFocus={warm}
       onClick={e => {
         onClick?.(e);
-        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || to === pathname) return;
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        if (to === pathname) {
+          beforeChange?.();
+          return;
+        }
         e.preventDefault();
         const link = e.currentTarget;
-        navigateWithTransition(navigate, to, travel ? (link.querySelector<HTMLElement>('.link-line') ?? link) : null);
+        navigateWithTransition(navigate, to, travel ? (link.querySelector<HTMLElement>('.link-line') ?? link) : null, beforeChange);
       }}
     />
   );

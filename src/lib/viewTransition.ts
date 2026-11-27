@@ -35,9 +35,16 @@ function routeReady(to: string): Promise<void> {
  * travels into the new page's heading (`.vt-title`). Without View Transitions, or under reduced motion,
  * it is a plain navigation.
  */
-export function navigateWithTransition(navigate: NavigateFunction, to: string, title?: HTMLElement | null) {
+export function navigateWithTransition(
+  navigate: NavigateFunction,
+  to: string,
+  title?: HTMLElement | null,
+  /** Runs just before the page changes, after the old page is captured: the plan closes here */
+  before?: () => void,
+) {
   const doc = document as TransitionDocument;
   if (!doc.startViewTransition || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    before?.();
     navigate(to);
     return;
   }
@@ -52,6 +59,7 @@ export function navigateWithTransition(navigate: NavigateFunction, to: string, t
   }
 
   const transition = doc.startViewTransition(async () => {
+    before?.();
     flushSync(() => navigate(to));
     window.scrollTo(0, 0);
     await routeReady(to);

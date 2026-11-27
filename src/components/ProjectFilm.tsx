@@ -4,6 +4,8 @@ import { useSearchParams } from 'react-router-dom';
 
 import { Project } from '../types';
 import { announce } from './Island';
+import { useOnline } from '../hooks/useOnline';
+import { OfflineWalker } from './OfflineWalker';
 import { StrideFigure } from './StrideFigure';
 
 const VIDEO = /\.(mp4|webm|mov)$/i;
@@ -63,6 +65,7 @@ function Film({
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [status, setStatus] = useState<'ready' | 'loading' | 'error'>('ready');
+  const online = useOnline();
 
   const scenes = project.scenes;
   const sceneIndex = scenes.reduce((found, scene, i) => (time + 0.05 >= scene.at ? i : found), -1);
@@ -301,7 +304,16 @@ function Film({
             onError={() => setStatus('error')}
             {...size}
           />
-          {status === 'error' && (
+          {/* Films stream from the network and are never saved for offline use, so without a connection the
+              film says so plainly, with the walker looking for a signal; it clears itself when the connection
+              returns. Everything else on the page was saved and still works */}
+          {!online && (duration === 0 || status === 'error') && (
+            <div className="film-error film-offline" role="status">
+              <OfflineWalker />
+              <p>Films need a connection. The rest of the site works offline.</p>
+            </div>
+          )}
+          {online && status === 'error' && (
             <div className="film-error" role="alert">
               <p>The film didn't load.</p>
               <button type="button" className="film-word" onClick={retry}>

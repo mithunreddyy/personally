@@ -10,8 +10,8 @@ import { appear, Arrow } from './List';
 import { Walker } from './Walker';
 
 const FLAG = '🇮🇳';
-// I is handled by the inspector loader in Shell.tsx; it's listed here so its keycap presses in too
-const SHORTCUT_KEYS = ['m', 'v', 'd', 't', 'i'];
+// I and P are handled by the inspector and plan loaders in Shell.tsx; they're listed here so their keycaps press in too
+const SHORTCUT_KEYS = ['m', 'v', 'd', 't', 'i', 'p'];
 const HOME_ZONE = 'Asia/Kolkata';
 const HOME_CITY = 'hyderabad, india';
 
@@ -182,7 +182,8 @@ export function Hero({ personalInfo }: { personalInfo: PersonalInfo }) {
 
       <p className="appear hidden sm:block text-ink" style={appear(120)}>
         Shortcuts: {cap('m')} copies my email, {cap('v')} opens the resume, {cap('d')} downloads it,{' '}
-        {cap('t')} switches the theme, {cap('i')} inspects the design, and <kbd className="keycap">⌘K</kbd> opens everything
+        {cap('t')} switches the theme, {cap('i')} inspects the design, {cap('p')} unfolds a plan of the site, and{' '}
+        <kbd className="keycap">⌘K</kbd> opens everything
         else.
       </p>
 

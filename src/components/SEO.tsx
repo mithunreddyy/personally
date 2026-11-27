@@ -55,11 +55,14 @@ export function SEO({
   description = SITE_DESCRIPTION,
   path = '/',
   type = 'website',
-  image = `${SITE_URL}/og-image.png`,
+  image,
   schema,
   noindex = false,
 }: SEOProps) {
   const siteTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
+  // Every post and project has its own card, drawn at build time (scripts/og-cards.mjs); the rest share the home card
+  const ownCard = /^\/(blog|work)\/[\w-]+$/.test(path) && !noindex;
+  image ??= ownCard ? `${SITE_URL}/og${path}.png` : `${SITE_URL}/og-image.png`;
   const canonical = `${SITE_URL}${path}`;
 
   const schemas: object[] = [];
@@ -79,7 +82,9 @@ export function SEO({
       <meta property="og:title" content={siteTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={image} />
-      <meta property="og:image:alt" content={SITE_NAME} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content={ownCard ? title : SITE_NAME} />
       {!noindex && <meta property="og:url" content={canonical} />}
 
       <meta name="twitter:card" content="summary_large_image" />
