@@ -72,7 +72,7 @@ export function ProjectView() {
                 className="case-logo"
               />
             )}
-            {project.title}
+            <span className="vt-title">{project.title}</span>
           </span>
         }
         meta={

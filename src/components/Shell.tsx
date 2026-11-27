@@ -1,9 +1,10 @@
 import { Contrast, CornerDownLeft, Github, Linkedin, Mail } from 'lucide-react';
 import { lazy, PointerEvent, ReactNode, Suspense, useEffect, useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import { PERSONAL_INFO } from '../constants';
 import { Island, announce } from './Island';
+import { TransitionLink } from './List';
 import { toggleTheme, useTheme } from '../hooks/useTheme';
 
 // The command menu (and the Motion library it animates with) loads on first use, not with every page
@@ -86,7 +87,7 @@ function ThemeToggle() {
       onClick={toggleTheme}
       aria-pressed={theme === 'dark'}
       aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-      className="fixed top-2 right-2 z-50 flex items-center justify-center w-11 h-11 text-muted opacity-70 hover:opacity-100 hover:text-ink transition print:hidden"
+      className="theme-toggle fixed z-50 flex items-center justify-center w-11 h-11 text-muted opacity-70 hover:opacity-100 hover:text-ink transition print:hidden"
     >
       <Contrast size={16} strokeWidth={1.75} aria-hidden="true" />
     </button>
@@ -132,7 +133,7 @@ function Dock({ showIndex }: { showIndex: boolean }) {
   return (
     <nav
       aria-label="Quick links"
-      className="fixed left-0 right-0 bottom-[max(20px,env(safe-area-inset-bottom))] z-50 flex justify-center pointer-events-none print:hidden"
+      className="dock-bar fixed left-0 right-0 bottom-[max(20px,env(safe-area-inset-bottom))] z-50 flex justify-center pointer-events-none print:hidden"
     >
       <div
         ref={bar}
@@ -141,11 +142,11 @@ function Dock({ showIndex }: { showIndex: boolean }) {
         className="dock-glass pointer-events-auto flex items-end gap-0.5 p-1 rounded-3xl"
       >
         {showIndex && (
-          <Link to="/" aria-label="Back to index" className={`${dockIcon} text-muted`}>
+          <TransitionLink to="/" aria-label="Back to index" className={`${dockIcon} text-muted`}>
             <DockGlyph label="Index">
               <CornerDownLeft size={16} strokeWidth={1.75} aria-hidden="true" />
             </DockGlyph>
-          </Link>
+          </TransitionLink>
         )}
         <a href={`mailto:${email}`} aria-label={`Email ${email}`} className={dockIcon}>
           <DockGlyph label="Email">
@@ -182,7 +183,10 @@ export function Shell({ children }: { children: ReactNode }) {
       <PaletteLoader />
       <InspectorLoader />
       <Island />
-      <main id="content" tabIndex={-1} className="outline-none relative mx-auto w-full max-w-[600px] min-w-0 px-[30px] pt-[120px] pb-36 max-[720px]:max-w-[624px] max-[720px]:px-8 max-[720px]:pt-16 max-[359.98px]:px-5 text-[15px] leading-[23px] print:p-0 print:max-w-none print:w-full">
+      {/* .page-column sets the margins on every side from the screen's size (src/index.css). data-path is
+          the route actually on screen, which a page change waits for (lib/viewTransition.ts) */}
+      <main id="content" tabIndex={-1} data-path={pathname} className="page-column outline-none relative min-w-0 text-[15px] leading-[23px] print:p-0 print:max-w-none print:w-full">
+
         {children}
       </main>
       <Dock showIndex={pathname !== '/'} />

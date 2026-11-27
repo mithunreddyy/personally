@@ -1,5 +1,8 @@
-import { CSSProperties, ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import { ComponentProps, CSSProperties, ReactNode } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+
+import { preloadRoute } from '../lib/routes';
+import { navigateWithTransition } from '../lib/viewTransition';
 
 const appear = (delay: number) => ({ '--appear-delay': `${delay}ms` }) as CSSProperties;
 
@@ -137,8 +140,41 @@ export function Arrow({ newTab = false }: { newTab?: boolean }) {
   );
 }
 
-/** Internal route or external URL, both wearing the hairline underline; external URLs get the arrow */
-export function TextLink({ to, arrow, children }: { to: string; arrow?: boolean; children: ReactNode }) {
+/**
+ * An internal link that changes page with a view transition (lib/viewTransition.ts) and warms the next
+ * page's chunk on hover or focus. With `travel`, the link's title moves into the new page's heading.
+ * Modified clicks (new tab, new window) and the current page behave as ordinary links.
+ */
+export function TransitionLink({
+  to,
+  travel = false,
+  onClick,
+  ...props
+}: Omit<ComponentProps<typeof Link>, 'to'> & { to: string; travel?: boolean }) {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const warm = () => preloadRoute(to);
+
+  return (
+    <Link
+      {...props}
+      to={to}
+      onPointerEnter={warm}
+      onFocus={warm}
+      onClick={e => {
+        onClick?.(e);
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || to === pathname) return;
+        e.preventDefault();
+        const link = e.currentTarget;
+        navigateWithTransition(navigate, to, travel ? (link.querySelector<HTMLElement>('.link-line') ?? link) : null);
+      }}
+    />
+  );
+}
+
+/** Internal route or external URL, both wearing the hairline underline; external URLs get the arrow.
+    `travel` carries an internal link's title into the page it opens */
+export function TextLink({ to, arrow, travel, children }: { to: string; arrow?: boolean; travel?: boolean; children: ReactNode }) {
   const external = /^https?:/.test(to);
   const withArrow = arrow ?? external;
   const body = withArrow ? (
@@ -159,9 +195,9 @@ export function TextLink({ to, arrow, children }: { to: string; arrow?: boolean;
     );
   }
   return (
-    <Link to={to} className={className}>
+    <TransitionLink to={to} travel={travel} className={className}>
       {body}
-    </Link>
+    </TransitionLink>
   );
 }
 

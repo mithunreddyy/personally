@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react';
 
+import { progressOf, readProgress, saveProgress } from '../lib/readingProgress';
 import { StrideFigure } from './StrideFigure';
 
 // Reading progress on blog posts, told with the hero's walker. Scrolling moves him and also drives his stride,
-// so his feet stay planted at any speed; at the end he turns round and sits on the bench with a book
-const EDGE = 0.6; // progress is measured where the reader's eye is, 60% down the screen
+// so his feet stay planted at any speed; at the end he turns round and sits on the bench with a book.
+// The furthest point he reaches is remembered, so the Writing list can say how much is left
 const WALKER = 21;
 const PARK = 64;
 const MARKERS = [0.25, 0.5, 0.75];
@@ -17,7 +18,7 @@ const CYCLE_MS = 1100;
 const FOOT_AHEAD = 9.93 * SCALE;
 const MAX_PRINTS = 14;
 
-export function ReadingPath() {
+export function ReadingPath({ slug }: { slug: string }) {
   const root = useRef<HTMLDivElement>(null);
   const walker = useRef<HTMLDivElement>(null);
   const prints = useRef<HTMLDivElement>(null);
@@ -35,18 +36,7 @@ export function ReadingPath() {
     let lastX: number | null = null;
     let travelled = 0;
     let step = 0;
-
-    const progressNow = () => {
-      const box = body.getBoundingClientRect();
-      const top = box.top + window.scrollY;
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      const start = top - window.innerHeight * EDGE;
-      // The end is where the article's last line reaches the eye line, or the bottom of the page if the
-      // page can't scroll that far (a tall window, a short post)
-      const end = Math.min(top + box.height - window.innerHeight * EDGE, max);
-      if (end <= start) return window.scrollY >= end ? 1 : 0;
-      return Math.min(1, Math.max(0, (window.scrollY - start) / (end - start)));
-    };
+    let furthest = readProgress(slug) ?? 0;
 
     const leavePrint = (x: number, facing: number) => {
       const print = document.createElement('span');
@@ -57,9 +47,14 @@ export function ReadingPath() {
       while (trail.childElementCount > MAX_PRINTS) trail.firstElementChild?.remove();
     };
 
-    const update = () => {
+    // Only a real scroll saves: on mount the page may still hold the previous page's scroll position
+    const update = (save = false) => {
       frame = 0;
-      const progress = progressNow();
+      const progress = progressOf(body);
+      if (save && (progress >= furthest + 0.01 || (progress >= 0.999 && furthest < 1))) {
+        furthest = progress >= 0.999 ? 1 : progress;
+        saveProgress(slug, furthest);
+      }
       const room = track.clientWidth - WALKER - PARK;
       const x = progress * room;
       figure.style.transform = `translateX(${x.toFixed(1)}px)`;
@@ -85,19 +80,22 @@ export function ReadingPath() {
       lastX = x;
     };
 
-    const onChange = () => {
-      if (!frame) frame = requestAnimationFrame(update);
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(() => update(true));
+    };
+    const onResize = () => {
+      if (!frame) frame = requestAnimationFrame(() => update());
     };
 
     update();
-    window.addEventListener('scroll', onChange, { passive: true });
-    window.addEventListener('resize', onChange);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize);
     return () => {
-      window.removeEventListener('scroll', onChange);
-      window.removeEventListener('resize', onChange);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onResize);
       cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [slug]);
 
   return (
     <div ref={root} className="reading-path print:hidden" aria-hidden="true">

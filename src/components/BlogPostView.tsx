@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { BLOG_POSTS } from "../constants";
+import { FINISHED, readProgress, scrollToProgress, STARTED } from "../lib/readingProgress";
 import { formatPostDate } from "../lib/utils";
 import { Article, ArticleSection } from "./Article";
 import { Blog } from "./Blog";
@@ -349,6 +350,20 @@ export function BlogPostView() {
     return () => clearTimeout(timer);
   }, [linkCopied]);
 
+  // Where this browser stopped last time, offered as a way back in. Read after mount (the prerendered page
+  // knows no reader), and only for a post started but not finished
+  const [resumeAt, setResumeAt] = useState<number | null>(null);
+  useEffect(() => {
+    const progress = slug ? readProgress(slug) : null;
+    setResumeAt(progress !== null && progress >= STARTED && progress < FINISHED ? progress : null);
+  }, [slug]);
+
+  const resume = () => {
+    const body = document.querySelector<HTMLElement>("[data-reading]");
+    if (body && resumeAt !== null) scrollToProgress(body, resumeAt);
+    setResumeAt(null);
+  };
+
   if (!post) return <NotFound />;
 
   const groups = groupByHeading(post.content ? parseContent(post.content) : []);
@@ -389,7 +404,7 @@ export function BlogPostView() {
         }}
       />
 
-      <ReadingPath />
+      <ReadingPath slug={post.slug} />
 
       <Article
         index={issue}
@@ -401,6 +416,14 @@ export function BlogPostView() {
             <button type="button" onClick={copyLink} className="link-line">
               {linkCopied ? "Link copied" : "copy link"}
             </button>
+            {resumeAt !== null && (
+              <>
+                {", or "}
+                <button type="button" onClick={resume} className="link-line">
+                  pick up where you stopped
+                </button>
+              </>
+            )}
             <span role="status" className="sr-only">
               {linkCopied ? "Link copied to clipboard" : ""}
             </span>

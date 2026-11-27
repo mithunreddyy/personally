@@ -28,7 +28,7 @@ export function Projects({ projects, delay = 0 }: { projects: Project[]; delay?:
               <Row
                 name={
                   <span className="focus-title">
-                    <TextLink to={`/work/${project.id}`} arrow>{project.title}</TextLink>
+                    <TextLink to={`/work/${project.id}`} arrow travel>{project.title}</TextLink>
                   </span>
                 }
                 detail={<ProjectSpan project={project} />}

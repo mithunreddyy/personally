@@ -86,7 +86,45 @@
   }
 }
 
+/*
+ * Page margins. Fluid instead of stepped: the side margin grows with the screen from 20px on the smallest
+ * phones to 32px from about 550px wide, the top from 64px to 120px with the screen's height, and none of
+ * them ever sits under a notch, a rounded corner or the home indicator (index.html sets viewport-fit=cover).
+ * The text column itself stays a reading measure: 540px, or 560px on phones and small tablets.
+ * Everything that leaves the column (the games' stage, the film, the hero) works from the same tokens.
+ */
+:root {
+  --gutter: clamp(20px, 4vw + 10px, 32px);
+  --gutter-left: max(var(--gutter), env(safe-area-inset-left));
+  --gutter-right: max(var(--gutter), env(safe-area-inset-right));
+  --column: 540px;
+  --page-top: calc(clamp(64px, 3vw + 7vh, 120px) + env(safe-area-inset-top));
+  /* Clears the dock (44px icons on a 4px pad, 20px off the bottom) with room to spare */
+  --page-bottom: calc(clamp(120px, 10vh + 48px, 144px) + env(safe-area-inset-bottom));
+  /* The theme switch's corner, kept clear of the notch in landscape */
+  --corner-top: max(8px, env(safe-area-inset-top));
+  --corner-right: max(8px, env(safe-area-inset-right));
+}
+
+@media (max-width: 720px) {
+  :root {
+    --column: 560px;
+  }
+}
+
 @layer components {
+  .page-column {
+    width: 100%;
+    max-width: calc(var(--column) + var(--gutter-left) + var(--gutter-right));
+    margin-inline: auto;
+    padding: var(--page-top) var(--gutter-right) var(--page-bottom) var(--gutter-left);
+  }
+
+  .theme-toggle {
+    top: var(--corner-top);
+    right: var(--corner-right);
+  }
+
   /* Resting hairline that fills with ink from the left on hover or focus */
   .link-line {
     position: relative;
@@ -112,6 +150,17 @@
     .focus-title
     .link-line {
     color: var(--color-muted);
+  }
+
+  /* A post this browser has started (Blog.tsx): the resting hairline is drawn in muted as far as the reader
+     got, under the ink that still fills on hover. Muted on the line colour is over 3:1 in both themes */
+  .has-read .link-line {
+    background-image:
+      linear-gradient(var(--color-ink), var(--color-ink)),
+      linear-gradient(var(--color-muted), var(--color-muted)),
+      linear-gradient(var(--color-line), var(--color-line));
+    background-size: 0% 1px, calc(var(--read, 0) * 100%) 1px, 100% 1px;
+    background-position: 0 100%, 0 100%, 0 100%;
   }
 
   :where(a, button):hover .link-line,
@@ -155,6 +204,73 @@
 .appear {
   animation: appear 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: var(--appear-delay, 0ms);
+}
+
+/*
+ * Page changes (lib/viewTransition.ts). The page takes one small step along the path: going deeper, the old
+ * page leaves to the left and the new one arrives from the right, as if you walked on; going back to the
+ * index, the reverse, the way the reading path's walker turns round. The clicked title travels into the new
+ * page's heading, so the eye never has to find it again. The dock and the theme switch hold still.
+ * Browsers without View Transitions, and reduced motion, change page instantly as before.
+ */
+:root {
+  --vt-step: -14px;
+}
+
+:root[data-vt='back'] {
+  --vt-step: 14px;
+}
+
+@keyframes vt-leave {
+  to {
+    opacity: 0;
+    transform: translateX(var(--vt-step));
+  }
+}
+
+@keyframes vt-arrive {
+  from {
+    opacity: 0;
+    transform: translateX(calc(var(--vt-step) * -1));
+  }
+}
+
+::view-transition-old(root) {
+  animation: vt-leave 0.18s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+::view-transition-new(root) {
+  animation: vt-arrive 0.3s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both;
+}
+
+/* The title is one box on both pages (a single line or a wrapped block), anchored at its left edge */
+.vt-title {
+  display: inline-block;
+}
+
+::view-transition-group(page-title) {
+  animation-duration: 0.38s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-old(page-title),
+::view-transition-new(page-title) {
+  width: auto;
+  height: 100%;
+}
+
+/* Named only while a page change runs: a view-transition-name makes its element a backdrop root, which
+   would cut the dock's glass off from the page it blurs */
+:root[data-vt] .dock-bar {
+  view-transition-name: dock;
+}
+
+:root[data-vt] .theme-toggle {
+  view-transition-name: theme-toggle;
+}
+
+:root[data-vt] .island-anchor {
+  view-transition-name: island;
 }
 
 /* The hero walker (Walker.tsx) walks in place while the path slides under him. A 0.55s step covers 19.9 units
@@ -495,7 +611,7 @@
 @media (max-width: 720px) {
   .reading-path-track {
     width: auto;
-    margin: 0 58px 0 32px;
+    margin: 0 calc(var(--corner-right) + 50px) 0 var(--gutter-left);
   }
 }
 
@@ -977,7 +1093,7 @@ pre::-webkit-scrollbar-thumb:hover {
 
 .game-stage {
   /* The room the screen gives: its width less the gutters, and its height less the score and rules */
-  --stage-room: min(calc(100vw - 64px), max(280px, calc((100svh - 240px) * 7 / 4)));
+  --stage-room: min(calc(100vw - var(--gutter-left) - var(--gutter-right)), max(280px, calc((100svh - 240px) * 7 / 4)));
   --stage-width: min(700px, var(--stage-room));
   display: block;
   width: var(--stage-width);
@@ -1332,7 +1448,7 @@ header[data-case] {
    the full screen width on phones, and on wide screens it stops short of the pinned contents rail. The
    seek bar is the hero's path with the walker at the playhead, so the film belongs to the same world */
 .film {
-  --film-width: min(700px, calc(100vw - 64px));
+  --film-width: min(700px, calc(100vw - var(--gutter-left) - var(--gutter-right)));
   width: var(--film-width);
   margin: 0 calc((100% - var(--film-width)) / 2);
 }
@@ -2131,7 +2247,8 @@ header[data-case] {
   align-items: center;
   justify-content: center;
   min-height: 100svh;
-  margin-top: -120px;
+  /* Pulled up through main's top margin, so the intro centres on the whole screen */
+  margin-top: calc(var(--page-top) * -1);
   padding-block: 96px 144px;
   /* One step under the site's 15px / 23px (owner request) */
   font-size: 14px;
@@ -2153,7 +2270,6 @@ header[data-case] {
 
 @media (max-width: 720px) {
   .home-hero {
-    margin-top: -64px;
     padding-block: 72px 144px;
   }
 }
@@ -2169,29 +2285,14 @@ header[data-case] {
     min-height: 0;
   }
 
+  /* The fixed stage sits outside main, so it takes the column's measure and margins itself */
   .home-hero-inner {
-    width: min(540px, calc(100% - 60px));
+    width: min(var(--column), calc(100% - var(--gutter-left) - var(--gutter-right)));
   }
 
   .home-spacer {
     display: block;
-    height: calc(100svh - 120px);
-  }
-}
-
-@media (max-width: 720px) and (min-height: 800px) {
-  .home-hero-inner {
-    width: min(560px, calc(100% - 64px));
-  }
-
-  .home-spacer {
-    height: calc(100svh - 64px);
-  }
-}
-
-@media (max-width: 359.98px) and (min-height: 800px) {
-  .home-hero-inner {
-    width: calc(100% - 40px);
+    height: calc(100svh - var(--page-top));
   }
 }
 

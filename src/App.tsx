@@ -11,12 +11,13 @@ import { SEO } from './components/SEO';
 import { Shell } from './components/Shell';
 import { VisitCount } from './components/VisitCount';
 import { usePortfolioData } from './hooks/usePortfolioData';
+import { loadBlogPost, loadCv, loadProject } from './lib/routes';
 import { scrollToSection } from './lib/utils';
 
-// Reading pages load on demand
-const BlogPostView = lazy(() => import('./components/BlogPostView').then(module => ({ default: module.BlogPostView })));
-const ProjectView = lazy(() => import('./components/ProjectView').then(module => ({ default: module.ProjectView })));
-const CvView = lazy(() => import('./components/CvView').then(module => ({ default: module.CvView })));
+// Reading pages load on demand; links warm the same chunks on hover (lib/routes.ts)
+const BlogPostView = lazy(() => loadBlogPost().then(module => ({ default: module.BlogPostView })));
+const ProjectView = lazy(() => loadProject().then(module => ({ default: module.ProjectView })));
+const CvView = lazy(() => loadCv().then(module => ({ default: module.CvView })));
 const NotFound = lazy(() => import('./components/NotFound').then(module => ({ default: module.NotFound })));
 
 function Portfolio() {
@@ -55,7 +56,8 @@ export function Site({ router }: { router: (children: ReactNode) => ReactNode })
         {router(
           <div className="min-h-screen bg-bg text-ink relative selection:bg-accent/20 selection:text-ink">
             <Shell>
-              <Suspense fallback={<p className="text-muted" role="status">Loading the page</p>}>
+              {/* data-route-loading tells a page change (lib/viewTransition.ts) the new page isn't in yet */}
+              <Suspense fallback={<p className="text-muted" role="status" data-route-loading>Loading the page</p>}>
                 <Routes>
                   <Route path="/" element={<Portfolio />} />
                   <Route path="/cv" element={<CvView />} />

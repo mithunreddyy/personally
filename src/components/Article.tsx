@@ -1,8 +1,6 @@
 import { CornerDownLeft } from 'lucide-react';
 import { ReactNode, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-
-import { appear } from './List';
+import { appear, TransitionLink } from './List';
 
 export interface TocItem {
   id: string;
@@ -61,17 +59,17 @@ export function Article({
     <>
       <nav
         aria-label="Contents"
-        className="appear flex flex-col gap-3.5 mb-6 min-[1180px]:text-[13px] min-[1180px]:leading-[19px] min-[1180px]:fixed min-[1180px]:left-16 min-[1180px]:top-[120px] min-[1180px]:w-[200px] min-[1180px]:mb-0"
+        className="appear flex flex-col gap-3.5 mb-6 min-[1180px]:text-[13px] min-[1180px]:leading-[19px] min-[1180px]:fixed min-[1180px]:left-16 min-[1180px]:top-[var(--page-top)] min-[1180px]:w-[200px] min-[1180px]:mb-0"
         style={appear(0)}
       >
         <p className="flex items-center gap-1.5 text-muted">
-          <Link
+          <TransitionLink
             to="/"
             aria-label="Back to index"
             className="inline-flex items-center justify-center -m-3 p-3 hover:text-ink transition-colors"
           >
             <CornerDownLeft size={14} strokeWidth={1.75} aria-hidden="true" />
-          </Link>
+          </TransitionLink>
           <span className="ml-1">{index}</span>
         </p>
         {toc.length > 1 && (
@@ -93,7 +91,8 @@ export function Article({
       </nav>
 
       <header data-case={kase} className="appear flex flex-col gap-1.5 pb-7" style={appear(0)}>
-        <h1 className="text-ink font-normal">{title}</h1>
+        {/* .vt-title is where a clicked entry's title lands when the page opens (lib/viewTransition.ts) */}
+        <h1 className="text-ink font-normal">{typeof title === 'string' ? <span className="vt-title">{title}</span> : title}</h1>
         <p className="text-muted">{meta}</p>
       </header>
 
